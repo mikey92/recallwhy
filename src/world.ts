@@ -45,7 +45,9 @@ export function buildContext(world: World, ids: string[], agent: string, trace: 
     evidence.push({ id: `E${evidence.length + 1}`, about: id, predicate: f.predicate, value: f.value,
       source: `${f.source.kind}${f.source.url ? ` ${f.source.url}` : ""} by ${f.source.by}` });
   }
-  const text = evidence.map((e) => `[${e.id}] ${e.about} ${e.predicate} = ${JSON.stringify(e.value)}  (source: ${e.source})`).join("\n");
+  // Plain-English lines ("[E12] our units on hand in affected lots: 379") read the same way to the
+  // model that writes the brief and to the model that checks it.
+  const text = evidence.map((e) => `[${e.id}] ${e.predicate.replace(/_/g, " ")}: ${typeof e.value === "string" ? e.value : JSON.stringify(e.value)}`).join("\n");
   trace.emit("world.context", agent, { entities: ids, evidenceCount: evidence.length });
   return { evidence, text };
 }
