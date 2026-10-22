@@ -41,6 +41,13 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
         const missing = tokens(cand.sku.title).filter((w) => !brand.has(w) && !/\d/.test(w) && w.length > 2 && !notice.has(w));
         if (missing.length) critiques.push({ code: "item-word-missing", sku: d.sku, detail: `our item "${cand.sku.title}" says ${missing.map((w) => `"${w}"`).join(", ")}, which the notice never mentions` });
         else checks.push(`${d.sku}: every product word of our item appears in the notice`);
+        // Our product named only inside another product's ingredient list is not a match.
+        const cut = r.text.search(/\bingredients?\s*:/i);
+        if (cut > 0) {
+          const head = new Set(tokens(`${r.title} ${r.text.slice(0, cut)}`));
+          const words = tokens(cand.sku.title).filter((w) => !brand.has(w) && !/\d/.test(w) && w.length > 2);
+          if (words.length && !words.some((w) => head.has(w))) critiques.push({ code: "only-an-ingredient", sku: d.sku, detail: `"${cand.sku.title}" appears in the notice only as an ingredient of another product` });
+        }
       }
       const conflict = d.verdict === "same" ? designatorConflict(cand, r) : undefined;
       if (conflict) critiques.push({ code: "designator-conflict", sku: d.sku, detail: conflict });

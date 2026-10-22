@@ -2,29 +2,29 @@
   "model": "ollama:nemotron-3-nano:latest",
   "since": "2026-07-01",
   "scanned": 517,
-  "cases": 230,
-  "seconds": 702,
+  "cases": 225,
+  "seconds": 841,
   "all": {
-    "pairs": 469,
+    "pairs": 440,
     "positives": 194,
     "caught": 190,
-    "falseAlarms": 111,
+    "falseAlarms": 20,
     "wronglyDismissed": 3,
     "toHuman": 1,
-    "precision": 0.631,
+    "precision": 0.905,
     "recall": 0.979
   },
   "textOnly": {
-    "pairs": 365,
+    "pairs": 336,
     "positives": 90,
     "caught": 87,
-    "falseAlarms": 111,
+    "falseAlarms": 20,
     "wronglyDismissed": 3,
     "toHuman": 0,
-    "precision": 0.439,
+    "precision": 0.813,
     "recall": 0.967
   },
-  "revisedCases": 84,
+  "revisedCases": 98,
   "rows": [
     {
       "recall": "fda:H-1166-2026",
@@ -76,43 +76,43 @@
     },
     {
       "recall": "fda:H-1206-2026",
-      "sku": "NW-100030",
+      "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1206-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1206-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1206-2026",
-      "sku": "NW-100120",
+      "sku": "NW-100030",
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1206-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1206-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1259-2026",
@@ -156,43 +156,43 @@
     },
     {
       "recall": "fda:H-1213-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1213-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1213-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1213-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1213-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1213-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1213-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1327-2026",
@@ -404,43 +404,43 @@
     },
     {
       "recall": "fda:H-1205-2026",
-      "sku": "NW-100030",
+      "sku": "NW-100120",
       "basis": "text",
-      "label": "not-this",
+      "label": "same",
       "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1205-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1205-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1205-2026",
-      "sku": "NW-100120",
+      "sku": "NW-100030",
       "basis": "text",
-      "label": "same",
-      "final": "same",
-      "rounds": 1
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1205-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1205-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1160-2026",
@@ -484,43 +484,43 @@
     },
     {
       "recall": "fda:H-1214-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1214-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1214-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1214-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1214-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1214-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1214-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1133-2026",
@@ -584,23 +584,23 @@
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1320-2026",
       "sku": "NW-100047",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1320-2026",
       "sku": "NW-100107",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1297-2026",
@@ -636,14 +636,6 @@
     },
     {
       "recall": "fda:H-1325-2026",
-      "sku": "NW-100025",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1325-2026",
       "sku": "NW-100047",
       "basis": "text",
       "label": "same",
@@ -652,10 +644,18 @@
     },
     {
       "recall": "fda:H-1325-2026",
+      "sku": "NW-100025",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 1
+    },
+    {
+      "recall": "fda:H-1325-2026",
       "sku": "NW-100107",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -691,46 +691,6 @@
       "rounds": 2
     },
     {
-      "recall": "fda:H-1201-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1201-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1201-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1201-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1201-2026",
-      "sku": "NW-100122",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
       "recall": "fda:H-1189-2026",
       "sku": "NW-100124",
       "basis": "text",
@@ -764,43 +724,43 @@
     },
     {
       "recall": "fda:H-1210-2026",
+      "sku": "NW-100064",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1210-2026",
       "sku": "NW-100030",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1210-2026",
       "sku": "NW-100031",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1210-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1210-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1210-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1308-2026",
@@ -871,7 +831,7 @@
       "sku": "NW-100080",
       "basis": "text",
       "label": "not-this",
-      "final": "not-this",
+      "final": "same",
       "rounds": 2
     },
     {
@@ -1028,43 +988,43 @@
     },
     {
       "recall": "fda:H-1215-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1215-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1215-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1215-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1215-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1215-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1215-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1177-2026",
@@ -1113,46 +1073,6 @@
       "label": "not-this",
       "final": "not-this",
       "rounds": 2
-    },
-    {
-      "recall": "fda:H-1199-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "not-this",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1199-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1199-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1199-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1199-2026",
-      "sku": "NW-100122",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
     },
     {
       "recall": "fda:H-1368-2026",
@@ -1204,75 +1124,43 @@
     },
     {
       "recall": "fda:H-1208-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1208-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1208-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1208-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 3
+    },
+    {
+      "recall": "fda:H-1208-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1208-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 3
     },
     {
-      "recall": "fda:H-1212-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1212-2026",
+      "recall": "fda:H-1208-2026",
       "sku": "NW-100031",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1212-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1212-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1212-2026",
@@ -1280,7 +1168,39 @@
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1212-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1212-2026",
+      "sku": "NW-100064",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1212-2026",
+      "sku": "NW-100120",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1212-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1289-2026",
@@ -1352,7 +1272,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-0022-2027",
@@ -1703,8 +1623,8 @@
       "sku": "NW-100039",
       "basis": "text",
       "label": "not-this",
-      "final": "not-this",
-      "rounds": 3
+      "final": "same",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1360-2026",
@@ -1712,7 +1632,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 3
+      "rounds": 2
     },
     {
       "recall": "fda:H-1097-2026",
@@ -1988,43 +1908,43 @@
     },
     {
       "recall": "fda:H-1200-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1200-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1200-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1200-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1200-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1200-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1200-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1163-2026",
@@ -2272,7 +2192,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1352-2026",
@@ -2280,7 +2200,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1352-2026",
@@ -2288,7 +2208,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1350-2026",
@@ -2459,46 +2379,6 @@
       "rounds": 1
     },
     {
-      "recall": "fda:H-1204-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1204-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1204-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1204-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1204-2026",
-      "sku": "NW-100122",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
       "recall": "fda:H-1346-2026",
       "sku": "NW-100090",
       "basis": "upc",
@@ -2576,103 +2456,47 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 3
-    },
-    {
-      "recall": "fda:H-1202-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1202-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1202-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1202-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1202-2026",
-      "sku": "NW-100122",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1216-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1216-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1216-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1216-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1216-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
-      "recall": "fda:H-1323-2026",
-      "sku": "NW-100025",
+      "recall": "fda:H-1216-2026",
+      "sku": "NW-100030",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
-      "recall": "fda:H-1323-2026",
-      "sku": "NW-100047",
+      "recall": "fda:H-1216-2026",
+      "sku": "NW-100031",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1323-2026",
@@ -2687,48 +2511,24 @@
       "sku": "NW-100025",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1322-2026",
       "sku": "NW-100047",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1322-2026",
       "sku": "NW-100107",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1207-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "same",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1207-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1207-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1207-2026",
@@ -2736,15 +2536,39 @@
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1207-2026",
+      "sku": "NW-100064",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1207-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "same",
+      "final": "same",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1207-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1207-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1150-2026",
@@ -2784,7 +2608,7 @@
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1279-2026",
@@ -2792,7 +2616,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1279-2026",
@@ -2800,7 +2624,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1294-2026",
@@ -2852,22 +2676,6 @@
     },
     {
       "recall": "fda:H-1324-2026",
-      "sku": "NW-100025",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1324-2026",
-      "sku": "NW-100047",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1324-2026",
       "sku": "NW-100107",
       "basis": "text",
       "label": "not-this",
@@ -2879,8 +2687,8 @@
       "sku": "NW-100039",
       "basis": "text",
       "label": "not-this",
-      "final": "not-this",
-      "rounds": 3
+      "final": "same",
+      "rounds": 1
     },
     {
       "recall": "fda:H-1359-2026",
@@ -2888,7 +2696,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 3
+      "rounds": 1
     },
     {
       "recall": "fda:H-1270-2026",
@@ -3028,10 +2836,18 @@
     },
     {
       "recall": "fda:H-1321-2026",
-      "sku": "NW-100025",
+      "sku": "NW-100107",
       "basis": "text",
       "label": "not-this",
       "final": "same",
+      "rounds": 1
+    },
+    {
+      "recall": "fda:H-1321-2026",
+      "sku": "NW-100025",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -3039,15 +2855,7 @@
       "sku": "NW-100047",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1321-2026",
-      "sku": "NW-100107",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -3107,84 +2915,44 @@
       "rounds": 1
     },
     {
-      "recall": "fda:H-1203-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1203-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1203-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1203-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1203-2026",
-      "sku": "NW-100122",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1211-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
       "recall": "fda:H-1211-2026",
       "sku": "NW-100031",
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1211-2026",
-      "sku": "NW-100064",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1211-2026",
-      "sku": "NW-100120",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1211-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1211-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1211-2026",
+      "sku": "NW-100064",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1211-2026",
+      "sku": "NW-100120",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1290-2026",
@@ -3284,43 +3052,43 @@
     },
     {
       "recall": "fda:H-1209-2026",
-      "sku": "NW-100030",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1209-2026",
-      "sku": "NW-100031",
-      "basis": "text",
-      "label": "not-this",
-      "final": "same",
-      "rounds": 1
-    },
-    {
-      "recall": "fda:H-1209-2026",
       "sku": "NW-100064",
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1209-2026",
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1209-2026",
+      "sku": "NW-100030",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1209-2026",
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "same",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
+    },
+    {
+      "recall": "fda:H-1209-2026",
+      "sku": "NW-100031",
+      "basis": "text",
+      "label": "not-this",
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1334-2026",
@@ -3528,7 +3296,7 @@
       "basis": "text",
       "label": "same",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "cpsc:26694",
@@ -3778,5 +3546,6 @@
       "final": "same",
       "rounds": 1
     }
-  ]
+  ],
+  "startedAt": "2026-10-22T01:10:50.000Z"
 }

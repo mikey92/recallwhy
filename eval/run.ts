@@ -22,20 +22,22 @@ const gt = new Map(readFileSync("data/synthetic/eval/ground_truth.csv", "utf8").
 
 const state = `state/eval-${tag}`;
 rmSync(state, { recursive: true, force: true });
+rmSync(`logs/eval/trace-eval-${tag}.jsonl`, { force: true });
 const trace = new Trace({ dir: "logs/eval", quiet: true, runId: `eval-${tag}` });
 const sql = new DuckSampleRunner({ trace });
 const ctx = { sql, gen: makeGenerator({ provider, model, ollamaUrl: process.env.OLLAMA_URL }, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}` };
 
 const t0 = Date.now();
+const startedAt = new Date().toISOString();
 const { cases, scanned } = await scout(ctx, { since });
 const rows: { recall: string; sku: string; basis: string; label: "same" | "not-this"; final: string; rounds: number }[] = [];
 let i = 0;
 for (const k of cases) {
-  const { finding } = await adjudicate(ctx, k);
+  const { finding, open } = await adjudicate(ctx, k);
   for (const d of finding.decisions) {
     const cand = k.candidates.find((c) => c.sku.sku === d.sku)!;
     const label = gt.get(d.sku) === k.recall.number || (cand.sku.upc && k.recall.upcs.includes(cand.sku.upc)) ? "same" : "not-this";
-    rows.push({ recall: k.recall.id, sku: d.sku, basis: d.basis, label, final: d.verdict, rounds: finding.round });
+    rows.push({ recall: k.recall.id, sku: d.sku, basis: d.basis, label, final: open.length && d.verdict === "same" ? "unsure" : d.verdict, rounds: finding.round });
   }
   if (++i % 20 === 0) console.error(`${i}/${cases.length} cases, ${Math.round((Date.now() - t0) / 1000)}s`);
 }
@@ -50,7 +52,7 @@ const m = (xs: typeof rows) => {
   return { pairs: xs.length, positives: pos, caught: tp, falseAlarms: fp, wronglyDismissed: fn, toHuman: unsure,
     precision: tp + fp ? +(tp / (tp + fp)).toFixed(3) : null, recall: pos ? +(tp / pos).toFixed(3) : null };
 };
-const out = { model: ctx.model, since, scanned, cases: cases.length, seconds: Math.round((Date.now() - t0) / 1000),
+const out = { model: ctx.model, startedAt, since, scanned, cases: cases.length, seconds: Math.round((Date.now() - t0) / 1000),
   all: m(rows), textOnly: m(rows.filter((r) => r.basis === "text")), revisedCases: new Set(rows.filter((r) => r.rounds > 1).map((r) => r.recall)).size };
 mkdirSync("eval/results", { recursive: true });
 writeFileSync(`eval/results/${tag}.json`, JSON.stringify({ ...out, rows }, null, 2));

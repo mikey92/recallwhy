@@ -356,7 +356,7 @@ export function fdaRetailerTitle(desc: string, brand: string): string {
     if (withSize.length <= 48) title = withSize;
   }
   title = title.replace(/\.{3}/g, "").trim();
-  if (title.length > 48) title = title.slice(0, 48).trim();
+  if (title.length > 48) title = clipWords(title, 48);
   return title || "FOOD ITEM";
 }
 
@@ -400,7 +400,7 @@ export function cpscRetailerTitle(
     if (withModel.length <= 48) title = withModel;
   }
   title = title.replace(/\.{3}/g, "").trim();
-  if (title.length > 48) title = title.slice(0, 48).trim();
+  if (title.length > 48) title = clipWords(title, 48);
   return title || "PRODUCT";
 }
 
@@ -857,4 +857,12 @@ if (isDirectRun) {
     console.error(err);
     process.exit(1);
   });
+}
+
+/** Cut a title at a word boundary so no word is left half-written. */
+export function clipWords(s: string, n: number): string {
+  if (s.length <= n) return s;
+  const cut = s.slice(0, n + 1);
+  const at = cut.lastIndexOf(" ");
+  return (at > n * 0.5 ? cut.slice(0, at) : s.slice(0, n)).replace(/[\s,(/-]+$/, "").trim();
 }
