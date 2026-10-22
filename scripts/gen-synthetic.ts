@@ -87,6 +87,7 @@ type FdaRecall = {
   recalling_firm: string;
   product_description: string;
   code_info: string;
+  more_code_info?: string;
   distribution_pattern: string;
   recall_initiation_date: string;
   report_date: string;
