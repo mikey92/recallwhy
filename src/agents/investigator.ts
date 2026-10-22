@@ -22,7 +22,7 @@ export interface Finding {
   lotSources: Record<string, "regex" | "model">; numbers?: Numbers; stores: StoreExposure[];
   verdict: "act-now" | "notify" | "no-exposure" | "not-ours" | "needs-human";
 }
-export interface Critique { code: "ungrounded-quote" | "lot-not-in-notice" | "number-mismatch" | "upc-not-in-notice" | "model-not-in-notice" | "designator-conflict" | "item-word-missing" | "only-an-ingredient"; sku?: string; lot?: string; detail: string }
+export interface Critique { code: "ungrounded-quote" | "lot-not-in-notice" | "number-mismatch" | "upc-not-in-notice" | "model-not-in-notice" | "designator-conflict" | "item-word-missing" | "only-an-ingredient" | "size-not-in-notice"; sku?: string; lot?: string; detail: string }
 
 const JUDGE_SYSTEM = "You check a retailer's item-master line against a U.S. federal recall notice. You answer on ONE line and you copy words from the notice exactly.";
 
@@ -31,7 +31,7 @@ function judgePrompt(r: Recall, c: Candidate, memories: string[], strict?: strin
     `RECALL NOTICE (${r.id}, firm: ${r.firm}):`, r.text.slice(0, 1400), "",
     `OUR ITEM: ${c.sku.sku} | brand ${c.sku.brand} | ${c.sku.title} | dept ${c.sku.department}${c.sku.upc ? ` | UPC ${c.sku.upc}` : ""}`,
     memories.length ? `\nPAST DECISIONS THAT MAY BE RELEVANT:\n${memories.map((m) => "- " + m).join("\n")}` : "",
-    "", "Is our item the product this notice recalls? It must be the same brand AND the same product variety: a different flavor, variety, model or product line of the same brand is DIFFERENT, and so is a product that merely contains our item as an ingredient.",
+    "", "Is our item the product this notice recalls? It must be the same brand AND the same product variety: a different flavor, variety, model or product line of the same brand is DIFFERENT, and so is a different package size or a product that merely contains our item as an ingredient.",
     "Reply exactly one of:", "SAME: <words copied from the notice that name our product>",
     "DIFFERENT: <words copied from the notice that name what IS recalled>", "UNSURE: <short reason>",
     strict ? `\nYour previous answer was rejected: ${strict}. Copy the words verbatim from the notice.` : "",
@@ -171,7 +171,7 @@ export async function revise(ctx: AgentContext, k: Case, f: Finding, critiques: 
   const next: Finding = { ...f, round: f.round + 1, decisions: [...f.decisions], recallLots: [...f.recallLots], lotSources: { ...f.lotSources } };
   for (const c of critiques) {
     if (c.code === "lot-not-in-notice" && c.lot) { next.recallLots = next.recallLots.filter((l) => l !== c.lot); delete next.lotSources[c.lot]; }
-    if ((c.code === "ungrounded-quote" || c.code === "item-word-missing" || c.code === "only-an-ingredient") && c.sku) {
+    if ((c.code === "ungrounded-quote" || c.code === "item-word-missing" || c.code === "only-an-ingredient" || c.code === "size-not-in-notice") && c.sku) {
       const cand = k.candidates.find((x) => x.sku.sku === c.sku)!;
       const i = next.decisions.findIndex((d) => d.sku === c.sku);
       next.decisions[i] = await judge(ctx, k, cand, c.detail);

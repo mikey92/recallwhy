@@ -30,3 +30,11 @@ test("traces redact passwords in SQL and secret-named fields", () => {
   assert.ok(!JSON.stringify(r).includes("hunter2"));
   assert.equal(r.apiKey, "***");
 });
+
+import { sizes } from "../src/agents/auditor.ts";
+test("sizes normalises package sizes from labels and notices", () => {
+  assert.deepEqual(sizes("PICO DE GALLO 7OZ"), ["7oz"]);
+  assert.deepEqual(sizes("Net Wt: 10 oz. Keep Refrigerated"), ["10oz"]);
+  assert.ok(sizes("SALAD 4/5# bag").includes("5lb"));
+  assert.deepEqual(sizes("Net Wt. 5.0 oz (142 g)"), ["5oz", "142g"]);
+});

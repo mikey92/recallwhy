@@ -41,10 +41,14 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
         const missing = tokens(cand.sku.title).filter((w) => !brand.has(w) && !/\d/.test(w) && w.length > 2 && !notice.has(w));
         if (missing.length) critiques.push({ code: "item-word-missing", sku: d.sku, detail: `our item "${cand.sku.title}" says ${missing.map((w) => `"${w}"`).join(", ")}, which the notice never mentions` });
         else checks.push(`${d.sku}: every product word of our item appears in the notice`);
+        // A size on our label that the notice never lists (7 oz vs a notice for 10 oz) is another product.
+        const ours = sizes(cand.sku.title);
+        const theirs = sizes(`${r.text} ${r.codeInfo}`);
+        if (ours.length && theirs.length && !ours.some((x) => theirs.includes(x))) critiques.push({ code: "size-not-in-notice", sku: d.sku, detail: `our item is ${ours.join("/")}; the notice lists ${[...new Set(theirs)].slice(0, 6).join(", ")}` });
         // Our product named only inside another product's ingredient list is not a match.
         const cut = r.text.search(/\bingredients?\s*:/i);
         if (cut > 0) {
-          const head = new Set(tokens(`${r.title} ${r.text.slice(0, cut)}`));
+          const head = new Set(tokens(`${r.feed === "cpsc" ? r.title : ""} ${r.text.slice(0, cut)}`));
           const words = tokens(cand.sku.title).filter((w) => !brand.has(w) && !/\d/.test(w) && w.length > 2);
           if (words.length && !words.some((w) => head.has(w))) critiques.push({ code: "only-an-ingredient", sku: d.sku, detail: `"${cand.sku.title}" appears in the notice only as an ingredient of another product` });
         }
@@ -109,3 +113,15 @@ export function auditBrief(text: string, evidenceIds: Set<string>, evidenceText:
 
 const NUMBER_WORDS: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
   eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, fifty: 50, hundred: 100, dozen: 12 };
+
+/** Package sizes normalised to one unit family: "Net Wt. 10 oz" → "10oz", "4/5#" → "5lb", "2.5 lbs" → "2.5lb". */
+export function sizes(text: string): string[] {
+  const out: string[] = [];
+  for (const m of (text ?? "").matchAll(/(\d+(?:\.\d+)?)\s*-?\s*(oz|ounces?|lbs?|pounds?|#|g|grams?|kg|ml|l|ct|count|pk|pack)(?![a-z])\.?/gi)) {
+    const n = String(Number(m[1]));
+    const u = m[2].toLowerCase();
+    const unit = /^(oz|ounce)/.test(u) ? "oz" : /^(lb|pound|#)/.test(u) ? "lb" : /^(g|gram)/.test(u) ? "g" : u === "kg" ? "kg" : /^(ml|l)$/.test(u) ? u : "ct";
+    out.push(n + unit);
+  }
+  return out;
+}

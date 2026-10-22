@@ -1,9 +1,10 @@
 {
   "model": "none:none",
+  "startedAt": "2026-10-22T01:27:13.343Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
-  "seconds": 17,
+  "seconds": 14,
   "all": {
     "pairs": 440,
     "positives": 194,
