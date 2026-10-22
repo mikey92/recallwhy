@@ -4,8 +4,8 @@
   "track": "Track 2: The Agent That Can Explain Why",
   "team": ["Mike Kim"],
   "repository": "https://github.com/mikey92/recallwhy",
-  "demo_video": "TBD",
-  "slide_deck": "TBD",
+  "demo_video": "https://youtu.be/_c3crNZhIUc",
+  "slide_deck": "https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf",
   "entry_points": { "run": "npm run agents -- --since 2026-09-15", "sample_mode": "SAMPLE_MODE=true npm run agents", "decide": "npm run decide -- <recall-id> <sku> same|not-this --note \"...\"", "eval": "npx tsx eval/run.ts --model nemotron-3-nano:latest" },
   "agents": [
     { "name": "Scout", "role": "Reads live CPSC and FDA recall feeds and the item master through Zetaris; one federated REST x JDBC UPC sweep; opens one case per recall that touches the catalog." },

@@ -10,6 +10,8 @@ Every week U.S. regulators publish dozens of recall notices (517 CPSC and FDA no
 **Track:** The Agent That Can Explain Why
 
 **Repository:** https://github.com/mikey92/recallwhy
+**Demo video:** https://youtu.be/_c3crNZhIUc
+**Slides:** https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf
 
 ## Sponsor technology
 

@@ -1,6 +1,6 @@
 # RecallWhy
 
-**Demo video:** VIDEO_LINK · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
+**Demo video:** https://youtu.be/_c3crNZhIUc · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
 **Open Agent Hackathon 2026 · Track 2: The Agent That Can Explain Why**
 
