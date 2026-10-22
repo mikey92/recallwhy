@@ -32,9 +32,9 @@ Setup is code (`npm run setup:zetaris`).
 - the why-paragraph
 - the Auditor's sentence-support check
 
-The same code reaches NVIDIA's hosted API through an OpenAI-compatible endpoint (`LLM_PROVIDER=openai`). EVAL_SPONSOR_LINE
+The same code reaches NVIDIA's hosted API through an OpenAI-compatible endpoint (`LLM_PROVIDER=openai`). In our evaluation over 440 recall/SKU pairs, Nemotron 3 Nano 30B was the only judge that wrongly dismissed nothing (189/194 caught; the 4B Nemotron and Gemma 4 E4B dismissed 18 and 14).
 
-**What was unique.** The Auditor treats Zetaris as the ground truth for its own checks. Instead of trusting the Investigator or the model, it re-queries the live REST table and the JDBC sources itself. It cut the judge's false alarms from EVAL_FA_BEFORE to EVAL_FA_AFTER. Meterless memory makes a human's correction change the next run, and every line of a brief traces to the query behind it.
+**What was unique.** The Auditor treats Zetaris as the ground truth for its own checks. Instead of trusting the Investigator or the model, it re-queries the live REST table and the JDBC sources itself. It cut the judge's false alarms from 207 to 7 with nothing wrongly dismissed. Meterless memory makes a human's correction change the next run, and every line of a brief traces to the query behind it.
 
 ## Pre-existing components
 - Matching ideas (brand gate, product-kind overlap, model-number conflict, quotes grounded in the notice) come from my Recall Sloth project (github.com/mikey92/recall-sloth, committed 21 Oct 2026). RecallWhy's matcher (`src/match.ts`) is new code.

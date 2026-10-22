@@ -86,8 +86,13 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="grid g2" style="gap:36px;margin-top:10px"><div><img class="shot" src="report.png" style="height:760px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Brief: verdict, why (cited), actions, caveats, evidence with SQL ids — and the agent trace that produced it.</p></div>
 <div><img class="shot" src="live.png" style="height:380px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Live viewer: the four agents' events as they happen, from the trace file.</p><img class="shot" src="zetaris.png" style="margin-top:18px;height:330px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Zetaris: REST feeds and JDBC sources registered by <code>setup:zetaris</code>.</p></div></div></section>
 
-<section class="s"><div class="k">8 · Results</div><h2>EVAL_HEADLINE</h2>
-EVAL_TABLE_HTML
+<section class="s"><div class="k">8 · Results</div><h2>The judge proposes, the Auditor disposes:<br>207 false alarms → 7, nothing dismissed.</h2>
+<table style="margin-bottom:26px"><tr><th>Judge model</th><th>Caught (of 194)</th><th>Wrongly dismissed</th><th>False alarms (of 246)</th><th>To human</th></tr>
+<tr><td>none — rules only</td><td>103</td><td>0</td><td>0</td><td>337</td></tr>
+<tr style="font-weight:700"><td>NVIDIA Nemotron 3 Nano 30B</td><td>189</td><td>0</td><td>7</td><td>35</td></tr>
+<tr><td>NVIDIA Nemotron 3 Nano 4B</td><td>175</td><td style="color:#c0392b">18</td><td>5</td><td>7</td></tr>
+<tr><td>Gemma 4 E4B</td><td>178</td><td style="color:#c0392b">14</td><td>5</td><td>5</td></tr></table>
+<p style="font-size:28px">Nemotron 30B's first answers on text matches: <b>207 false alarms</b>. After the Auditor's checks and revisions: <b>7</b>. The Auditor can prune false matches but cannot recover a dismissal — so the judge must lean toward SAME, and the 30B does.</p>
 <p class="mute" style="font-size:24px">Real Investigator ⇄ Auditor loop on every candidate pair from 517 recalls (sample mode, DuckDB stand-in). A pair is "covered" if the SKU was generated from that recall or its UPC is printed in the notice. Retailer data is synthetic.</p>
 <div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
 

@@ -31,7 +31,8 @@
     "nvidia": {
       "used": true,
       "how": "NVIDIA Nemotron 3 Nano (30B-A3B, via Ollama) is the default model behind the single injected generator: it judges text matches between a recall notice and an item-master line, reads lot codes out of messy code_info text, and writes the why-paragraph that the Auditor checks. Any OpenAI-compatible endpoint (NVIDIA API Catalog, Meterless runtime) can replace it via env vars.",
-      "models": ["nemotron-3-nano:latest (30B-A3B)", "nemotron-3-nano:4b"]
+      "models": ["nemotron-3-nano:latest (30B-A3B)", "nemotron-3-nano:4b"],
+      "evaluation": "eval/EVAL.md: 189/194 covered pairs caught, 0 wrongly dismissed, 7 false alarms over 440 pairs; judge-alone false alarms 207 → 7 after the Auditor loop"
     }
   },
   "data": {

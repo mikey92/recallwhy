@@ -89,9 +89,16 @@ npm run agents -- --only H-1378-2026                    # Investigator follows t
 
 ## Evaluation
 
-`eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample mode) on every candidate pair since 2026-07-01: 517 recalls scanned, 230 cases, 471 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice.
+`eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample mode) on every candidate pair since 2026-07-01: 517 recalls scanned, 225 cases, 440 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice.
 
-EVAL_TABLE
+| Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human |
+|---|---|---|---|---|
+| none (rules only) | 103 | 0 | 0 | 337 |
+| **NVIDIA Nemotron 3 Nano 30B** | **189** | **0** | **7** | 35 |
+| NVIDIA Nemotron 3 Nano 4B | 175 | 18 | 5 | 7 |
+| Gemma 4 E4B | 178 | 14 | 5 | 5 |
+
+On text matches, the Nemotron 30B judge's first answers would have raised **207 false alarms**. After the Auditor's checks and the revision loop, **7** remain, with nothing wrongly dismissed. The smaller models dismiss 14–18 real matches, and no Auditor check can win those back. Details and caveats (strict labels, one false alarm is the same product in an expanded recall): [`eval/EVAL.md`](eval/EVAL.md).
 
 ## Data
 
