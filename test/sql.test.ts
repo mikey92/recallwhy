@@ -44,12 +44,12 @@ describe("coerceNumericFields", () => {
     assert.equal(row.title, "guac");
   });
 
-  it("converts all-digit strings regardless of column name", () => {
-    const row = coerceNumericFields({ sku_count: "9", weird: "12345", code: "L24-1", title: "42" });
+  it("keeps identifiers that are all digits as strings (UPCs, yyyymmdd dates)", () => {
+    const row = coerceNumericFields({ sku_count: "9", upc: "012345678905", report_date: "20260923", title: "42" });
     assert.equal(row.sku_count, 9);
-    assert.equal(row.weird, 12345);
-    assert.equal(row.code, "L24-1");
-    assert.equal(row.title, 42);
+    assert.equal(row.upc, "012345678905");
+    assert.equal(row.report_date, "20260923");
+    assert.equal(row.title, "42");
   });
 
   it("leaves non-numeric strings alone", () => {

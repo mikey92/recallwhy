@@ -19,9 +19,9 @@ Inputs (public recall snapshots under `sample/`, captured per `sample/CAPTURED_A
 | stores.csv | 24 | Fictional Northwind stores across 12 US states |
 | suppliers.csv | 40 | Fictional suppliers; contact_role only |
 | skus.csv | 900 | Item master only (no origin / source_recall) |
-| inventory.csv | 15051 | ~35% of SKUs per store; 1–3 lots |
+| inventory.csv | 15031 | ~35% of SKUs per store; 1–3 lots |
 | sales.csv | 58000 | Weekly sampled sales through 2026-10-18 |
-| ship_notices.csv | 14959 | One ASN per (sku, lot) to a DC state |
+| ship_notices.csv | 14875 | One ASN per (sku, lot) to a DC state |
 | eval/ground_truth.csv | 900 | Evaluation labels only — agents must never read this |
 
 ### SKU origins (in eval/ground_truth.csv only)

@@ -88,6 +88,7 @@ export function designatorConflict(c: Candidate, r: Recall): string | undefined 
 /** Every content word of a quote must occur in the notice: a reason the model made up doesn't count. */
 export function grounded(quote: string, r: Recall): boolean {
   const src = new Set(tokens(`${r.firm} ${r.title} ${r.text} ${r.codeInfo}`));
-  const words = tokens(quote);
+  // Sizes and bare numbers ("12OZ", "4") are formatting, not claims about the product.
+  const words = tokens(quote).filter((w) => !/^\d+[a-z]{0,5}$/.test(w));
   return words.length > 0 && words.every((w) => src.has(w));
 }

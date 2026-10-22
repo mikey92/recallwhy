@@ -5,10 +5,12 @@ import { sqlId, type SqlResult, type SqlRunner } from "./types.ts";
 const TIMEOUT_MS = 120_000;
 const DEFAULT_LIMIT = 5000;
 
+// Only aggregate-style columns become numbers. Identifiers such as UPCs, lot codes and
+// yyyymmdd dates stay strings even when they are all digits (leading zeros matter).
 const NUMERIC_COL =
-  /(^n$|_units$|_count$|units$|on_hand$|customers$)/i;
+  /(^n$|^n_|_n$|_units$|_count$|units$|on_hand$|customers$|^stores$|^lots$)/i;
 
-/** Convert numeric-looking strings for count/units columns, or any all-digit string. */
+/** Convert numeric-looking strings in count/units columns. */
 export function coerceNumericFields(row: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(row)) {
@@ -22,9 +24,8 @@ export function coerceNumericFields(row: Record<string, unknown>): Record<string
       continue;
     }
     const named = NUMERIC_COL.test(key);
-    const allDigit = /^\d+$/.test(s);
     const numericLooking = /^-?\d+(\.\d+)?$/.test(s);
-    if (allDigit || (named && numericLooking)) {
+    if (named && numericLooking) {
       out[key] = Number(s);
     } else {
       out[key] = value;

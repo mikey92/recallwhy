@@ -2,6 +2,7 @@
  * Deterministic synthetic retailer catalog for Northwind Mercantile (synthetic).
  * Reads sample CPSC/FDA recall snapshots and writes CSVs under data/synthetic/.
  */
+import { lotsFromCodeInfo } from "../src/feeds.ts";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -505,7 +506,8 @@ async function main(): Promise<void> {
     if (!upc) {
       upc = rng() < 0.5 ? "" : randomValidUpc(rng);
     }
-    const lots = parseLotCodes(r.code_info ?? "");
+    // Same deterministic reader the agents use as their baseline (src/feeds.ts).
+    const lots = lotsFromCodeInfo([r.code_info, r.more_code_info].filter(Boolean).join(" "));
     skus.push({
       sku: nextSku(),
       upc,
