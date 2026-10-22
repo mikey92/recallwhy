@@ -30,7 +30,7 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
       if (modelsInText(r).some((m) => m.replace(/[^A-Z0-9]/g, "") === cand.evidence)) checks.push(`${d.sku}: model ${cand.evidence} is in the notice`);
       else critiques.push({ code: "model-not-in-notice", sku: d.sku, detail: `model ${cand.evidence} not in notice` });
     }
-    if (d.decidedBy === "judge" && d.verdict !== "unsure") {
+    if ((d.decidedBy === "judge" || d.decidedBy === "agent-memory") && d.verdict !== "unsure") {
       if (!d.quote || !grounded(d.quote, r)) critiques.push({ code: "ungrounded-quote", sku: d.sku, detail: `quote "${d.quote ?? ""}" is not in the notice text` });
       else checks.push(`${d.sku}: judge quote is grounded in the notice`);
       // A grounded quote can still describe a different variety: every product word of our

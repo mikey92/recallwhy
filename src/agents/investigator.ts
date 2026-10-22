@@ -9,7 +9,7 @@ import type { Case } from "./scout.ts";
 export type MatchVerdict = "same" | "not-this" | "unsure";
 export interface MatchDecision {
   sku: string; title: string; basis: Candidate["basis"]; verdict: MatchVerdict;
-  why: string; quote?: string; decidedBy: "rule" | "judge" | "human-memory"; memoryId?: string;
+  why: string; quote?: string; decidedBy: "rule" | "judge" | "human-memory" | "agent-memory"; memoryId?: string;
 }
 export interface StoreExposure { store_id: string; state: string; on_hand: number; lots: string[] }
 export interface Numbers {
@@ -62,6 +62,15 @@ async function decide(ctx: AgentContext, k: Case, c: Candidate): Promise<MatchDe
     const v = (human.tags.find((t) => t.startsWith("verdict:"))?.slice(8) ?? "unsure") as MatchVerdict;
     say(ctx, "Investigator", "Orchestrator", `${c.sku.sku}: following human decision ${human.id} (${v})`);
     return { ...base, verdict: v, why: `human reviewer decided: ${human.content}`, decidedBy: "human-memory", memoryId: human.id };
+  }
+  // An earlier run's audited decision on this exact pair is reused (no new model call);
+  // the Auditor still re-checks it against the notice.
+  const earlier = prior.find((m) => m.tags.includes("by:agent") && !m.tags.includes("verdict:unsure"));
+  if (earlier && c.basis === "text") {
+    const v = (earlier.tags.find((t) => t.startsWith("verdict:"))?.slice(8) ?? "unsure") as MatchVerdict;
+    const quote = earlier.content.match(/"([^"]+)"/)?.[1];
+    say(ctx, "Investigator", "Orchestrator", `${c.sku.sku}: reusing decision ${earlier.id} from ${earlier.source} (${v})`);
+    return { ...base, verdict: v, quote, why: `earlier run decided: ${earlier.content.replace(/^.*?: /, "")}`, decidedBy: "agent-memory", memoryId: earlier.id };
   }
   if (c.basis === "upc") return { ...base, verdict: "same", why: `our UPC ${c.evidence} is printed in the notice`, decidedBy: "rule" };
   if (c.basis === "model") return { ...base, verdict: "same", why: `model ${c.evidence} from the notice is in our item title`, decidedBy: "rule" };

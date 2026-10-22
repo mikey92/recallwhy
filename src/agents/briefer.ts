@@ -26,7 +26,8 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   let whyBy: Brief["whyBy"] = "template";
   let feedback = "";
   let attempts = 0;
-  for (; attempts < 3 && f.verdict !== "needs-human"; ) {
+  // "Not ours" and "needs human" briefs only restate the decisions, so they use the template.
+  for (; attempts < 3 && (f.verdict === "act-now" || f.verdict === "notify" || f.verdict === "no-exposure"); ) {
     attempts++;
     const out = await ctx.gen(
       [`Write 2-4 sentences for a retail safety manager explaining WHY the verdict below is correct.`,
