@@ -44,13 +44,13 @@ export async function scout(ctx: AgentContext, opts: { since: string; only?: str
     if (!cands.length) continue;
     const src = { kind: ctx.sql.engine, by: "Scout", ref: recall.feed === "cpsc" ? cpsc.sqlId : fda.sqlId };
     const recallEntity = await ctx.world.entity("recall", recall.feed, recall.number, recall.title, { firm: recall.firm }, src);
-    await ctx.world.fact(recallEntity, "firm", recall.firm, src);
-    await ctx.world.fact(recallEntity, "product", recall.text.slice(0, 300), src);
-    await ctx.world.fact(recallEntity, "reason", recall.reason, src);
-    await ctx.world.fact(recallEntity, "recall_date", recall.date, src);
-    await ctx.world.fact(recallEntity, "distribution", recall.states, src);
-    if (recall.codeInfo) await ctx.world.fact(recallEntity, "code_info", recall.codeInfo.slice(0, 400), src);
-    if (recall.upcs.length) await ctx.world.fact(recallEntity, "upcs_in_notice", recall.upcs, src);
+    await ctx.world.fact(recallEntity, "notice_firm", recall.firm, src);
+    await ctx.world.fact(recallEntity, "notice_product_text", recall.text.slice(0, 300), src);
+    await ctx.world.fact(recallEntity, "notice_reason", recall.reason, src);
+    await ctx.world.fact(recallEntity, "notice_recall_date", recall.date, src);
+    await ctx.world.fact(recallEntity, "notice_distribution_states", recall.states, src);
+    if (recall.codeInfo) await ctx.world.fact(recallEntity, "notice_code_info", recall.codeInfo.slice(0, 400), src);
+    if (recall.upcs.length) await ctx.world.fact(recallEntity, "notice_upcs", recall.upcs, src);
     cases.push({ id: `case-${recall.id.replace(/[^A-Za-z0-9]+/g, "-")}`, recall, recallEntity, candidates: cands });
   }
   say(ctx, "Scout", "Orchestrator", `scanned ${recalls.length} recalls since ${opts.since}; ${cases.length} touch our catalog`, {

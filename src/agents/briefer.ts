@@ -40,7 +40,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
       // supported by the facts it cites (a separate call, not the Briefer's own prompt).
       const verdict = await ctx.gen(
         [`FACTS:`, text, "", `DRAFT:`, out, "",
-          "Check every sentence of the DRAFT against the FACTS it cites in brackets. A sentence is unsupported if it claims something the cited facts do not say (for example who confirmed something, or what the notice says about our stores).",
+          "Check every sentence of the DRAFT against the FACTS it cites in brackets. Facts named notice_* come from the recall notice; facts named our_* come from our own systems. Paraphrase and plain conclusions drawn directly from the facts are fine. A sentence is unsupported only if it adds information the cited facts do not contain (for example a state, a person, a confirmation, or a notice statement about our stores).",
           "Answer exactly OK if every sentence is supported. Otherwise answer UNSUPPORTED: <the first unsupported claim, quoted>."].join("\n"),
         { agent: "Auditor", purpose: `check brief support ${k.id}`, maxTokens: 120 }).catch(() => "OK");
       if (/^\W*UNSUPPORTED/i.test(verdict)) problems.push(verdict.replace(/^\W*UNSUPPORTED\W*/i, "unsupported claim: ").slice(0, 240));
@@ -55,11 +55,11 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   const n = f.numbers;
   const actions: string[] = [];
   if (f.verdict === "act-now" && n) {
-    actions.push(`Pull lots ${n.affectedLots.slice(0, 8).join(", ")}${n.affectedLots.length > 8 ? "…" : ""} from ${n.storesWithStock} store(s): ${f.stores.slice(0, 6).map((s) => `${s.store_id} (${s.on_hand})`).join(", ")} ${cite("on_hand_units")}`);
+    actions.push(`Pull lots ${n.affectedLots.slice(0, 8).join(", ")}${n.affectedLots.length > 8 ? "…" : ""} from ${n.storesWithStock} store(s): ${f.stores.slice(0, 6).map((s) => `${s.store_id} (${s.on_hand})`).join(", ")} ${cite("our_units_on_hand_in_affected_lots")}`);
   }
-  if (n && n.unitsSoldSince > 0) actions.push(`Send recall notice to loyalty customers who bought affected lots since ${k.recall.date}: at most ${n.loyaltyCustomers} ${cite("loyalty_customers")}`);
-  if (n && (f.verdict === "act-now" || f.verdict === "notify")) actions.push(`Contact ${n.supplier ?? "the supplier"} for credit and replacement ${cite("supplier")}`);
-  if (f.verdict === "no-exposure") actions.push(`No pull needed. Keep the notice on file; re-run if new lots arrive ${cite("affected_lots")}`);
+  if (n && n.unitsSoldSince > 0) actions.push(`Send recall notice to loyalty customers who bought affected lots since ${k.recall.date}: at most ${n.loyaltyCustomers} ${cite("our_loyalty_customers_who_bought_affected_lots")}`);
+  if (n && (f.verdict === "act-now" || f.verdict === "notify")) actions.push(`Contact ${n.supplier ?? "the supplier"} for credit and replacement ${cite("our_supplier_for_this_sku")}`);
+  if (f.verdict === "no-exposure") actions.push(`No pull needed. Keep the notice on file; re-run if new lots arrive ${cite("our_lots_named_in_notice")}`);
   if (f.verdict === "needs-human") actions.push(`Review in the queue: \`npm run decide -- ${k.recall.id} <sku> same|not-this --note "..."\`. The decision is stored in memory and used on the next run.`);
 
   const caveats: string[] = ["Retailer data is synthetic (Northwind Mercantile, generated for this demo)."];
@@ -84,10 +84,10 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
 
 function templateWhy(f: Finding, cite: (p: string) => string): string {
   const same = f.decisions.filter((d) => d.verdict === "same");
-  if (f.verdict === "not-ours") return `Every candidate was ruled out: ${f.decisions.map((d) => `${d.sku} (${d.why})`).join("; ")} ${cite("decision")}.`;
-  if (f.verdict === "needs-human") return `The team could not settle this: ${f.decisions.map((d) => `${d.sku} ${d.verdict} — ${d.why}`).join("; ")} ${cite("decision")}.`;
+  if (f.verdict === "not-ours") return `Every candidate was ruled out: ${f.decisions.map((d) => `${d.sku} (${d.why})`).join("; ")} ${cite("match_decision")}.`;
+  if (f.verdict === "needs-human") return `The team could not settle this: ${f.decisions.map((d) => `${d.sku} ${d.verdict} — ${d.why}`).join("; ")} ${cite("match_decision")}.`;
   const n = f.numbers!;
-  return `${same.map((d) => `${d.sku} matches the notice because ${d.why}`).join("; ")} ${cite("decision")}. ` +
-    `${n.lotRule === "listed-lots" ? `Our lots ${n.affectedLots.join(", ")} appear in the notice's lot list` : n.lotRule === "all-lots" ? "The notice does not limit the recall to specific lots" : "None of our lots appear in the notice's lot list"} ${cite("affected_lots")}. ` +
-    `${n.onHandUnits} units are on hand in ${n.storesWithStock} store(s) ${cite("on_hand_units")} and ${n.unitsSoldSince} were sold since the recall began ${cite("units_sold_since")}.`;
+  return `${same.map((d) => `${d.sku} matches the notice because ${d.why}`).join("; ")} ${cite("match_decision")}. ` +
+    `${n.lotRule === "listed-lots" ? `Our lots ${n.affectedLots.join(", ")} appear in the notice's lot list` : n.lotRule === "all-lots" ? "The notice does not limit the recall to specific lots" : "None of our lots appear in the notice's lot list"} ${cite("our_lots_named_in_notice")}. ` +
+    `${n.onHandUnits} units are on hand in ${n.storesWithStock} store(s) ${cite("our_units_on_hand_in_affected_lots")} and ${n.unitsSoldSince} were sold since the recall began ${cite("our_units_sold_since_recall_date")}.`;
 }
