@@ -5,7 +5,12 @@
   "scripts": {
     "test": "node --import tsx --test test/*.test.ts",
     "gen": "tsx scripts/gen-synthetic.ts",
-    "load": "tsx scripts/load-postgres.ts"
+    "load": "tsx scripts/load-postgres.ts",
+    "agents": "tsx src/cli.ts run",
+    "decide": "tsx src/cli.ts decide",
+    "queue": "tsx src/cli.ts queue",
+    "eval": "tsx eval/run.ts",
+    "setup:zetaris": "tsx scripts/setup-zetaris.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.4.1-r.1",

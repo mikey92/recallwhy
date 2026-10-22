@@ -1,0 +1,25 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { auditBrief } from "../src/agents/auditor.ts";
+import { parseJudge } from "../src/agents/investigator.ts";
+
+const evidence = "[E1] case on_hand_units = 383  (source: zetaris q-1)\n[E2] case stores_with_stock = 9  (source: zetaris q-1)";
+const ids = new Set(["E1", "E2"]);
+
+test("auditBrief accepts a cited paragraph with known numbers", () => {
+  assert.deepEqual(auditBrief("We hold 383 units [E1] in 9 stores [E2].", ids, evidence), []);
+});
+test("auditBrief rejects missing citations, unknown ids and new numbers", () => {
+  assert.ok(auditBrief("We hold 383 units.", ids, evidence).some((p) => p.includes("cites no evidence")));
+  assert.ok(auditBrief("We hold 383 units [E7].", ids, evidence).some((p) => p.includes("E7")));
+  assert.ok(auditBrief("We hold 500 units [E1].", ids, evidence).some((p) => p.includes("500")));
+  assert.ok(auditBrief("We hold units in twelve stores [E2].", ids, evidence).some((p) => p.includes("twelve")));
+});
+
+test("parseJudge reads the judge's one-line answers", () => {
+  assert.deepEqual(parseJudge("SAME: Frozen Pepperoni Pizza"), { label: "SAME", quote: "Frozen Pepperoni Pizza" });
+  assert.equal(parseJudge("**DIFFERENT** - salsa roja")?.label, "DIFFERENT");
+  assert.equal(parseJudge("UNSURE: no size given")?.label, "UNSURE");
+  assert.equal(parseJudge("SAME")?.label, "SAME");
+  assert.equal(parseJudge("I think maybe"), undefined);
+});

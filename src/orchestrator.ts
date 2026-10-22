@@ -35,7 +35,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   return { runId: ctx.trace.runId, scanned, cases: results, outDir };
 }
 
-async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding: Finding; open: string[] }> {
+export async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding: Finding; open: string[] }> {
   let f = await investigate(ctx, k);
   for (;;) {
     const a = await audit(ctx, k, f);
