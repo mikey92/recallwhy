@@ -1,0 +1,14 @@
+services:
+  recallwhy-pg:
+    image: postgres:16-alpine
+    ports:
+      - "127.0.0.1:55432:5432"
+    environment:
+      POSTGRES_USER: ${RW_PG_USER}
+      POSTGRES_PASSWORD: ${RW_PG_PASSWORD}
+    volumes:
+      - recallwhy_pg_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  recallwhy_pg_data:
