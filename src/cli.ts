@@ -20,7 +20,7 @@ async function main() {
   if (cmd === "decide") {
     const [, recallId, sku, verdict] = args;
     if (!recallId || !sku || !["same", "not-this"].includes(verdict)) throw new Error('usage: decide <recall-id> <sku> same|not-this [--note "..."]');
-    const trace = new Trace({ quiet: false });
+    const trace = new Trace({ quiet: true });
     const mem = new CaseMemory(trace);
     const id = recallId.includes(":") ? recallId : /^[A-Z]-\d+-\d{4}$/.test(recallId) ? `fda:${recallId}` : `cpsc:${recallId}`;
     mem.record({ recallId: id, sku, verdict: verdict as "same" | "not-this", reason: flag("note") ?? "no note", by: "human", runId: trace.runId }, "Human");
@@ -29,7 +29,14 @@ async function main() {
   }
   if (cmd === "queue") {
     const f = "state/review-queue.json";
-    console.log(existsSync(f) ? readFileSync(f, "utf8") : "[]");
+    const q = existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as { caseId: string; recall: string; skus: { sku: string; title: string; verdict: string; why: string }[]; open: string[] }[]) : [];
+    if (args.includes("--json")) { console.log(JSON.stringify(q, null, 2)); return; }
+    if (!q.length) console.log("review queue is empty");
+    for (const c of q) {
+      console.log(`${c.caseId}  (${c.recall})`);
+      for (const s of c.skus) console.log(`  ${s.sku} ${s.title}: ${s.verdict} — ${s.why.slice(0, 100)}`);
+      for (const o of c.open) console.log(`  Auditor objection: ${o}`);
+    }
     return;
   }
   const trace = new Trace();

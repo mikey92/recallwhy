@@ -1,0 +1,51 @@
+{
+  "runId": "2026-10-22T02-29-36-78985e",
+  "engine": "duckdb-sample",
+  "model": "ollama:nemotron-3-nano:latest",
+  "since": "2026-09-20",
+  "scanned": 129,
+  "cases": [
+    {
+      "id": "case-fda-H-1364-2026",
+      "recall": "fda:H-1364-2026",
+      "verdict": "needs-human",
+      "rounds": 3,
+      "whyBy": "template"
+    },
+    {
+      "id": "case-fda-H-1379-2026",
+      "recall": "fda:H-1379-2026",
+      "verdict": "not-ours",
+      "rounds": 2,
+      "whyBy": "template"
+    },
+    {
+      "id": "case-fda-H-1407-2026",
+      "recall": "fda:H-1407-2026",
+      "verdict": "act-now",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-1396-2026",
+      "recall": "fda:H-1396-2026",
+      "verdict": "act-now",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-1355-2026",
+      "recall": "fda:H-1355-2026",
+      "verdict": "needs-human",
+      "rounds": 3,
+      "whyBy": "template"
+    },
+    {
+      "id": "case-fda-H-1354-2026",
+      "recall": "fda:H-1354-2026",
+      "verdict": "needs-human",
+      "rounds": 3,
+      "whyBy": "template"
+    }
+  ]
+}

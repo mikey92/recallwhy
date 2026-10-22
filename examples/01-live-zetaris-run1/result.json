@@ -1,0 +1,65 @@
+{
+  "runId": "2026-10-22T02-23-41-ddd202",
+  "engine": "zetaris",
+  "model": "ollama:nemotron-3-nano:latest",
+  "since": "2026-10-01",
+  "scanned": 61,
+  "cases": [
+    {
+      "id": "case-fda-H-1407-2026",
+      "recall": "fda:H-1407-2026",
+      "verdict": "act-now",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-0021-2027",
+      "recall": "fda:H-0021-2027",
+      "verdict": "needs-human",
+      "rounds": 3,
+      "whyBy": "template"
+    },
+    {
+      "id": "case-fda-H-0022-2027",
+      "recall": "fda:H-0022-2027",
+      "verdict": "act-now",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-1402-2026",
+      "recall": "fda:H-1402-2026",
+      "verdict": "act-now",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-0007-2027",
+      "recall": "fda:H-0007-2027",
+      "verdict": "act-now",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-1405-2026",
+      "recall": "fda:H-1405-2026",
+      "verdict": "not-ours",
+      "rounds": 2,
+      "whyBy": "template"
+    },
+    {
+      "id": "case-fda-H-0014-2027",
+      "recall": "fda:H-0014-2027",
+      "verdict": "no-exposure",
+      "rounds": 1,
+      "whyBy": "model"
+    },
+    {
+      "id": "case-fda-H-1409-2026",
+      "recall": "fda:H-1409-2026",
+      "verdict": "not-ours",
+      "rounds": 1,
+      "whyBy": "template"
+    }
+  ]
+}
