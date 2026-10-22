@@ -85,7 +85,7 @@ export function fromFda(r: FdaRow): Recall {
   return {
     id: `fda:${r.recall_number}`, feed: "fda_food", number: r.recall_number,
     date: iso(r.recall_initiation_date || r.report_date), reported: iso(r.report_date),
-    firm: r.recalling_firm, title: r.product_description.slice(0, 120),
+    firm: r.recalling_firm, title: clip(r.product_description, 120),
     text: r.product_description, reason: r.reason_for_recall, codeInfo,
     upcs: findUpcs(`${r.product_description} ${codeInfo}`), models: [],
     states: parseStates(r.distribution_pattern), classification: r.classification,
@@ -129,4 +129,11 @@ export function lotsFromCodeInfo(codeInfo: string): string[] {
 export function lotAppears(lot: string, codeInfo: string): boolean {
   const esc = lot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`(^|[^A-Za-z0-9])${esc}($|[^A-Za-z0-9])`, "i").test(codeInfo ?? "");
+}
+
+/** Cut at a word boundary so titles never end mid-word. */
+export function clip(s: string, n: number): string {
+  if (s.length <= n) return s;
+  const cut = s.slice(0, n);
+  return cut.slice(0, Math.max(cut.lastIndexOf(" "), n * 0.6)).replace(/[\s,;:.-]+$/, "") + "…";
 }

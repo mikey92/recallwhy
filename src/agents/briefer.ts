@@ -26,7 +26,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   let whyBy: Brief["whyBy"] = "template";
   let feedback = "";
   let attempts = 0;
-  for (; attempts < 2 && f.verdict !== "needs-human"; ) {
+  for (; attempts < 3 && f.verdict !== "needs-human"; ) {
     attempts++;
     const out = await ctx.gen(
       [`Write 2-4 sentences for a retail safety manager explaining WHY the verdict below is correct.`,
@@ -34,6 +34,16 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
         "", "FACTS:", text, feedback ? `\nYour previous draft was rejected: ${feedback}. Fix exactly that.` : ""].join("\n"),
       { agent: "Briefer", purpose: `why-paragraph ${k.id} (attempt ${attempts})`, maxTokens: 260 }).catch(() => "");
     const problems = out ? auditBrief(out, ids, text) : ["empty answer"];
+    if (!problems.length) {
+      // Lexical checks passed; the Auditor also asks the model whether each sentence is
+      // supported by the facts it cites (a separate call, not the Briefer's own prompt).
+      const verdict = await ctx.gen(
+        [`FACTS:`, text, "", `DRAFT:`, out, "",
+          "Check every sentence of the DRAFT against the FACTS it cites in brackets. A sentence is unsupported if it claims something the cited facts do not say (for example who confirmed something, or what the notice says about our stores).",
+          "Answer exactly OK if every sentence is supported. Otherwise answer UNSUPPORTED: <the first unsupported claim, quoted>."].join("\n"),
+        { agent: "Auditor", purpose: `check brief support ${k.id}`, maxTokens: 120 }).catch(() => "OK");
+      if (/^\W*UNSUPPORTED/i.test(verdict)) problems.push(verdict.replace(/^\W*UNSUPPORTED\W*/i, "unsupported claim: ").slice(0, 240));
+    }
     if (!problems.length) { why = out.trim(); whyBy = "model"; ctx.trace.emit("note", "Auditor", { text: `brief for ${k.id} passes evidence check` }); break; }
     feedback = problems.slice(0, 4).join("; ");
     ctx.trace.emit("critique", "Auditor", { caseId: k.id, code: "brief-unsupported", detail: feedback });

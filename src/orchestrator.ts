@@ -7,6 +7,7 @@ import { brief, type Brief } from "./agents/briefer.ts";
 import { say, type AgentContext } from "./agents/context.ts";
 import { investigate, revise, type Finding } from "./agents/investigator.ts";
 import { scout, type Case } from "./agents/scout.ts";
+import { renderReport } from "./report-html.ts";
 
 const MAX_REVISIONS = 2;
 
@@ -31,6 +32,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   }
   writeFileSync(`${outDir}/report.md`, report(ctx, opts.since, scanned, results));
   writeFileSync(`${outDir}/result.json`, JSON.stringify({ runId: ctx.trace.runId, engine: ctx.sql.engine, model: ctx.model, since: opts.since, scanned, cases: results }, null, 2));
+  try { renderReport(outDir); } catch (e) { ctx.trace.emit("note", "Orchestrator", { text: `report.html not written: ${(e as Error).message}` }); }
   ctx.trace.emit("run.end", "Orchestrator", { scanned, cases: results.length, verdicts: count(results.map((r) => r.verdict)), outDir });
   return { runId: ctx.trace.runId, scanned, cases: results, outDir };
 }

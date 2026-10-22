@@ -1,5 +1,6 @@
--- Live recall feeds as Zetaris Lightning REST tables. Re-run safe except the
--- CREATE LIGHTNING DATABASE / SCHEMASTORE CONTAINER lines (Zetaris has no IF NOT EXISTS).
+-- Live recall feeds as Zetaris Lightning REST tables. scripts/setup-zetaris.ts treats
+-- "already exists" as done (Zetaris has no IF NOT EXISTS for databases/containers);
+-- views are dropped and recreated so their column lists stay current.
 CREATE LIGHTNING DATABASE OPENFDA_REST DESCRIBE BY "openFDA food enforcement REST source";
 CREATE LIGHTNING DATABASE CPSC_REST DESCRIBE BY "CPSC SaferProducts recalls REST source";
 CREATE SCHEMASTORE CONTAINER recallfeeds;
@@ -17,10 +18,12 @@ CREATE LIGHTNING REST TABLE recalls_2026h2 FROM CPSC_REST REQUEST(
     http_encoding "URLENCODED"
 ) HEADER (
 ) BODY ();
+DROP VIEW IF EXISTS recallfeeds.fda_food;
 CREATE SCHEMASTORE VIEW fda_food WITH CONTAINER recallfeeds AS
 SELECT r.recall_number, r.recalling_firm, r.product_description, r.reason_for_recall, r.code_info, r.more_code_info,
        r.distribution_pattern, r.classification, r.report_date, r.recall_initiation_date, r.status, r.product_type
 FROM OPENFDA_REST.food_enforcement LATERAL VIEW explode(results) t AS r;
+DROP VIEW IF EXISTS recallfeeds.cpsc_recalls;
 CREATE SCHEMASTORE VIEW cpsc_recalls WITH CONTAINER recallfeeds AS
 SELECT RecallNumber AS recall_number, substr(RecallDate, 1, 10) AS recall_date, substr(LastPublishDate, 1, 10) AS last_publish,
        Title AS title, Description AS description,
