@@ -36,21 +36,6 @@ const CONTACT_ROLES = [
   "Warehouse supervisor",
 ];
 
-const DECOY_KINDS = [
-  "paper towels",
-  "garden hose",
-  "salsa",
-  "flashlight",
-  "notebook",
-  "dish soap",
-  "extension cord",
-  "yoga mat",
-  "coffee filters",
-  "trash bags",
-  "batteries",
-  "screwdrivers",
-];
-
 const DEPARTMENTS: Record<string, string[]> = {
   Grocery: ["pasta", "rice", "cereal", "beans", "soup", "crackers", "jam", "oil", "vinegar", "sauce"],
   Produce: ["apples", "lettuce", "carrots", "berries", "spinach", "tomatoes", "pears", "kale"],
@@ -66,15 +51,33 @@ const SYLLABLES_A = ["Nor", "Bel", "Cal", "Dor", "Fen", "Glen", "Har", "Jun", "K
 const SYLLABLES_B = ["wood", "field", "stone", "brook", "vale", "crest", "ridge", "haven", "dale", "ford"];
 const BRAND_SUFFIXES = ["Co", "Farms", "Home"];
 
+type CpscProduct = {
+  Name?: string;
+  Model?: string;
+  Description?: string;
+  Type?: string;
+  CategoryID?: string;
+};
+
 type CpscRecall = {
   RecallNumber: string;
   RecallDate: string;
   Title: string;
   Description: string;
-  Products?: { Name?: string; Model?: string; Description?: string }[];
+  Products?: CpscProduct[];
   ProductUPCs?: { UPC?: string }[];
   Manufacturers?: { Name?: string }[];
+  Importers?: { Name?: string }[];
   Retailers?: { Name?: string }[];
+  Distributors?: { Name?: string }[];
+};
+
+/** Minimal shape accepted by CPSC brand/title helpers (tests + generator). */
+export type CpscNameSource = {
+  Title: string;
+  Products?: CpscProduct[];
+  Manufacturers?: { Name?: string }[];
+  Importers?: { Name?: string }[];
   Distributors?: { Name?: string }[];
 };
 
@@ -88,6 +91,8 @@ type FdaRecall = {
   report_date: string;
 };
 
+type SkuOrigin = "from_recall" | "decoy" | "background";
+
 type SkuRow = {
   sku: string;
   upc: string;
@@ -95,9 +100,19 @@ type SkuRow = {
   brand: string;
   department: string;
   supplier_id: string;
-  origin: "from_recall" | "decoy" | "background";
+  origin: SkuOrigin;
+  sourceRecall: string;
   recallLots?: string[];
 };
+
+const LEGAL_SUFFIX_RE =
+  /,?\s*\b(?:Incorporated|Corporation|Company|L\.L\.C\.?|LLC|Inc\.?|Corp\.?|Ltd\.?|Co\.)\.?/gi;
+
+const PRODUCE_RE =
+  /\b(sprouts?|lettuce|spinach|fruit|vegetables?|cilantro|onions?|peppers?)\b/i;
+
+const PLASTIC_BAG_IN_RE =
+  /\bin\s+(?:a\s+|an\s+|the\s+)?(?:clear\s+|yellow\s+|plastic\s+|sealed\s+|poly\s+)*(?:plastic|bag|bags|pouch|pouches|tray|trays|container|containers)\b/i;
 
 function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
@@ -226,85 +241,208 @@ export function parseLotCodes(codeInfo: string): string[] {
   return [...new Set(lots)];
 }
 
-function brandFromFdaDescription(desc: string): string {
-  const words = desc.replace(/[;,].*$/, "").trim().split(/\s+/).filter(Boolean);
-  const stop = new Set(["organic", "the", "a", "an", "net", "wt", "containing"]);
-  const kept: string[] = [];
-  for (const w of words) {
-    if (stop.has(w.toLowerCase()) && kept.length === 0) continue;
-    kept.push(w.replace(/[^A-Za-z0-9&'-]/g, ""));
-    if (kept.length >= 3) break;
-    // stop before common product nouns if we already have a brand-ish token
-    if (kept.length >= 2 && /^(powder|mix|milk|juice|sauce|bar|chips|cookies|cereal)$/i.test(w)) break;
-  }
-  return (kept.join(" ") || "Generic Brand").slice(0, 40);
-}
-
-function retailerTitleFromFda(desc: string): string {
-  let t = desc
-    .replace(/\bUPC\b.*$/i, "")
-    .replace(/https?:\/\/\S+/gi, "")
-    .replace(/\bnet\s*wt\.?\s*/gi, "")
-    .replace(/\bcontaining\b.*?(?=,|\(|$)/gi, "")
-    .replace(/\b(delicious|premium|all[- ]natural|farm[- ]fresh|handcrafted)\b/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  // Keep size tokens like 5OZ / 5.0 oz → 5OZ
-  t = t.replace(/(\d+(?:\.\d+)?)\s*(oz|lb|g|kg|ml|ct)\b/gi, (_, n, u) => `${String(n).replace(/\./g, "")}${u.toUpperCase()}`);
-  // Uppercase short abbreviations
-  t = t
-    .split(" ")
-    .map((w) => (w.length <= 3 ? w.toUpperCase() : w))
+/** Title-case words; keep short all-caps / digit-bearing tokens as-is. */
+export function titleCaseBrand(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => {
+      if (/\d/.test(w) || (w.length <= 3 && w === w.toUpperCase())) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
     .join(" ");
-  if (t.length > 80) t = t.slice(0, 77) + "...";
-  return t || "FOOD ITEM";
 }
 
-function brandFromCpsc(r: CpscRecall): string {
-  const mfr = r.Manufacturers?.[0]?.Name;
-  if (mfr) {
-    const first = mfr.split(/[,\-]/)[0]!.trim().split(/\s+/).slice(0, 2).join(" ");
-    if (first) return first.slice(0, 40);
-  }
-  const titleWords = r.Title.replace(/™|®/g, "").split(/\s+/);
-  const stop = new Set(["company", "recalls", "inc", "llc", "due", "to", "of", "the", "a"]);
-  const kept: string[] = [];
-  for (const w of titleWords) {
-    const clean = w.replace(/[^A-Za-z0-9&]/g, "");
-    if (!clean || stop.has(clean.toLowerCase())) {
-      if (kept.length) break;
-      continue;
-    }
-    kept.push(clean);
-    if (kept.length >= 2) break;
-  }
-  return (kept.join(" ") || "Consumer Brand").slice(0, 40);
+/** Strip Inc/LLC/Co/Corp/Company/Ltd (and L.L.C.) and tidy commas. */
+export function stripLegalSuffixes(name: string): string {
+  let s = name.replace(/™|®/g, "").trim();
+  // Prefer the company token before ", of City" location clauses.
+  const ofLoc = s.match(/^(.+?),\s*of\s+/i);
+  if (ofLoc) s = ofLoc[1]!.trim();
+  s = s.replace(LEGAL_SUFFIX_RE, " ");
+  s = s.replace(/[,\s]+$/g, "").replace(/\s{2,}/g, " ").trim();
+  // If a bare trailing comma-clause remains, keep first clause.
+  if (s.includes(",")) s = s.split(",")[0]!.trim();
+  return s;
 }
 
-function cpscTitle(r: CpscRecall, includeModel: boolean): string {
-  const name = (r.Products?.[0]?.Name || r.Title.split(/Due to|Recalls/)[0] || "Product")
+function clipBrand(name: string, max = 40): string {
+  if (name.length <= max) return name;
+  const cut = name.slice(0, max);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > 12 ? cut.slice(0, sp) : cut).trim();
+}
+
+export function brandFromFdaFirm(firm: string): string {
+  const cleaned = stripLegalSuffixes(firm);
+  return clipBrand(titleCaseBrand(cleaned) || "Generic Brand");
+}
+
+/** Extract first size token: 5.0 oz→5OZ, 16 oz→16OZ, 5 lb/pound→5LB, 142 g→142G, 12 ct→12CT. */
+export function extractSizeToken(text: string): string | null {
+  const m = text.match(
+    /(\d+(?:\.\d+)?)\s*(ounces?|oz\.?|pounds?|lbs?\.?|grams?|g\.?|kg\.?|ml\.?|cts?\.?|count)\b/i,
+  );
+  if (!m) return null;
+  const num = Number(m[1]!);
+  if (!Number.isFinite(num)) return null;
+  // Keep meaningful decimals (3.17→3.17); drop trailing .0 (5.0→5).
+  const n = Number.isInteger(num) || /\.0+$/.test(m[1]!) ? String(Math.trunc(num)) : String(num);
+  const unitRaw = m[2]!.toLowerCase().replace(/\./g, "");
+  let unit: string;
+  if (/^(oz|ounce|ounces)$/.test(unitRaw)) unit = "OZ";
+  else if (/^(lb|lbs|pound|pounds)$/.test(unitRaw)) unit = "LB";
+  else if (/^(g|gram|grams)$/.test(unitRaw)) unit = "G";
+  else if (/^kg$/.test(unitRaw)) unit = "KG";
+  else if (/^ml$/.test(unitRaw)) unit = "ML";
+  else unit = "CT";
+  return `${n}${unit}`;
+}
+
+function cutFdaDescriptionStem(desc: string): string {
+  const markers: number[] = [];
+  const pushIf = (idx: number) => {
+    if (idx >= 0) markers.push(idx);
+  };
+  pushIf(desc.indexOf(","));
+  pushIf(desc.search(/\.\s/));
+  for (const re of [/\bUPC\b/, /\bNet\s*Wt\b/i, /\bIngredients\b/i, /\bpacked\b/i]) {
+    const m = re.exec(desc);
+    if (m) pushIf(m.index);
+  }
+  const plastic = PLASTIC_BAG_IN_RE.exec(desc);
+  if (plastic) pushIf(plastic.index);
+  if (markers.length === 0) return desc.trim();
+  return desc.slice(0, Math.min(...markers)).trim();
+}
+
+function removeBrandWords(text: string, brand: string): string {
+  const brandWords = new Set(
+    brand
+      .toLowerCase()
+      .split(/\s+/)
+      .map((w) => w.replace(/[^a-z0-9&']/gi, ""))
+      .filter(Boolean),
+  );
+  return text
+    .split(/\s+/)
+    .filter((w) => {
+      const clean = w.replace(/[^A-Za-z0-9&']/g, "").toLowerCase();
+      return clean && !brandWords.has(clean);
+    })
+    .join(" ");
+}
+
+export function fdaRetailerTitle(desc: string, brand: string): string {
+  let stem = cutFdaDescriptionStem(desc);
+  stem = stripLegalSuffixes(stem.replace(/™|®/g, ""));
+  stem = removeBrandWords(stem, brand);
+  const words = stem.split(/\s+/).filter(Boolean).slice(0, 5);
+  let title = words.join(" ").toUpperCase().replace(/\s+/g, " ").trim();
+  const size = extractSizeToken(desc);
+  const alreadySized = /\b\d+(?:\.\d+)?(?:OZ|LB|G|KG|ML|CT)\b/i.test(title);
+  if (size && !alreadySized) {
+    const withSize = `${title} ${size}`.trim();
+    if (withSize.length <= 48) title = withSize;
+  }
+  title = title.replace(/\.{3}/g, "").trim();
+  if (title.length > 48) title = title.slice(0, 48).trim();
+  return title || "FOOD ITEM";
+}
+
+export function brandFromCpscName(r: CpscNameSource): string {
+  const company =
+    r.Manufacturers?.[0]?.Name ||
+    r.Importers?.[0]?.Name ||
+    r.Distributors?.[0]?.Name ||
+    "";
+  if (company) {
+    const cleaned = stripLegalSuffixes(company);
+    return clipBrand(titleCaseBrand(cleaned) || "Consumer Brand");
+  }
+  const first = r.Title.replace(/™|®/g, "").trim().split(/\s+/)[0] ?? "";
+  const clean = first.replace(/[^A-Za-z0-9&']/g, "");
+  return clipBrand(titleCaseBrand(clean) || "Consumer Brand");
+}
+
+function usableCpscModel(model: string | undefined): string | null {
+  if (!model) return null;
+  const m = model.replace(/™|®/g, "").trim();
+  if (!m || /^n\/?a$/i.test(m) || /^none$/i.test(m)) return null;
+  if (m.length > 16) return null;
+  return m;
+}
+
+export function cpscRetailerTitle(
+  r: CpscNameSource,
+  brand: string,
+  includeModel: boolean,
+): string {
+  const rawName = (r.Products?.[0]?.Name || r.Title.split(/Due to|Recalls/i)[0] || "Product")
     .replace(/™|®/g, "")
     .trim();
-  const model =
-    r.Products?.[0]?.Model ||
-    (r.Description.match(/model\s*(?:number\s*)?([A-Z0-9][A-Z0-9\-]+)/i)?.[1] ?? "");
-  if (includeModel && model) return `${name} ${model}`.slice(0, 100);
-  return name.slice(0, 100);
+  const stem = removeBrandWords(rawName, brand);
+  const words = stem.split(/\s+/).filter(Boolean).slice(0, 6);
+  let title = words.join(" ").toUpperCase().replace(/\s+/g, " ").trim();
+  const model = includeModel ? usableCpscModel(r.Products?.[0]?.Model) : null;
+  if (model) {
+    const withModel = `${title} ${model}`.trim();
+    if (withModel.length <= 48) title = withModel;
+  }
+  title = title.replace(/\.{3}/g, "").trim();
+  if (title.length > 48) title = title.slice(0, 48).trim();
+  return title || "PRODUCT";
 }
 
-function departmentForOrigin(origin: SkuRow["origin"], title: string, rng: () => number): string {
-  if (origin === "from_recall") {
-    const t = title.toLowerCase();
-    if (/toy|doll|puzzle|block/.test(t)) return "Toys";
-    if (/diaper|formula|baby|pacifier/.test(t)) return "Baby";
-    if (/hose|hammer|screw|nail|tape|drill/.test(t)) return "Hardware";
-    if (/ball|helmet|racket|weight/.test(t)) return "Sporting";
-    if (/cable|charger|speaker|laminator|electronic/.test(t)) return "Electronics";
-    if (/apple|lettuce|berry|produce|sprout/.test(t)) return "Produce";
-    if (/towel|pillow|candle|rug/.test(t)) return "Home";
-    return pick(rng, ["Grocery", "Home", "Hardware", "Toys"]);
+export function fdaDepartment(desc: string): string {
+  return PRODUCE_RE.test(desc) ? "Produce" : "Grocery";
+}
+
+export function cpscDepartment(r: CpscNameSource): string {
+  const type = (r.Products?.[0]?.Type || "").toLowerCase();
+  const name = (r.Products?.[0]?.Name || r.Title || "").toLowerCase();
+  const blob = `${type} ${name}`;
+  if (/\b(toy|toys|doll|puzzle|plush|playpen|swing)\b/.test(blob) || /\btoys?\b/.test(type)) {
+    return "Toys";
   }
-  return pick(rng, Object.keys(DEPARTMENTS));
+  if (/\b(baby|infant|diaper|teething|pacifier|crib|bassinet|stroller)\b/.test(blob)) return "Baby";
+  if (/\b(helmet|bicycle|bike|sport|weight|racket|ball|air rifle|bb gun)\b/.test(blob)) {
+    return "Sporting";
+  }
+  if (
+    /\b(hammer|nail|screw|drill|lock|pressure washer|lawn mower|fuel container|hardware)\b/.test(
+      blob,
+    )
+  ) {
+    return "Hardware";
+  }
+  if (
+    /\b(electronic|charger|battery|adapter|lamp|light|laminator|air conditioner|speaker)\b/.test(
+      blob,
+    ) ||
+    /office machines|adapter\/power|night-lights|electric/.test(type)
+  ) {
+    return "Electronics";
+  }
+  if (/\b(home|mattress|blanket|furniture|dresser|desk|candle|towel|pillow|rug)\b/.test(blob)) {
+    return "Home";
+  }
+  return "Home";
+}
+
+function decoyDepartmentAndKind(
+  rng: () => number,
+  avoidDept: string,
+): { department: string; kind: string } {
+  const depts = Object.keys(DEPARTMENTS).filter((d) => d !== avoidDept);
+  const department = pick(rng, depts.length ? depts : Object.keys(DEPARTMENTS));
+  const kind = pick(rng, DEPARTMENTS[department]!);
+  return { department, kind };
+}
+
+function retailerStyleTitle(kind: string, rng: () => number): string {
+  const size = pick(rng, ["", " 12OZ", " 16OZ", " 2PK", " 4CT"]);
+  return `${kind.toUpperCase()}${size}`.slice(0, 48).trim();
 }
 
 function generatedBrand(rng: () => number): string {
@@ -361,8 +499,8 @@ async function main(): Promise<void> {
   const cpscPicked = sampleN(rng, cpsc, 50);
 
   for (const r of fdaPicked) {
-    const brand = brandFromFdaDescription(r.product_description);
-    const title = retailerTitleFromFda(r.product_description);
+    const brand = brandFromFdaFirm(r.recalling_firm);
+    const title = fdaRetailerTitle(r.product_description, brand);
     let upc = extractUpcFromText(r.product_description, rng) ?? "";
     if (!upc) {
       upc = rng() < 0.5 ? "" : randomValidUpc(rng);
@@ -373,17 +511,18 @@ async function main(): Promise<void> {
       upc,
       title,
       brand,
-      department: "Grocery",
+      department: fdaDepartment(r.product_description),
       supplier_id: pick(rng, suppliers).supplier_id,
       origin: "from_recall",
+      sourceRecall: r.recall_number,
       recallLots: lots,
     });
   }
 
   for (const r of cpscPicked) {
     const includeModel = rng() < 0.7;
-    const title = cpscTitle(r, includeModel);
-    const brand = brandFromCpsc(r);
+    const brand = brandFromCpscName(r);
+    const title = cpscRetailerTitle(r, brand, includeModel);
     const upcFromFeed = r.ProductUPCs?.map((u) => (u.UPC ?? "").replace(/\D/g, "")).find(
       (d) => d.length === 11 || d.length === 12,
     );
@@ -401,27 +540,28 @@ async function main(): Promise<void> {
       upc,
       title,
       brand,
-      department: departmentForOrigin("from_recall", title, rng),
+      department: cpscDepartment(r),
       supplier_id: pick(rng, suppliers).supplier_id,
       origin: "from_recall",
+      sourceRecall: r.RecallNumber,
     });
   }
 
-  // ~40 decoys: same brand as a recall SKU, unrelated product kind
+  // ~40 decoys: same brand as a recall SKU, kind from a different department
   const recallSkus = skus.filter((s) => s.origin === "from_recall");
   const decoyCount = 40;
   for (let i = 0; i < decoyCount; i++) {
     const base = pick(rng, recallSkus);
-    const kind = pick(rng, DECOY_KINDS);
-    const title = `${base.brand} ${kind}`.slice(0, 80);
+    const { department, kind } = decoyDepartmentAndKind(rng, base.department);
     skus.push({
       sku: nextSku(),
       upc: randomValidUpc(rng),
-      title,
+      title: retailerStyleTitle(kind, rng),
       brand: base.brand,
-      department: departmentForOrigin("decoy", title, rng),
+      department,
       supplier_id: pick(rng, suppliers).supplier_id,
       origin: "decoy",
+      sourceRecall: "",
     });
   }
 
@@ -431,15 +571,15 @@ async function main(): Promise<void> {
     const dept = pick(rng, Object.keys(DEPARTMENTS));
     const kind = pick(rng, DEPARTMENTS[dept]!);
     const brand = generatedBrand(rng);
-    const size = pick(rng, ["", " 12OZ", " 16OZ", " 2PK", " 4CT"]);
     skus.push({
       sku: nextSku(),
       upc: randomValidUpc(rng),
-      title: `${brand} ${kind}${size}`.slice(0, 80),
+      title: retailerStyleTitle(kind, rng),
       brand,
       department: dept,
       supplier_id: pick(rng, suppliers).supplier_id,
       origin: "background",
+      sourceRecall: "",
     });
   }
 
@@ -590,8 +730,15 @@ async function main(): Promise<void> {
   );
   await writeCsv(
     path.join(OUT, "skus.csv"),
-    ["sku", "upc", "title", "brand", "department", "supplier_id", "origin"],
-    skus.map((s) => [s.sku, s.upc, s.title, s.brand, s.department, s.supplier_id, s.origin]),
+    ["sku", "upc", "title", "brand", "department", "supplier_id"],
+    skus.map((s) => [s.sku, s.upc, s.title, s.brand, s.department, s.supplier_id]),
+  );
+  const evalDir = path.join(OUT, "eval");
+  await mkdir(evalDir, { recursive: true });
+  await writeCsv(
+    path.join(evalDir, "ground_truth.csv"),
+    ["sku", "source_recall", "origin"],
+    skus.map((s) => [s.sku, s.sourceRecall, s.origin]),
   );
   await writeCsv(
     path.join(OUT, "inventory.csv"),
@@ -644,16 +791,22 @@ Inputs (public recall snapshots under \`sample/\`, captured per \`sample/CAPTURE
 |------|---------------|-------|
 | stores.csv | ${stores.length} | Fictional Northwind stores across ${STATES.length} US states |
 | suppliers.csv | ${suppliers.length} | Fictional suppliers; contact_role only |
-| skus.csv | ${skus.length} | origin=${JSON.stringify(originCounts)} |
+| skus.csv | ${skus.length} | Item master only (no origin / source_recall) |
 | inventory.csv | ${inventory.length} | ~35% of SKUs per store; 1–3 lots |
 | sales.csv | ${sales.length} | Weekly sampled sales through 2026-10-18 |
 | ship_notices.csv | ${ship_notices.length} | One ASN per (sku, lot) to a DC state |
+| eval/ground_truth.csv | ${skus.length} | Evaluation labels only — agents must never read this |
 
-### SKU origins
+### SKU origins (in eval/ground_truth.csv only)
+
+Ground-truth columns \`origin\` and \`source_recall\` are **not** loaded into the ERP the agents query.
+They exist solely for offline evaluation of match quality.
 
 - **from_recall** — built from ~70 FDA + ~50 CPSC notices so the catalog overlaps the feeds
-  (UPCs/lots where parseable; CPSC titles omit the model ~30% of the time).
-- **decoy** — same brand as a recall SKU, unrelated product kind (hard negative for text match).
+  (UPCs/lots where parseable; CPSC titles append Products[0].Model ~70% when short and usable).
+  \`source_recall\` holds the FDA recall_number or CPSC RecallNumber used to build the row.
+- **decoy** — same brand string as a recall SKU, product kind from a *different* department
+  (hard negative for text match). \`source_recall\` empty.
 - **background** — invented brand × department product kinds with random valid UPCs.
 
 Lot codes on FDA from_recall inventory rows use a parsed \`code_info\` lot with probability 0.5;
@@ -684,7 +837,13 @@ Regenerate with: \`npm run gen -- --seed ${seed}\`
   );
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+const isDirectRun =
+  process.argv[1] !== undefined &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isDirectRun) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

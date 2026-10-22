@@ -7,3 +7,4 @@ logs/*.jsonl
 out/
 *.log
 .DS_Store
+.omc/

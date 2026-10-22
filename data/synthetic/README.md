@@ -18,16 +18,22 @@ Inputs (public recall snapshots under `sample/`, captured per `sample/CAPTURED_A
 |------|---------------|-------|
 | stores.csv | 24 | Fictional Northwind stores across 12 US states |
 | suppliers.csv | 40 | Fictional suppliers; contact_role only |
-| skus.csv | 900 | origin={"from_recall":120,"decoy":40,"background":740} |
-| inventory.csv | 15070 | ~35% of SKUs per store; 1–3 lots |
+| skus.csv | 900 | Item master only (no origin / source_recall) |
+| inventory.csv | 15051 | ~35% of SKUs per store; 1–3 lots |
 | sales.csv | 58000 | Weekly sampled sales through 2026-10-18 |
-| ship_notices.csv | 15000 | One ASN per (sku, lot) to a DC state |
+| ship_notices.csv | 14959 | One ASN per (sku, lot) to a DC state |
+| eval/ground_truth.csv | 900 | Evaluation labels only — agents must never read this |
 
-### SKU origins
+### SKU origins (in eval/ground_truth.csv only)
+
+Ground-truth columns `origin` and `source_recall` are **not** loaded into the ERP the agents query.
+They exist solely for offline evaluation of match quality.
 
 - **from_recall** — built from ~70 FDA + ~50 CPSC notices so the catalog overlaps the feeds
-  (UPCs/lots where parseable; CPSC titles omit the model ~30% of the time).
-- **decoy** — same brand as a recall SKU, unrelated product kind (hard negative for text match).
+  (UPCs/lots where parseable; CPSC titles append Products[0].Model ~70% when short and usable).
+  `source_recall` holds the FDA recall_number or CPSC RecallNumber used to build the row.
+- **decoy** — same brand string as a recall SKU, product kind from a *different* department
+  (hard negative for text match). `source_recall` empty.
 - **background** — invented brand × department product kinds with random valid UPCs.
 
 Lot codes on FDA from_recall inventory rows use a parsed `code_info` lot with probability 0.5;

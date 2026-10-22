@@ -150,9 +150,10 @@ async function setupErp(user: string, password: string): Promise<Record<string, 
         title TEXT NOT NULL,
         brand TEXT NOT NULL,
         department TEXT NOT NULL,
-        supplier_id TEXT NOT NULL,
-        origin TEXT NOT NULL
+        supplier_id TEXT NOT NULL
       );
+      -- Drop eval-only column if a prior load created it; agents never see origin.
+      ALTER TABLE skus DROP COLUMN IF EXISTS origin;
       CREATE TABLE IF NOT EXISTS inventory (
         store_id TEXT NOT NULL REFERENCES stores(store_id),
         sku TEXT NOT NULL REFERENCES skus(sku),
