@@ -1,5 +1,7 @@
 # RecallWhy
 
+**Demo video:** VIDEO_LINK · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
+
 **Open Agent Hackathon 2026 · Track 2: The Agent That Can Explain Why**
 
 A retailer's safety team gets dozens of federal recall notices a week. For each one they need to know: *do we sell this, which lots, which stores still have it, how many customers bought it — and why do we believe that?* Today that means hand-checking the recall feed against the ERP and the supplier portal.
@@ -68,8 +70,11 @@ cp .env.example .env          # fill in Zetaris and Postgres settings
 docker compose up -d && npm run load     # synthetic ERP + supplier portal
 npm run setup:zetaris                    # register feeds + datasources in Zetaris
 ollama pull nemotron-3-nano
-npm run agents -- --since 2026-09-15     # → out/<run>/report.md, briefs/, logs/trace-<run>.jsonl
+npm run agents -- --since 2026-09-15     # → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
+npm run view                             # http://127.0.0.1:8899 — watch the four agents live, open reports
 ```
+
+Real outputs from these commands, with their traces, are in [`examples/`](examples/): a live Zetaris run, the human review step, the re-run that follows the human decision, and a sample-mode run.
 
 **No credentials? Sample mode:**
 

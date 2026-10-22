@@ -1,4 +1,4 @@
-# Example runs (real outputs, copied unedited from `out/` and `logs/`)
+# Example runs (real outputs copied from `out/` and `logs/`; only the trace path in report.md was changed)
 
 | Folder | What | Engine |
 |---|---|---|
