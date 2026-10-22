@@ -336,9 +336,17 @@ function removeBrandWords(text: string, brand: string): string {
 }
 
 export function fdaRetailerTitle(desc: string, brand: string): string {
-  let stem = cutFdaDescriptionStem(desc);
-  stem = stripLegalSuffixes(stem.replace(/™|®/g, ""));
-  stem = removeBrandWords(stem, brand);
+  // Notices often open with the firm ("Clover Hill Dairy LLP, Sharp Cheese …"): take the first
+  // comma segment that still names a product once firm/brand words are removed.
+  const segments = desc.replace(/™|®/g, "").replace(/\b(Inc|Co|Corp|Ltd)\.\s/g, "$1 ").split(",");
+  let stem = "";
+  for (let i = 0; i < segments.length && i < 4; i++) {
+    const cand = removeBrandWords(stripLegalSuffixes(cutFdaDescriptionStem(segments.slice(i).join(",")))
+      .replace(/\b(LLP|LLC|Inc|Co|Corp|Ltd|Specialists?)\b\.?/gi, " "), brand).trim();
+    const words = (cand.match(/[A-Za-z]{3,}/g) ?? []).filter((w) => !/^(and|packaged|package|the|with|net|oz|lbs?|pounds?|ounces?)$/i.test(w));
+    if (words.length >= 2) { stem = cand; break; }
+  }
+  if (!stem) stem = removeBrandWords(stripLegalSuffixes(cutFdaDescriptionStem(desc)), brand);
   const words = stem.split(/\s+/).filter(Boolean).slice(0, 5);
   let title = words.join(" ").toUpperCase().replace(/\s+/g, " ").trim();
   const size = extractSizeToken(desc);
