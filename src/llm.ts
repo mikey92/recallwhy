@@ -5,7 +5,7 @@ import type { Trace } from "./trace.ts";
 export interface GenOpts { purpose: string; agent: string; system?: string; maxTokens?: number; json?: boolean }
 export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 
-export interface LlmConfig { provider: "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string }
+export interface LlmConfig { provider: "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number }
 
 export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
   return async (prompt, opts) => {
@@ -33,7 +33,7 @@ async function ollama(cfg: LlmConfig, prompt: string, opts: GenOpts): Promise<st
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model: cfg.model, messages: messages(prompt, opts), stream: false, think: false,
-      options: { temperature: 0, num_predict: opts.maxTokens ?? 300 } }),
+      options: { temperature: 0, num_predict: opts.maxTokens ?? 300, num_ctx: cfg.numCtx ?? 8192 }, keep_alive: "2m" }),
     signal: AbortSignal.timeout(180_000),
   });
   if (!res.ok) throw new Error(`ollama HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);

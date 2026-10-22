@@ -23,3 +23,10 @@ test("parseJudge reads the judge's one-line answers", () => {
   assert.equal(parseJudge("SAME")?.label, "SAME");
   assert.equal(parseJudge("I think maybe"), undefined);
 });
+
+import { redact } from "../src/trace.ts";
+test("traces redact passwords in SQL and secret-named fields", () => {
+  const r = redact({ sql: `CREATE DATASOURCE erp OPTIONS (username "u", password "hunter2")`, apiKey: "abc" });
+  assert.ok(!JSON.stringify(r).includes("hunter2"));
+  assert.equal(r.apiKey, "***");
+});

@@ -23,7 +23,7 @@ export class Trace {
     this.quiet = opts.quiet ?? false;
   }
   emit(kind: TraceKind, agent: string, data: Record<string, unknown> = {}): TraceEvent {
-    const ev: TraceEvent = { t: new Date().toISOString(), run: this.runId, seq: ++this.seq, kind, agent, ...data };
+    const ev: TraceEvent = { t: new Date().toISOString(), run: this.runId, seq: ++this.seq, kind, agent, ...redact(data) };
     appendFileSync(this.file, JSON.stringify(ev) + "\n");
     if (!this.quiet) console.log(pretty(ev));
     return ev;
@@ -42,4 +42,12 @@ function pretty(ev: TraceEvent): string {
   else if (ev.kind === "llm") body = `${ev.model} ${ev.purpose} → ${String(ev.output).replace(/\s+/g, " ").slice(0, 100)}`;
   else body = String(ev.text ?? ev.summary ?? JSON.stringify(Object.fromEntries(Object.entries(ev).filter(([x]) => !["t", "run", "seq", "kind", "agent"].includes(x))))).slice(0, 160);
   return `${C.dim}${String(ev.seq).padStart(4)}${C.reset} ${who} ${C.dim}${k}${C.reset} ${body}`;
+}
+
+/** Traces are meant to be shared: never let a password or key reach one. */
+export function redact<T>(v: T): T {
+  if (typeof v === "string") return v.replace(/\b(password|api[_-]?key|token|secret)(\s*[:=]?\s*)(["'])[^"']*\3/gi, "$1$2$3***$3") as T;
+  if (Array.isArray(v)) return v.map(redact) as T;
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, /password|api[_-]?key|secret|token/i.test(k) ? "***" : redact(x)])) as T;
+  return v;
 }
