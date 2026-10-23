@@ -19,7 +19,7 @@
   "agents": [
     {
       "name": "Cartographer",
-      "role": "Before any case, maps the fragmented sources through Zetaris: lists datasources, Lightning databases and views, tags barcode/SKU/lot columns, profiles barcode lengths and tests cross-source barcode joins as written and normalised (finds GTIN-14 padding from a third of suppliers). The Auditor uses the join it verified."
+      "role": "Before any case, maps the fragmented sources through Zetaris: lists datasources, Lightning databases and views, tags barcode/SKU/lot columns, profiles barcode lengths and tests cross-source barcode joins as written and normalised (finds GTIN-14 padding from a third of suppliers). The Auditor uses the join it verified and sends back rows it cannot reach; the Cartographer then diagnoses that supplier, tests the fix on all of its ship notices and corrects the map."
     },
     {
       "name": "Scout",
@@ -41,7 +41,7 @@
   "sponsor_technologies": {
     "zetaris": {
       "used": true,
-      "how": "All agent data access is Zetaris Lightning SQL over its REST API. Two live Lightning REST tables (saferproducts.gov CPSC recalls, a top-level JSON array; api.fda.gov food enforcement) flattened into schemastore views, and two JDBC datasources (synthetic ERP and supplier-portal Postgres databases). Agents run federated queries joining live REST feeds with JDBC tables and the two databases with each other; the Auditor re-queries Zetaris independently to verify numbers. The Cartographer agent maps the sources through Zetaris's catalog statements (SHOW DATASOURCES, SHOW DATASOURCE TABLES, DESCRIBE DATASOURCE TABLE, SHOW LIGHTNING DATABASES, SHOW TABLES IN, DESCRIBE) and tests cross-source barcode joins with federated SQL; it finds that a third of the suppliers send GTIN-14 barcodes (9,251 of 14,180 ship notices join as written, all 14,180 normalised).",
+      "how": "All agent data access is Zetaris Lightning SQL over its REST API. Two live Lightning REST tables (saferproducts.gov CPSC recalls, a top-level JSON array; api.fda.gov food enforcement) flattened into schemastore views, and two JDBC datasources (synthetic ERP and supplier-portal Postgres databases). Agents run federated queries joining live REST feeds with JDBC tables and the two databases with each other; the Auditor re-queries Zetaris independently to verify numbers. The Cartographer agent maps the sources through Zetaris's catalog statements (SHOW DATASOURCES, SHOW DATASOURCE TABLES, DESCRIBE DATASOURCE TABLE, SHOW LIGHTNING DATABASES, SHOW TABLES IN, DESCRIBE) and tests cross-source barcode joins with federated SQL; it finds that a third of the suppliers send GTIN-14 barcodes (7,856 of 14,180 ship notices join as written, 12,785 without leading zeros) and leaves the other 1,395 open. When the Auditor sends back ship-notice rows its key cannot reach, the Cartographer diagnoses that supplier's barcodes with federated SQL, tests the transform on every ship notice from the supplier, and corrects the map (e.g. suppliers that drop the UPC check digit).",
       "files": [
         "sql/01_feeds.sql",
         "sql/02_retail_sources.sql",

@@ -15,7 +15,8 @@ The answer is spread over four systems that were never meant to meet: two federa
  ERP (Postgres) ─┤  (JDBC datasources)          │
  supplier portal ┘                              ▼
   Cartographer ──► Scout ──► Investigator ◄──critique── Auditor ──► Briefer ──► brief.md
-  (catalog, join tests)                                  ▲ uses the verified barcode join
+  (catalog, join tests) ◄──── barcode rows its key can't reach ──┘
+       └── corrected map (per-supplier rule) ──────────────────►
                    │   ▲  (≤2 revisions, then human queue)  ▲
                    ▼   │                                    │
            H-MEM (decisions, trust)      World Model (facts + provenance) ─┘
@@ -27,10 +28,10 @@ The answer is spread over four systems that were never meant to meet: two federa
 
 | Agent | Does | Can |
 |---|---|---|
-| **Cartographer** | Before any case: lists every Zetaris datasource, Lightning database and schemastore view, describes their columns and tags barcode, SKU and lot columns. Profiles barcode lengths and tests each cross-source barcode join as written and without leading zeros. Finds that a third of the suppliers send GTIN-14 (UPC-12 padded with `00`): 9,251 of 14,180 barcoded ship notices join as written, all 14,180 after normalising. Skips the Zetaris sample databases with the reason logged. | Tell the Auditor which join to trust |
+| **Cartographer** | Before any case: lists every Zetaris datasource, Lightning database and schemastore view, describes their columns and tags barcode, SKU and lot columns. Profiles barcode lengths and tests each cross-source barcode join as written and without leading zeros. Finds that a third of the suppliers send GTIN-14 (UPC-12 padded with `00`): 7,856 of 14,180 barcoded ship notices join as written, 12,785 after stripping leading zeros. The other 1,395 join neither way; it says so and leaves them open. When the Auditor sends back rows its key cannot reach, it diagnoses that supplier's barcodes, tests the fix on **every** ship notice from that supplier, and only then corrects the map (for example: SUP007 sends the 11-digit UPC without its check digit, 484 of 484 rows). Skips the Zetaris sample databases with the reason logged. | Tell the Auditor which join to trust; correct the map mid-run |
 | **Scout** | Pulls recalls since a date from the two live feed views. Loads the item master. Runs one federated query that joins the live FDA feed (REST) with ERP SKUs (JDBC) on UPC digits. Opens a case for each recall that touches our catalog. | Delegate cases to the Investigator |
 | **Investigator** | Reads prior decisions from H-MEM. Decides each candidate: UPC or model number → rule; text match → **NVIDIA Nemotron** judge, which must quote the notice. Reads lot codes (regex plus Nemotron). Computes exposure with federated SQL: on-hand units by store and lot, units sold since the recall date, loyalty customers to notify, and the supplier from ship notices. | Revise when the Auditor blocks it |
-| **Auditor** | Re-checks each UPC match against the *live notice in Zetaris*. Checks that judge quotes and lot codes are verbatim in the notice, and that every product word of our item appears in the notice (catches "cheese pizza" ≠ "pepperoni pizza"). **Re-derives every exposure number with its own SQL**, aggregated in the database rather than in code. Confirms affected lots against supplier ship notices. Rejects briefs that cite missing evidence or state numbers not in the evidence. | **Block** (max 2 revision rounds, then escalate to the human queue) |
+| **Auditor** | Re-checks each UPC match against the *live notice in Zetaris*. Checks that judge quotes and lot codes are verbatim in the notice, and that every product word of our item appears in the notice (catches "cheese pizza" ≠ "pepperoni pizza"). **Re-derives every exposure number with its own SQL**, aggregated in the database rather than in code. Confirms affected lots against supplier ship notices, reached by barcode (a different key than the Investigator's SKU join). If the barcode reaches fewer lots than the SKU, it sends those rows to the Cartographer rather than blocking the Investigator, which could not fix a key format. Rejects briefs that cite missing evidence or state numbers not in the evidence. | **Block** (max 2 revision rounds, then escalate to the human queue) |
 | **Briefer** | Writes the brief only from the World Model context builder (numbered evidence with provenance). Nemotron writes the "why" paragraph; the Auditor checks it. Actions and caveats are computed. | Fall back to a template if the model's draft keeps failing the check |
 
 Every message, SQL call, model call, memory read/write and world write goes to `logs/trace-<run>.jsonl` and stdout. Traces come only from the code path; nothing is hand-written.
@@ -131,7 +132,15 @@ npm run agents -- --only H-1378-2026                    # Investigator follows t
 
 ## Evaluation
 
-**Cartographer ablation.** With the Cartographer off, the Auditor joins ship-notice barcodes to the item master as written. Every GTIN-14 supplier then looks like a lot mismatch, and rules alone catch **15** covered pairs. With the Cartographer's normalised key they catch **103** (`eval/results/none-none-no-cartographer.json` vs `none-none.json`).
+**Cartographer ablation** (rules only, so the model plays no part; same 440 pairs):
+
+| Setup | Covered caught (of 194) | Sent to human | Cartographer corrections |
+|---|---|---|---|
+| No Cartographer: barcodes join as written, no loop | 12 | 428 | — |
+| Map only on demand: no upfront map, the Auditor sends every mismatch back | 103 | 337 | 11 supplier rules learned from cases (7 padding, 4 check digit) |
+| **Upfront map + loop** (default) | **103** | 337 | padding found upfront; all 4 check-digit suppliers learned from cases |
+
+Without the Cartographer, every GTIN-14 or check-digit supplier looks like a lot that was never shipped, so the Auditor blocks real matches. Files: `eval/results/none-none*.json`.
 
 
 `eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample mode) on every candidate pair since 2026-07-01: 517 recalls scanned, 225 cases, 440 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice.
