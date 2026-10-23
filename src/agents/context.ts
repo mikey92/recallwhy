@@ -7,7 +7,12 @@ import type { World } from "../world.ts";
 import type { Trace } from "../trace.ts";
 import type { SourceMap } from "./cartographer.ts";
 
-export interface AgentContext { sql: SqlRunner; gen: Generator; memory: CaseMemory; world: World; trace: Trace; model: string; map?: SourceMap }
+export interface AgentContext {
+  sql: SqlRunner; gen: Generator; memory: CaseMemory; world: World; trace: Trace; model: string;
+  map?: SourceMap;
+  /** false only in the evaluation's ablation: no source map and no Auditor → Cartographer loop */
+  cartographer?: boolean;
+}
 
 export type AgentName = "Orchestrator" | "Cartographer" | "Scout" | "Investigator" | "Auditor" | "Briefer";
 

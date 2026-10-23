@@ -3,13 +3,18 @@
 // schemastore view, describes their columns, profiles the identifier columns, and tests the
 // candidate join keys with real federated queries. The result (a source map) is written to the
 // World Model with the query id behind every number, and the Auditor uses the barcode join it
-// verified.
+// verified. The map is a hypothesis: when the Auditor finds ship notices its join cannot reach,
+// it sends them back, and the Cartographer diagnoses that supplier's barcodes (reconcile) and
+// corrects the map for the rest of the run.
 import { inList, say, type AgentContext } from "./context.ts";
 
 export type Role = "barcode" | "sku" | "lot";
 export interface TableInfo { name: string; kind: "jdbc" | "rest" | "view"; source: string; columns: { name: string; type: string; role?: Role }[] }
 export interface BarcodeProfile { table: string; column: string; lengths: Record<string, number>; sqlId: string }
-export interface JoinCheck { left: string; right: string; column: string; leftRows: number; asWritten: number; normalized: number; chosen: "as-written" | "normalized" | "none"; sqlIds: string[] }
+export type Transform = "no-leading-zeros" | "no-check-digit";
+/** A supplier whose barcodes need their own transform, learned from a case the Auditor sent back. */
+export interface SupplierRule { supplier: string; transform: Transform; rows: number; learnedFrom: string; sqlId: string }
+export interface JoinCheck { left: string; right: string; column: string; leftRows: number; asWritten: number; normalized: number; chosen: "as-written" | "normalized" | "none"; sqlIds: string[]; rules?: SupplierRule[] }
 export interface SourceMap { tables: TableInfo[]; skipped: { name: string; why: string }[]; barcodes: BarcodeProfile[]; joins: JoinCheck[] }
 
 // Zetaris has no statement that lists schemastore containers, so the view container this
@@ -19,12 +24,22 @@ const VIEW_CONTAINERS = ["recallfeeds"];
 const ROLE: [Role, RegExp][] = [["barcode", /^(upc|gtin|ean|barcode)$/i], ["sku", /^sku$/i], ["lot", /^lot(_code)?$/i]];
 const roleOf = (col: string) => ROLE.find(([, re]) => re.test(col))?.[0];
 
-/** The join predicate for two tables' barcode columns, as verified by the Cartographer. */
+const ASN = "supplier_portal.ship_notices", ITEMS = "erp.skus";
+
+/** Barcode equality under a transform; `asn` is the ship-notice alias, `item` the item-master one. */
+function keyEq(t: Transform | "as-written", asn: string, item: string): string {
+  if (t === "no-leading-zeros") return `regexp_replace(${asn}.upc, '^0+', '') = regexp_replace(${item}.upc, '^0+', '')`;
+  if (t === "no-check-digit") return `${asn}.upc = substr(${item}.upc, 1, 11)`;
+  return `${asn}.upc = ${item}.upc`;
+}
+
+/** The join predicate for two tables' barcode columns, as verified (and corrected) by the Cartographer. */
 export function barcodeJoin(map: SourceMap | undefined, left: string, right: string, a: string, b: string): string {
   const j = map?.joins.find((x) => (x.left === left && x.right === right) || (x.left === right && x.right === left));
-  return j?.chosen === "normalized"
-    ? `regexp_replace(${a}.upc, '^0+', '') = regexp_replace(${b}.upc, '^0+', '')`
-    : `${a}.upc = ${b}.upc`;
+  const base = j?.chosen === "normalized" ? keyEq("no-leading-zeros", a, b) : `${a}.upc = ${b}.upc`;
+  if (!j?.rules?.length) return base;
+  const [asn, item] = left === ASN ? [a, b] : [b, a];
+  return `(${[base, ...j.rules.map((r) => `(${asn}.supplier_id = '${r.supplier}' AND ${keyEq(r.transform, asn, item)})`)].join(" OR ")})`;
 }
 
 export async function chart(ctx: AgentContext): Promise<SourceMap> {
@@ -63,9 +78,11 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
 
   for (const j of map.joins) {
     const gap = j.normalized - j.asWritten;
-    say(ctx, "Cartographer", "Auditor", gap > 0
+    const open = j.leftRows - Math.max(j.asWritten, j.normalized);
+    say(ctx, "Cartographer", "Auditor", (gap > 0
       ? `${j.left} x ${j.right}: ${j.asWritten}/${j.leftRows} barcoded rows join as written, ${j.normalized}/${j.leftRows} after stripping leading zeros (${gap} rows are GTIN-14/EAN-13 padded). Use the normalized key.`
-      : `${j.left} x ${j.right}: ${j.asWritten}/${j.leftRows} barcoded rows join as written; no padding found.`,
+      : `${j.left} x ${j.right}: ${j.asWritten}/${j.leftRows} barcoded rows join as written; no padding found.`)
+      + (open > 0 ? ` ${open} barcoded rows join neither way; left open until a case needs them — send me any you hit.` : ""),
       { join: j });
   }
   const blanks = map.barcodes.filter((b) => (b.lengths["0"] ?? 0) > 0).map((b) => `${b.table} has ${b.lengths["0"]} rows with no barcode`);
@@ -117,4 +134,53 @@ async function duckCatalog(ctx: AgentContext): Promise<TableInfo[]> {
     t.columns.push({ name: String(x.column_name), type: String(x.data_type).toLowerCase() });
   }
   return [...by.values()];
+}
+
+/**
+ * The Auditor found ship notices that reach a case's lots by SKU but not by barcode. Diagnose
+ * them: per supplier, which barcode transform makes those rows join? A transform is adopted only
+ * if it also holds for every barcoded ship notice of that supplier, and the map is corrected for
+ * the rest of the run. Returns the rules it learned (empty if the gap is not a key format issue).
+ */
+export async function reconcile(ctx: AgentContext, caseId: string, skus: string[], lots: string[]): Promise<SupplierRule[]> {
+  const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
+  const t = ["as-written", "no-leading-zeros", "no-check-digit"] as const;
+  const counts = t.map((x, i) => `SUM(CASE WHEN ${keyEq(x, "a", "s")} THEN 1 ELSE 0 END) AS k${i}`).join(", ");
+  const diag = await run(
+    `SELECT a.supplier_id AS supplier, length(a.upc) AS asn_len, length(s.upc) AS item_len, COUNT(*) AS n, ${counts}
+     FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku
+     WHERE a.sku IN (${inList(skus)}) AND a.lot_code IN (${inList(lots)}) AND a.upc <> ''
+     GROUP BY a.supplier_id, length(a.upc), length(s.upc)`,
+    `diagnose barcodes behind the ${caseId} mismatch`);
+  const current = barcodeJoin(ctx.map, ASN, ITEMS, "a", "s");
+  const learned: SupplierRule[] = [];
+  const notes: string[] = [];
+  for (const row of diag.rows) {
+    const supplier = String(row.supplier), n = Number(row.n);
+    const ok = t.map((_, i) => Number(row[`k${i}`] ?? 0));
+    const covered = ctx.map?.joins.find((j) => j.left === ASN || j.right === ASN);
+    if (ok[0] === n || (covered?.chosen === "normalized" && ok[1] === n) || covered?.rules?.some((r) => r.supplier === supplier)) continue;
+    const transform = (["no-leading-zeros", "no-check-digit"] as const).find((_, i) => ok[i + 1] === n);
+    if (!transform) { notes.push(`${supplier}: ${n} rows with ${row.asn_len}-digit barcodes match our ${row.item_len}-digit UPCs under no known transform`); continue; }
+    // A rule from one case is a guess; check it on everything this supplier has shipped.
+    const all = await run(
+      `SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s")} THEN 1 ELSE 0 END) AS ok
+       FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = '${supplier.replace(/'/g, "''")}' AND a.upc <> ''`,
+      `test "${transform}" on every ship notice from ${supplier}`);
+    const [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
+    if (hit !== tot) { notes.push(`${supplier}: "${transform}" fits this case but only ${hit}/${tot} of its ship notices`); continue; }
+    learned.push({ supplier, transform, rows: tot, learnedFrom: caseId, sqlId: all.sqlId });
+    notes.push(`${supplier} sends ${row.asn_len}-digit barcodes against our ${row.item_len}-digit UPCs: "${transform}" holds for all ${tot} of its ship notices (${all.sqlId})`);
+  }
+  if (learned.length) {
+    ctx.map ??= { tables: [], skipped: [], barcodes: [], joins: [] };
+    let j = ctx.map.joins.find((x) => x.left === ASN || x.right === ASN);
+    if (!j) ctx.map.joins.push(j = { left: ASN, right: ITEMS, column: "upc", leftRows: 0, asWritten: 0, normalized: 0, chosen: "as-written", sqlIds: [] });
+    (j.rules ??= []).push(...learned);
+    const ent = await ctx.world.entity("join_key", ctx.sql.engine, `${j.left}~${j.right}:upc`, `${j.left} x ${j.right} on barcode`, {}, { kind: ctx.sql.engine, by: "Cartographer", ref: diag.sqlId });
+    for (const r of learned) await ctx.world.fact(ent, `supplier_rule:${r.supplier}`, r.transform, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
+  }
+  say(ctx, "Cartographer", "Auditor", `${caseId}: ${notes.join("; ") || "every row already joins with the current key"}.${learned.length ? " Map corrected; re-run your check." : ""}`,
+    { diagnosis: diag.sqlId, learned, before: current });
+  return learned;
 }

@@ -4,7 +4,7 @@
 import { lotAppears } from "../feeds.ts";
 import { designatorConflict, grounded, modelsInText, tokens } from "../match.ts";
 import { inList, lit, say, type AgentContext } from "./context.ts";
-import { barcodeJoin } from "./cartographer.ts";
+import { barcodeJoin, reconcile } from "./cartographer.ts";
 import type { Critique, Finding } from "./investigator.ts";
 import type { Case } from "./scout.ts";
 
@@ -84,17 +84,30 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
     if (pairs.every(([, x, y]) => x === y)) checks.push(`exposure numbers re-derived independently and match (${onHand.sqlId}, ${sold.sqlId})`);
     // Cross-source: did the supplier actually ship these lots to us? Reached through the barcode
     // (a different key than the Investigator's SKU join), with the join the Cartographer verified.
-    const on = barcodeJoin(ctx.map, "supplier_portal.ship_notices", "erp.skus", "a", "s");
-    const viaBarcode = await ctx.sql.run(
-      `SELECT COUNT(DISTINCT a.lot_code) AS lots FROM supplier_portal.ship_notices a JOIN erp.skus s ON ${on}
-       WHERE s.sku IN (${inList(skus)}) AND a.lot_code IN (${inList(n.affectedLots)})`,
-      { agent: "Auditor", purpose: "supplier ship notices reached by barcode confirm the affected lots" });
+    const byBarcode = async (purpose: string) => {
+      const r = await ctx.sql.run(
+        `SELECT COUNT(DISTINCT a.lot_code) AS lots FROM supplier_portal.ship_notices a JOIN erp.skus s ON ${barcodeJoin(ctx.map, "supplier_portal.ship_notices", "erp.skus", "a", "s")}
+         WHERE s.sku IN (${inList(skus)}) AND a.lot_code IN (${inList(n.affectedLots)})`,
+        { agent: "Auditor", purpose });
+      return { lots: Number(r.rows[0]?.lots ?? 0), sqlId: r.sqlId };
+    };
+    let viaBarcode = await byBarcode("supplier ship notices reached by barcode confirm the affected lots");
     const viaSku = await ctx.sql.run(
       `SELECT COUNT(DISTINCT lot_code) AS lots FROM supplier_portal.ship_notices WHERE sku IN (${inList(skus)}) AND lot_code IN (${inList(n.affectedLots)}) AND upc <> ''`,
       { agent: "Auditor", purpose: "same lots reached by SKU, barcoded ship notices only" });
-    const [byCode, bySku] = [Number(viaBarcode.rows[0]?.lots ?? 0), Number(viaSku.rows[0]?.lots ?? 0)];
-    if (byCode < bySku) critiques.push({ code: "supplier-barcode-mismatch", detail: `supplier ship notices: ${bySku} affected lots by SKU but only ${byCode} by barcode — the supplier's barcode does not match our item master (${viaBarcode.sqlId}/${viaSku.sqlId})` });
-    else checks.push(`supplier ship notices reached by barcode cover ${byCode}/${n.affectedLots.length} affected lots (${viaBarcode.sqlId})`);
+    const bySku = Number(viaSku.rows[0]?.lots ?? 0);
+    let remapped = "";
+    // A key the sources disagree on is the Cartographer's to fix, not the Investigator's.
+    if (viaBarcode.lots < bySku && ctx.cartographer !== false) {
+      say(ctx, "Auditor", "Cartographer", `${k.id}: ship notices reach ${bySku} affected lots by SKU but only ${viaBarcode.lots} by barcode (${viaBarcode.sqlId}/${viaSku.sqlId}). Check the barcode key for these rows.`, { skus, lots: n.affectedLots });
+      const learned = await reconcile(ctx, k.id, skus, n.affectedLots);
+      if (learned.length) {
+        viaBarcode = await byBarcode("re-check the affected lots by barcode with the corrected map");
+        remapped = ` after the Cartographer learned ${learned.map((r) => `${r.supplier} "${r.transform}"`).join(", ")}`;
+      }
+    }
+    if (viaBarcode.lots < bySku) critiques.push({ code: "supplier-barcode-mismatch", detail: `supplier ship notices: ${bySku} affected lots by SKU but only ${viaBarcode.lots} by barcode — the supplier's barcode does not match our item master (${viaBarcode.sqlId}/${viaSku.sqlId})` });
+    else checks.push(`supplier ship notices reached by barcode cover ${viaBarcode.lots}/${n.affectedLots.length} affected lots${remapped} (${viaBarcode.sqlId})`);
   }
 
   const ok = critiques.length === 0;
