@@ -89,7 +89,18 @@ curl localhost:8000/runs/<runId>/trace     # the run's JSONL trace
 curl localhost:8000/runs/<runId>/report    # its HTML report
 ```
 
-`POST /run {since, only?, limit?}` returns the verdict per case, the briefs, the engine (`zetaris` or `duckdb-sample`) and the model. Inputs are validated (bad dates, limits outside 1–50 and non-list `only` get a 400), and one run happens at a time (409 while busy). Without Nightshift or Zetaris the container still answers, in sample mode with rules only. `examples/input/` has three request bodies. `npm run api` starts the same server without Docker.
+With live Zetaris and Nightshift, pass the same `.env` and point the container at the host. Inside a container `localhost` is the container itself, and the Nightshift token file is not mounted, so the token goes in `METERLESS_RUNTIME_TOKEN`:
+
+```bash
+docker run --rm -p 8000:8000 --env-file .env \
+  -e METERLESS_BASE_URL=http://host.docker.internal:8088/v1 \
+  -e ZETARIS_BASE_URL=http://host.docker.internal:3000 \
+  recallwhy
+# If another app holds port 3000 on the host, join Zetaris's network instead:
+#   --network zetaris_default -e ZETARIS_BASE_URL=http://zetaris-ui-1:3000
+```
+
+`POST /run {since, only?, limit?}` returns the verdict per case, the briefs, the engine (`zetaris` or `duckdb-sample`) and the model. Inputs are validated (bad dates, limits outside 1–50 and non-list `only` get a 400), and one run happens at a time (409 while busy). Without Nightshift or Zetaris the container still answers, in sample mode with rules only. If Zetaris is configured but does not answer, the run falls back to sample mode and the trace says why (`ZETARIS_FALLBACK=false` makes it fail instead). `examples/input/` has three request bodies. `npm run api` starts the same server without Docker.
 
 **No credentials? Sample mode:**
 
