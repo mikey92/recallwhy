@@ -11,7 +11,8 @@
     "queue": "tsx src/cli.ts queue",
     "eval": "tsx eval/run.ts",
     "setup:zetaris": "tsx scripts/setup-zetaris.ts",
-    "view": "tsx src/serve.ts"
+    "view": "tsx src/serve.ts",
+    "api": "tsx src/api.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.4.1-r.1",

@@ -11,12 +11,13 @@ import { CaseMemory } from "../src/memory.ts";
 import { World } from "../src/world.ts";
 import { scout } from "../src/agents/scout.ts";
 import { adjudicate } from "../src/orchestrator.ts";
+import { chart } from "../src/agents/cartographer.ts";
 
 const arg = (k: string, d?: string) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
 const model = arg("model", "nemotron-3-nano:latest")!;
 const provider = arg("provider", "ollama") as LlmConfig["provider"];
 const since = arg("since", "2026-07-01")!;
-const tag = `${provider}-${model}`.replace(/[^a-z0-9.-]+/gi, "_");
+const tag = `${provider}-${model}${process.argv.includes("--no-cartographer") ? "-no-cartographer" : ""}`.replace(/[^a-z0-9.-]+/gi, "_");
 
 // Labels: a SKU is covered if it was generated from this recall, or if its UPC is printed in the notice.
 const gt = new Map(readFileSync("data/synthetic/eval/ground_truth.csv", "utf8").trim().split("\n").slice(1).map((l) => { const [sku, rec] = l.split(","); return [sku, rec] as const; }));
@@ -31,6 +32,8 @@ const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace,
 
 const t0 = Date.now();
 const startedAt = new Date().toISOString();
+// --no-cartographer: ablation, the Auditor falls back to joining barcodes as written
+if (!process.argv.includes("--no-cartographer")) (ctx as { map?: unknown }).map = await chart(ctx);
 const { cases, scanned } = await scout(ctx, { since });
 const rows: { recall: string; sku: string; basis: string; label: "same" | "not-this"; final: string; rounds: number }[] = [];
 let i = 0;

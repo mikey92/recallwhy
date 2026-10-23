@@ -1,0 +1,38 @@
+// Programmatic entry point for judges and scripts.
+//   npm run api            → http://0.0.0.0:8000
+//   curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d @examples/input/example_1.json
+// POST /run {since, only?, limit?} → JSON: verdict per case, briefs, trace path. One run at a time.
+import { createServer } from "node:http";
+import { loadConfig } from "./config.ts";
+import { runOnce } from "./app.ts";
+
+const PORT = Number(process.env.PORT ?? 8000);
+let busy = false;
+
+createServer(async (req, res) => {
+  const url = new URL(req.url ?? "/", "http://x");
+  const send = (code: number, body: unknown) => { res.writeHead(code, { "Content-Type": "application/json" }); res.end(JSON.stringify(body, null, 2)); };
+  if (req.method === "GET" && url.pathname === "/health") return send(200, { ok: true, busy });
+  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run or GET /health" });
+  if (busy) return send(409, { error: "a run is already in progress; try again when it finishes" });
+  let input: { since?: string; only?: string[]; limit?: number };
+  try {
+    const chunks: Buffer[] = [];
+    for await (const c of req) chunks.push(c as Buffer);
+    input = chunks.length ? JSON.parse(Buffer.concat(chunks).toString("utf8")) : {};
+  } catch {
+    return send(400, { error: "body must be JSON like {\"since\":\"2026-09-15\",\"limit\":5}" });
+  }
+  if (input.since && !/^\d{4}-\d{2}-\d{2}$/.test(input.since)) return send(400, { error: "since must be YYYY-MM-DD" });
+  if (input.only && (!Array.isArray(input.only) || input.only.some((x) => typeof x !== "string"))) return send(400, { error: "only must be a list of recall numbers" });
+  if (input.limit !== undefined && !(Number.isInteger(input.limit) && input.limit > 0 && input.limit <= 50)) return send(400, { error: "limit must be an integer 1-50" });
+  busy = true;
+  try {
+    const r = await runOnce(loadConfig(), { since: input.since ?? "2026-09-15", only: input.only, limit: input.limit ?? 5 });
+    send(200, r);
+  } catch (e) {
+    send(500, { error: e instanceof Error ? e.message : String(e) });
+  } finally {
+    busy = false;
+  }
+}).listen(PORT, "0.0.0.0", () => console.log(`RecallWhy API on http://0.0.0.0:${PORT}  (POST /run, GET /health)`));

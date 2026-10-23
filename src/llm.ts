@@ -8,7 +8,7 @@ import type { Trace } from "./trace.ts";
 export interface GenOpts { purpose: string; agent: string; system?: string; maxTokens?: number; json?: boolean }
 export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 
-export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string }
+export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string }
 
 const NIGHTSHIFT_URL = "http://127.0.0.1:8088/v1";
 
@@ -16,7 +16,11 @@ const NIGHTSHIFT_URL = "http://127.0.0.1:8088/v1";
 export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
   const provider = (env.LLM_PROVIDER as LlmConfig["provider"]) || "meterless";
   if (provider === "meterless") {
-    return { provider, model: env.METERLESS_MODEL || "meterless/auto", baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey: env.METERLESS_RUNTIME_TOKEN || nightshiftToken(), app: env.METERLESS_APP || "recallwhy" };
+    const apiKey = env.METERLESS_RUNTIME_TOKEN || nightshiftToken();
+    // No Nightshift on this machine (a judge's laptop, a container): run without a model rather
+    // than fail every call. Text matches then go to the human queue and briefs use the template.
+    if (!apiKey) return { provider: "none", model: "none", note: "Meterless Nightshift is not configured (no METERLESS_RUNTIME_TOKEN): running without a model; text matches go to the human queue." };
+    return { provider, model: env.METERLESS_MODEL || "meterless/auto", baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy" };
   }
   return { provider, model: env.LLM_MODEL ?? "nemotron-3-nano", ollamaUrl: env.OLLAMA_URL, baseUrl: env.OPENAI_BASE_URL, apiKey: env.OPENAI_API_KEY };
 }
