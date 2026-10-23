@@ -4,6 +4,7 @@
 import { lotAppears } from "../feeds.ts";
 import { designatorConflict, grounded, modelsInText, tokens } from "../match.ts";
 import { inList, lit, say, type AgentContext } from "./context.ts";
+import { barcodeJoin } from "./cartographer.ts";
 import type { Critique, Finding } from "./investigator.ts";
 import type { Case } from "./scout.ts";
 
@@ -81,11 +82,19 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
       if (mine !== theirs) critiques.push({ code: "number-mismatch", detail: `${label}: Investigator ${mine}, Auditor ${theirs} (${onHand.sqlId}/${sold.sqlId})` });
     }
     if (pairs.every(([, x, y]) => x === y)) checks.push(`exposure numbers re-derived independently and match (${onHand.sqlId}, ${sold.sqlId})`);
-    // Cross-source: did the supplier actually ship these lots to us?
-    const shipped = await ctx.sql.run(
-      `SELECT COUNT(DISTINCT lot_code) AS lots FROM supplier_portal.ship_notices WHERE sku IN (${inList(skus)}) AND lot_code IN (${inList(n.affectedLots)})`,
-      { agent: "Auditor", purpose: "supplier portal confirms affected lots were shipped to us" });
-    checks.push(`supplier ship notices cover ${shipped.rows[0]?.lots ?? 0}/${n.affectedLots.length} affected lots (${shipped.sqlId})`);
+    // Cross-source: did the supplier actually ship these lots to us? Reached through the barcode
+    // (a different key than the Investigator's SKU join), with the join the Cartographer verified.
+    const on = barcodeJoin(ctx.map, "supplier_portal.ship_notices", "erp.skus", "a", "s");
+    const viaBarcode = await ctx.sql.run(
+      `SELECT COUNT(DISTINCT a.lot_code) AS lots FROM supplier_portal.ship_notices a JOIN erp.skus s ON ${on}
+       WHERE s.sku IN (${inList(skus)}) AND a.lot_code IN (${inList(n.affectedLots)})`,
+      { agent: "Auditor", purpose: "supplier ship notices reached by barcode confirm the affected lots" });
+    const viaSku = await ctx.sql.run(
+      `SELECT COUNT(DISTINCT lot_code) AS lots FROM supplier_portal.ship_notices WHERE sku IN (${inList(skus)}) AND lot_code IN (${inList(n.affectedLots)}) AND upc <> ''`,
+      { agent: "Auditor", purpose: "same lots reached by SKU, barcoded ship notices only" });
+    const [byCode, bySku] = [Number(viaBarcode.rows[0]?.lots ?? 0), Number(viaSku.rows[0]?.lots ?? 0)];
+    if (byCode < bySku) critiques.push({ code: "supplier-barcode-mismatch", detail: `supplier ship notices: ${bySku} affected lots by SKU but only ${byCode} by barcode — the supplier's barcode does not match our item master (${viaBarcode.sqlId}/${viaSku.sqlId})` });
+    else checks.push(`supplier ship notices reached by barcode cover ${byCode}/${n.affectedLots.length} affected lots (${viaBarcode.sqlId})`);
   }
 
   const ok = critiques.length === 0;

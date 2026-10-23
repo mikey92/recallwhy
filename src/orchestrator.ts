@@ -7,6 +7,7 @@ import { brief, type Brief } from "./agents/briefer.ts";
 import { say, type AgentContext } from "./agents/context.ts";
 import { investigate, revise, type Finding } from "./agents/investigator.ts";
 import { scout, type Case } from "./agents/scout.ts";
+import { chart } from "./agents/cartographer.ts";
 import { renderReport } from "./report-html.ts";
 
 const MAX_REVISIONS = 2;
@@ -15,6 +16,7 @@ export interface RunResult { runId: string; scanned: number; cases: { id: string
 
 export async function run(ctx: AgentContext, opts: { since: string; only?: string[]; limit?: number }): Promise<RunResult> {
   ctx.trace.emit("run.start", "Orchestrator", { since: opts.since, only: opts.only, engine: ctx.sql.engine, model: ctx.model });
+  ctx.map ??= await chart(ctx);
   const { cases, scanned } = await scout(ctx, opts);
   const todo = opts.limit ? cases.slice(0, opts.limit) : cases;
   if (todo.length < cases.length) say(ctx, "Orchestrator", "Scout", `limiting this run to ${todo.length} of ${cases.length} cases`);

@@ -31,7 +31,7 @@ export class Trace {
 }
 
 const C = { dim: "\x1b[2m", reset: "\x1b[0m", bold: "\x1b[1m" };
-const COLORS: Record<string, string> = { Scout: "\x1b[36m", Investigator: "\x1b[33m", Auditor: "\x1b[35m", Briefer: "\x1b[32m", Orchestrator: "\x1b[34m", Human: "\x1b[31m" };
+const COLORS: Record<string, string> = { Cartographer: "\x1b[96m", Scout: "\x1b[36m", Investigator: "\x1b[33m", Auditor: "\x1b[35m", Briefer: "\x1b[32m", Orchestrator: "\x1b[34m", Human: "\x1b[31m" };
 
 function pretty(ev: TraceEvent): string {
   const who = `${COLORS[ev.agent] ?? ""}${ev.agent.padEnd(12)}${C.reset}`;

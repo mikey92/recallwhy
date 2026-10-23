@@ -11,6 +11,17 @@ import { gtin12CheckDigit, isValidUpc } from "./upc.ts";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "data", "synthetic");
 
+/**
+ * How a supplier writes the barcode on its ship notices. Like many real EDI feeds, every third
+ * supplier sends GTIN-14 (the 12-digit UPC left-padded with "00") instead of UPC-12. A plain
+ * UPC = UPC join therefore misses their rows; the Cartographer has to discover this.
+ * Deterministic (no PRNG draw), so every other generated value is unchanged.
+ */
+export function asnBarcode(supplierId: string, upc: string): string {
+  const n = Number(supplierId.replace(/\D/g, ""));
+  return upc && n % 3 === 0 ? `00${upc}` : upc;
+}
+
 const STATES = ["CA", "OR", "WA", "TX", "IL", "MN", "WI", "NY", "NJ", "PA", "FL", "GA"] as const;
 
 const FICTIONAL_CITIES: Record<(typeof STATES)[number], [string, string]> = {
@@ -768,7 +779,7 @@ async function main(): Promise<void> {
       r.asn_id,
       r.supplier_id,
       r.sku,
-      r.upc,
+      asnBarcode(r.supplier_id, r.upc),
       r.lot_code,
       r.shipped_on,
       r.units,

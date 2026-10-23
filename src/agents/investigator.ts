@@ -22,7 +22,7 @@ export interface Finding {
   lotSources: Record<string, "regex" | "model">; numbers?: Numbers; stores: StoreExposure[];
   verdict: "act-now" | "notify" | "no-exposure" | "not-ours" | "needs-human";
 }
-export interface Critique { code: "ungrounded-quote" | "lot-not-in-notice" | "number-mismatch" | "upc-not-in-notice" | "model-not-in-notice" | "designator-conflict" | "item-word-missing" | "only-an-ingredient" | "size-not-in-notice"; sku?: string; lot?: string; detail: string }
+export interface Critique { code: "ungrounded-quote" | "lot-not-in-notice" | "number-mismatch" | "upc-not-in-notice" | "model-not-in-notice" | "designator-conflict" | "item-word-missing" | "only-an-ingredient" | "size-not-in-notice" | "supplier-barcode-mismatch"; sku?: string; lot?: string; detail: string }
 
 const JUDGE_SYSTEM = "You check a retailer's item-master line against a U.S. federal recall notice. You answer on ONE line and you copy words from the notice exactly.";
 

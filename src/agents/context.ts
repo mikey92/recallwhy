@@ -5,10 +5,11 @@ import type { Generator } from "../llm.ts";
 import type { CaseMemory } from "../memory.ts";
 import type { World } from "../world.ts";
 import type { Trace } from "../trace.ts";
+import type { SourceMap } from "./cartographer.ts";
 
-export interface AgentContext { sql: SqlRunner; gen: Generator; memory: CaseMemory; world: World; trace: Trace; model: string }
+export interface AgentContext { sql: SqlRunner; gen: Generator; memory: CaseMemory; world: World; trace: Trace; model: string; map?: SourceMap }
 
-export type AgentName = "Orchestrator" | "Scout" | "Investigator" | "Auditor" | "Briefer";
+export type AgentName = "Orchestrator" | "Cartographer" | "Scout" | "Investigator" | "Auditor" | "Briefer";
 
 export function say(ctx: AgentContext, from: AgentName, to: AgentName | "Human", text: string, data: Record<string, unknown> = {}) {
   ctx.trace.emit("msg", from, { to, text, ...data });
