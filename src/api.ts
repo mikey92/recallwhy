@@ -2,7 +2,9 @@
 //   npm run api            → http://0.0.0.0:8000
 //   curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d @examples/input/example_1.json
 // POST /run {since, only?, limit?} → JSON: verdict per case, briefs, trace path. One run at a time.
+// GET /runs/<runId>/trace → the run's JSONL trace; GET /runs/<runId>/report → its HTML report.
 import { createServer } from "node:http";
+import { existsSync, readFileSync } from "node:fs";
 import { loadConfig } from "./config.ts";
 import { runOnce } from "./app.ts";
 
@@ -13,7 +15,16 @@ createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   const send = (code: number, body: unknown) => { res.writeHead(code, { "Content-Type": "application/json" }); res.end(JSON.stringify(body, null, 2)); };
   if (req.method === "GET" && url.pathname === "/health") return send(200, { ok: true, busy });
-  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run or GET /health" });
+  // The files a run wrote, so a judge running the container can read them without a volume mount.
+  const file = url.pathname.match(/^\/runs\/([\w-]+)\/(trace|report)$/);
+  if (req.method === "GET" && file) {
+    const [, id, kind] = file;
+    const path = kind === "trace" ? `logs/trace-${id}.jsonl` : `out/${id}/report.html`;
+    if (!existsSync(path)) return send(404, { error: `no ${kind} for run ${id}` });
+    res.writeHead(200, { "Content-Type": kind === "trace" ? "application/x-ndjson" : "text/html; charset=utf-8" });
+    return void res.end(readFileSync(path));
+  }
+  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report or GET /health" });
   if (busy) return send(409, { error: "a run is already in progress; try again when it finishes" });
   let input: { since?: string; only?: string[]; limit?: number };
   try {
