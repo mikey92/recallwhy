@@ -11,6 +11,7 @@ export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string }
 
 const NIGHTSHIFT_URL = "http://127.0.0.1:8088/v1";
+const RETRIES = [3_000, 8_000, 20_000]; // backoff before attempts 2, 3 and 4
 
 /** Provider settings from the environment. Meterless Nightshift is the default (hackathon rule: primary AI provider). */
 export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
@@ -46,7 +47,18 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
     try {
       if (cfg.provider === "none") throw new Error("no model configured (LLM_PROVIDER=none)");
       if (cfg.provider === "ollama") output = await ollama(cfg, prompt, opts);
-      else ({ output, served } = await openai(cfg, prompt, opts));
+      else {
+        // Rate limits (429) and slow first tokens (502/504) from the hosted model are transient:
+        // wait and try again, and record each retry so the trace shows the recovery.
+        for (let attempt = 1; ; attempt++) {
+          try { ({ output, served } = await openai(cfg, prompt, opts)); break; } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            if (attempt >= RETRIES.length + 1 || !/HTTP (429|502|503|504)\b|\b429\b|first token|fetch failed/i.test(msg)) throw e;
+            trace.emit("llm.retry", opts.agent, { purpose: opts.purpose, attempt, waitMs: RETRIES[attempt - 1], reason: msg.slice(0, 160) });
+            await new Promise((r) => setTimeout(r, RETRIES[attempt - 1]));
+          }
+        }
+      }
     } catch (e) {
       error = e instanceof Error ? e.message : String(e);
     }
