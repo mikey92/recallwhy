@@ -54,6 +54,9 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
           if (words.length && !words.some((w) => head.has(w))) critiques.push({ code: "only-an-ingredient", sku: d.sku, detail: `"${cand.sku.title}" appears in the notice only as an ingredient of another product` });
         }
       }
+      // The opposite error, and the dangerous one: a dismissal whose own quote names our product.
+      if (d.verdict === "not-this" && d.quote && dismissalNamesItem(cand.sku.title, cand.sku.brand, d.quote))
+        critiques.push({ code: "dismissal-names-our-item", sku: d.sku, detail: `dismissed, but the quoted recalled product "${d.quote.slice(0, 120)}" contains every product word of our item "${cand.sku.title}"` });
       const conflict = d.verdict === "same" ? designatorConflict(cand, r) : undefined;
       if (conflict) critiques.push({ code: "designator-conflict", sku: d.sku, detail: conflict });
     }
@@ -137,6 +140,14 @@ const NUMBER_WORDS: Record<string, number> = { two: 2, three: 3, four: 4, five: 
   eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, fifty: 50, hundred: 100, dozen: 12 };
 
 /** Package sizes normalised to one unit family: "Net Wt. 10 oz" → "10oz", "4/5#" → "5lb", "2.5 lbs" → "2.5lb". */
+/** True when every product word of our item title (vendor words, numbers and short words aside) is in the quote. */
+export function dismissalNamesItem(title: string, vendor: string, quote: string): boolean {
+  const skip = new Set(tokens(vendor));
+  const words = tokens(title).filter((w) => !skip.has(w) && !/\d/.test(w) && w.length > 2);
+  const q = new Set(tokens(quote));
+  return words.length >= 2 && words.every((w) => q.has(w));
+}
+
 export function sizes(text: string): string[] {
   const out: string[] = [];
   for (const m of (text ?? "").matchAll(/(\d+(?:\.\d+)?)\s*-?\s*(oz|ounces?|lbs?|pounds?|#|g|grams?|kg|ml|l|ct|count|pk|pack)(?![a-z])\.?/gi)) {

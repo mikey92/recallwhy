@@ -20,7 +20,9 @@ const since = arg("since", "2026-07-01")!;
 // Ablations: --no-cartographer (no source map, no Auditor → Cartographer loop; barcodes join as
 // written) and --map-on-demand (no upfront map; the Cartographer only fixes keys the Auditor sends back).
 const ablation = process.argv.includes("--no-cartographer") ? "no-cartographer" : process.argv.includes("--map-on-demand") ? "map-on-demand" : "";
-const tag = `${provider}-${model}${ablation ? `-${ablation}` : ""}`.replace(/[^a-z0-9.-]+/gi, "_");
+// --recalls a,b,c: spot check on those recalls only (written under a separate "-subset" tag)
+const only = arg("recalls")?.split(",");
+const tag = `${provider}-${model}${ablation ? `-${ablation}` : ""}${only ? "-subset" : ""}`.replace(/[^a-z0-9.-]+/gi, "_");
 
 // Labels: a SKU is covered if it was generated from this recall, or if its UPC is printed in the notice.
 const gt = new Map(readFileSync("data/synthetic/eval/ground_truth.csv", "utf8").trim().split("\n").slice(1).map((l) => { const [sku, rec] = l.split(","); return [sku, rec] as const; }));
@@ -37,15 +39,17 @@ const t0 = Date.now();
 const startedAt = new Date().toISOString();
 if (ablation === "no-cartographer") (ctx as { cartographer?: boolean }).cartographer = false;
 else if (!ablation) (ctx as { map?: unknown }).map = await chart(ctx);
-const { cases, scanned } = await scout(ctx, { since });
+const found = await scout(ctx, { since });
+const scanned = found.scanned, cases = only ? found.cases.filter((k) => only.includes(k.recall.id)) : found.cases;
 const rows: { recall: string; sku: string; basis: string; label: "same" | "not-this"; final: string; rounds: number }[] = [];
 let i = 0;
 for (const k of cases) {
-  const { finding, open } = await adjudicate(ctx, k);
+  const { finding, open, openSkus } = await adjudicate(ctx, k);
   for (const d of finding.decisions) {
     const cand = k.candidates.find((c) => c.sku.sku === d.sku)!;
     const label = gt.get(d.sku) === k.recall.number || (cand.sku.upc && k.recall.upcs.includes(cand.sku.upc)) ? "same" : "not-this";
-    rows.push({ recall: k.recall.id, sku: d.sku, basis: d.basis, label, final: open.length && d.verdict === "same" ? "unsure" : d.verdict, rounds: finding.round });
+    // An escalated case goes to a reviewer: its "same" calls and any pair still under objection are theirs.
+    rows.push({ recall: k.recall.id, sku: d.sku, basis: d.basis, label, final: open.length && (d.verdict === "same" || openSkus.includes(d.sku)) ? "unsure" : d.verdict, rounds: finding.round });
   }
   if (++i % 20 === 0) console.error(`${i}/${cases.length} cases, ${Math.round((Date.now() - t0) / 1000)}s`);
 }

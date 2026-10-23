@@ -39,18 +39,18 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   return { runId: ctx.trace.runId, scanned, cases: results, outDir };
 }
 
-export async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding: Finding; open: string[] }> {
+export async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding: Finding; open: string[]; openSkus: string[] }> {
   let f = await investigate(ctx, k);
   for (;;) {
     const a = await audit(ctx, k, f);
-    if (a.ok) return { finding: f, open: [] };
+    if (a.ok) return { finding: f, open: [], openSkus: [] };
     if (f.round > MAX_REVISIONS) {
       const open = a.critiques.map((c) => c.detail);
       f = { ...f, verdict: "needs-human" };
       ctx.trace.emit("escalate", "Orchestrator", { caseId: k.id, open });
       say(ctx, "Orchestrator", "Human", `${k.id}: escalated after ${f.round} rounds — ${open.join("; ")}`.slice(0, 400));
       queue(k, f, open);
-      return { finding: f, open };
+      return { finding: f, open, openSkus: a.critiques.flatMap((c) => (c.sku ? [c.sku] : [])) };
     }
     f = await revise(ctx, k, f, a.critiques);
   }

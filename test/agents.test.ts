@@ -31,10 +31,17 @@ test("traces redact passwords in SQL and secret-named fields", () => {
   assert.equal(r.apiKey, "***");
 });
 
-import { sizes } from "../src/agents/auditor.ts";
+import { dismissalNamesItem, sizes } from "../src/agents/auditor.ts";
 test("sizes normalises package sizes from labels and notices", () => {
   assert.deepEqual(sizes("PICO DE GALLO 7OZ"), ["7oz"]);
   assert.deepEqual(sizes("Net Wt: 10 oz. Keep Refrigerated"), ["10oz"]);
   assert.ok(sizes("SALAD 4/5# bag").includes("5lb"));
   assert.deepEqual(sizes("Net Wt. 5.0 oz (142 g)"), ["5oz", "142g"]);
+});
+
+test("a dismissal whose quote names every product word of our item is caught", () => {
+  assert.equal(dismissalNamesItem("VITASIA ASIAN STYLE WOK SPICE 1.58OZ", "Lidl US Trading", "VITASIA ASIAN STYLE WOK SPICE MIX NET WT 1.58 OZ (45g)"), true);
+  assert.equal(dismissalNamesItem("AMANA THROUGH THE WALL (TTW) AIR", "Daikin Comfort Technologies", "Amana Through the Wall (TTW) air conditioners or heat pumps"), true);
+  assert.equal(dismissalNamesItem("WHOLE FOODS SPICY GUACAMOLE DIP", "WFM Purchasing", "Whole Foods Pomegranate Guacamole Dip"), false);
+  assert.equal(dismissalNamesItem("RAISINS 15OZ", "Lehi Valley Trading", "Chocolate Covered Raisins"), false, "one product word is too little to overrule the judge");
 });
