@@ -54,7 +54,7 @@ async function judge(ctx: AgentContext, k: Case, c: Candidate, strict?: string):
   return { ...base, verdict, quote: a.quote, why: a.label === "SAME" ? `notice names "${a.quote}"` : a.label === "DIFFERENT" ? `notice is about "${a.quote}"` : a.quote, decidedBy: "judge" };
 }
 
-async function decide(ctx: AgentContext, k: Case, c: Candidate): Promise<MatchDecision> {
+export async function decide(ctx: AgentContext, k: Case, c: Candidate): Promise<MatchDecision> {
   const base = { sku: c.sku.sku, title: c.sku.title, basis: c.basis };
   const prior = ctx.memory.priorDecisions(k.recall.id, c.sku.sku, "Investigator");
   const human = prior.find((m) => m.tags.includes("by:human"));
