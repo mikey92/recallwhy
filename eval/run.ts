@@ -14,8 +14,8 @@ import { adjudicate } from "../src/orchestrator.ts";
 import { chart } from "../src/agents/cartographer.ts";
 
 const arg = (k: string, d?: string) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
-const model = arg("model", "nemotron-3-nano:latest")!;
-const provider = arg("provider", "ollama") as LlmConfig["provider"];
+const provider = arg("provider", "meterless") as LlmConfig["provider"];
+const model = arg("model", provider === "meterless" ? (process.env.METERLESS_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b") : "none")!;
 const since = arg("since", "2026-07-01")!;
 // Ablations: --no-cartographer (no source map, no Auditor → Cartographer loop; barcodes join as
 // written) and --map-on-demand (no upfront map; the Cartographer only fixes keys the Auditor sends back).

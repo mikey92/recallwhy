@@ -51,14 +51,16 @@ trust; the next run retrieves them and the Investigator must honour or explicitl
 
 ## Meterless engines mounted (Apache-2.0 reference code, adapted, see engines/*/NOTICE)
 - `src/engines/hmem/`        H-MEM: MemoryStoreService, MemoryRetrievalService, TrustLedgerService.
-- `src/engines/world-model/` World Model: WorldStoreService, IngestPipelineService, ContextBuilder.
+- `src/engines/world-model/` World Model: WorldStoreService, IngestPipelineService. `src/world.ts` adds our context builder over its fact view.
 Engine state persists under `state/` (gitignored). Engines emit JSONL to `logs/`.
 
 ## Model calls
 All LLM calls go through one injected `Generator` (src/llm.ts):
-- `ollama` provider → `nemotron-3-nano` (default) or any local model,
-- `openai` provider → any OpenAI-compatible endpoint (NVIDIA API Catalog / Meterless runtime),
-  configured only by env vars. No keys in code.
+- `meterless` provider (default) → Meterless Nightshift Runtime API (`127.0.0.1:8088/v1`), model
+  `nvidia/nemotron-3-ultra-550b-a55b`; the trace records the routed model and receipt per call,
+- `ollama` provider → any local model; `openai` provider → any OpenAI-compatible endpoint,
+- `none` → no model: text matches go to the human queue, briefs use the template.
+  Configured only by env vars. No keys in code.
 
 ## Modes
 - Live (default when Zetaris env vars are set): real Zetaris REST API, real feeds.

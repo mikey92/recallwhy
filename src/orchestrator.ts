@@ -61,7 +61,8 @@ async function record(ctx: AgentContext, k: Case, f: Finding): Promise<string[]>
   await ctx.world.link(caseEntity, "about", k.recallEntity, { kind: "agent", by: "Orchestrator" });
   for (const d of f.decisions) {
     await ctx.world.fact(caseEntity, "match_decision", `${d.sku} ${d.title}: ${d.verdict} — ${d.why}`, { kind: d.decidedBy === "judge" ? "model" : d.decidedBy.endsWith("memory") ? "h-mem" : "rule", by: "Investigator", ref: d.memoryId }, d.decidedBy === "judge" ? 0.7 : 0.95);
-    if (d.decidedBy === "rule" || d.decidedBy === "judge") ctx.memory.record({ recallId: k.recall.id, sku: d.sku, verdict: d.verdict, reason: d.why, by: "agent", runId: ctx.trace.runId }, "Investigator");
+    // An escalated case is the reviewer's to decide; its contested calls are not remembered as the agents' answer.
+    if ((d.decidedBy === "rule" || d.decidedBy === "judge") && f.verdict !== "needs-human") ctx.memory.record({ recallId: k.recall.id, sku: d.sku, verdict: d.verdict, reason: d.why, by: "agent", runId: ctx.trace.runId }, "Investigator");
   }
   const n = f.numbers;
   if (n) {

@@ -2,43 +2,45 @@
 
 **Project name:** RecallWhy
 
-**One sentence:** Agents that tell a retailer's product-safety manager which newly recalled products are on its shelves — which lots, which stores, how many customers to notify — and show the evidence for every claim.
+**Track:** Solving Fragmented Intelligence (Track 1)
+
+**One sentence:** Five agents that tell a retailer's product-safety manager which newly recalled products are on its shelves — which lots, which stores, how many customers to notify — working across four sources that disagree, with the evidence for every claim.
 
 **Short description:**
-Every week U.S. regulators publish dozens of recall notices (517 CPSC and FDA notices since July). For a retailer, each one means cross-checking the recall feed against the ERP and the supplier portal by hand. RecallWhy does that investigation with four agents. The Scout reads the live CPSC and FDA feeds through Zetaris, joins them with the item master, and opens a case for every recall that touches the catalog. The Investigator decides which SKUs the notice covers: UPC and model-number rules, plus NVIDIA Nemotron for text matches with quotes from the notice. It also reads lot codes and computes exposure with federated SQL: units on hand by store and lot, units sold since the recall began, loyalty customers to notify, and the supplier. The Auditor can block it. It re-checks the live notice in Zetaris, requires quotes and lot codes to appear verbatim, and catches a different variety ("cheese" vs "pepperoni") or a product that only contains ours as an ingredient. It also re-derives every number with its own SQL and checks each sentence of the brief against the evidence it cites. After two failed revisions, a case goes to a human. The Briefer writes the action brief only from the Meterless World Model, where every fact carries its source query. Human decisions go into Meterless H-MEM with high trust, and the next run follows them.
+Every week U.S. regulators publish dozens of recall notices (517 CPSC and FDA notices since July). For a retailer, each one means cross-checking the recall feeds against the ERP and the supplier portal by hand, and those systems do not even write a barcode the same way. RecallWhy does the investigation with five agents.
+- The **Cartographer** maps the sources through Zetaris's catalog, profiles the identifier columns and tests how they join. Its map is a hypothesis: when the Auditor finds ship notices the map's key cannot reach, it sends them back, and the Cartographer diagnoses that supplier's barcodes, proves the fix on all of its ship notices and corrects the map for the rest of the run.
+- The **Scout** reads the live CPSC and FDA feeds through Zetaris, joins them with the item master, and opens a case for every recall that touches the catalog.
+- The **Investigator** decides which SKUs the notice covers (UPC and model-number rules, NVIDIA Nemotron for text matches, quoting the notice), reads lot codes and computes exposure with federated SQL.
+- The **Auditor** can block it: it re-checks the live notice in Zetaris, requires quotes, lot codes, product words and package sizes to be in the notice, rejects a dismissal whose own quote names our product, re-derives every number with its own SQL, and confirms lots through the supplier's ship notices by barcode. After two failed revisions a case goes to a human.
+- The **Briefer** writes the action brief only from the World Model context, where every fact carries its source query.
 
-**Track:** The Agent That Can Explain Why
+Human decisions go into Meterless H-MEM with high trust, and the next run follows them. The retailer is synthetic; its barcode quirks (GTIN-14 padding, a dropped check digit) are planted by the generator, modelled on real EDI feeds.
 
 **Repository:** https://github.com/mikey92/recallwhy
-**Demo video:** https://youtu.be/_c3crNZhIUc
-**Slides:** https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf
 
 ## Sponsor technology
 
-**Zetaris — the only data path.** Two live public APIs are registered as Lightning REST tables. The CPSC Recall API returns a top-level JSON array, and Zetaris accepted it. The openFDA food enforcement API is the other. Both are flattened into schemastore views. Two synthetic Postgres databases (ERP, supplier portal) are registered as JDBC datasources. Every agent query goes through the Zetaris REST API:
+**Zetaris — the only data path.** Two live public APIs are registered as Lightning REST tables (the CPSC Recall API returns a top-level JSON array, and Zetaris accepted it; openFDA food enforcement) and flattened into schemastore views. Two synthetic Postgres databases (ERP, supplier portal) are registered as JDBC datasources. Every agent query goes through the Zetaris REST API:
+- the Cartographer's catalog statements (`SHOW DATASOURCES`, `SHOW DATASOURCE TABLES`, `DESCRIBE DATASOURCE TABLE`, `SHOW LIGHTNING DATABASES`, `SHOW TABLES IN`, `DESCRIBE`), barcode profiles and join tests
 - the Scout's REST × JDBC join of live FDA notice text against ERP UPCs
-- the Investigator's ship notices ⋈ suppliers ⋈ item-master joins across the two databases
+- the Investigator's and Auditor's joins across the two databases
 - the Auditor's independent re-query of the live notice and of every exposure number
 
-Setup is code (`npm run setup:zetaris`).
+Setup is code (`npm run setup:zetaris`). If Zetaris does not answer, a run falls back to the sample stand-in and the trace says so.
 
-**Meterless — memory and provenance.** The H-MEM and World Model reference engines are mounted in `src/engines/` (Apache-2.0).
-- **H-MEM** stores every decision: the agents' at 0.6 trust, humans' at 0.95. The Investigator reads it before judging. Human decisions are followed and cited, audited agent decisions are reused without a model call, and the trust ledger records each read and write.
-- **World Model** holds recalls, cases and findings as facts with provenance: agent, SQL id, model call. Its ContextBuilder is the Briefer's only input, so a brief cannot cite something the team did not establish.
+**Meterless.**
+- **Nightshift is the primary AI provider.** Every model call goes to its OpenAI-compatible Runtime API (`127.0.0.1:8088/v1`, `meterless-app`/`meterless-scope` headers). The trace records the requested model, the model Nightshift routed to, and the receipt id for each call; transient errors are retried and logged as `llm.retry`.
+- **H-MEM** (reference engine, Apache-2.0, `src/engines/hmem`) stores decisions: the agents' in working memory at 0.6 trust, humans' in long-term memory at 0.95. The Investigator reads it before judging; a human decision is followed and cited.
+- **World Model** (reference engine, `src/engines/world-model`) holds the source map, recalls, cases and findings as facts with provenance (agent, SQL id, model call). Our context builder over its fact view is the Briefer's only input.
+- Tests: `test/engines.test.ts`, `test/llm.test.ts`.
 
-**Cursor (with Space XAI).** The repository was developed in Cursor. The Cursor agent did the scaffolding, the synthetic data generator and Postgres loader, the Zetaris REST runner, the DuckDB sample-mode runner with its dialect shim, and their tests. Each change was reviewed and corrected before commit (commits marked "Cursor agent").
+**NVIDIA.** `nvidia/nemotron-3-ultra-550b-a55b`, reached through Nightshift, is the default model: the match judge, the lot-code reader and the why-paragraph. Evaluation over 440 recall/SKU pairs: see the README's Evaluation section and `eval/EVAL.md`.
 
-**NVIDIA.** Nemotron 3 Nano (30B-A3B, via Ollama) is the one injected model behind every agent call:
-- the match judge
-- the lot-code reader
-- the why-paragraph
-- the Auditor's sentence-support check
+**Cursor (with Space XAI).** The Cursor agent did the scaffolding, the synthetic data generator and Postgres loader, the Zetaris REST runner, the DuckDB sample-mode runner and their tests (commits marked "Cursor agent"). Each change was reviewed and corrected before commit.
 
-The same code reaches NVIDIA's hosted API through an OpenAI-compatible endpoint (`LLM_PROVIDER=openai`). In our evaluation over 440 recall/SKU pairs, Nemotron 3 Nano 30B was the only judge that wrongly dismissed nothing (189/194 caught; the 4B Nemotron and Gemma 4 E4B dismissed 18 and 14).
-
-**What was unique.** The Auditor treats Zetaris as the ground truth for its own checks. Instead of trusting the Investigator or the model, it re-queries the live REST table and the JDBC sources itself. It cut the judge's false alarms from 207 to 7 with nothing wrongly dismissed. Meterless memory makes a human's correction change the next run, and every line of a brief traces to the query behind it.
+**What was unique.** The source map is not trusted either: the agent that verifies the answers is also the one that finds where the map is wrong, and the Cartographer fixes it with evidence from the whole supplier, not one case. Without the Cartographer, rules-only matching catches 12 of 194 covered pairs; with it, 103.
 
 ## Pre-existing components
 - Matching ideas (brand gate, product-kind overlap, model-number conflict, quotes grounded in the notice) come from my Recall Sloth project (github.com/mikey92/recall-sloth, committed 21 Oct 2026). RecallWhy's matcher (`src/match.ts`) is new code.
-- Meterless engine reference implementations (open source, Apache-2.0), mounted unchanged.
+- Meterless engine reference implementations (Apache-2.0), mounted with the changes listed in each `CHANGES.md`.
 - The local Zetaris instance was installed from Zetaris's getting-started repository before the build window. That is tooling, not project code.

@@ -26,8 +26,10 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   let whyBy: Brief["whyBy"] = "template";
   let feedback = "";
   let attempts = 0;
-  // "Not ours" and "needs human" briefs only restate the decisions, so they use the template.
-  for (; attempts < 3 && (f.verdict === "act-now" || f.verdict === "notify" || f.verdict === "no-exposure"); ) {
+  // "Not ours" and "needs human" briefs only restate the decisions, so they use the template,
+  // and so does every brief when no model is configured.
+  const drafted = !ctx.model.startsWith("none:") && (f.verdict === "act-now" || f.verdict === "notify" || f.verdict === "no-exposure");
+  for (; attempts < 3 && drafted; ) {
     attempts++;
     const out = await ctx.gen(
       [`Write 2-4 sentences for a retail safety manager explaining WHY the verdict below is correct.`,

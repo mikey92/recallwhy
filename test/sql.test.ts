@@ -92,7 +92,7 @@ describe("toDuckDialect", () => {
 
 describe("DuckSampleRunner smoke", () => {
   it("loads synthetic CSVs and sample feeds, joins across schemas", async () => {
-    const trace = new Trace({ quiet: true, dir: "logs" });
+    const trace = new Trace({ quiet: true, dir: mkdtempSync(`${tmpdir()}/rw-duck-`) });
     const runner = new DuckSampleRunner({ trace });
     await runner.ready;
 

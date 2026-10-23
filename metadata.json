@@ -12,7 +12,7 @@
     "run": "npm run agents -- --since 2026-09-15",
     "sample_mode": "SAMPLE_MODE=true npm run agents",
     "decide": "npm run decide -- <recall-id> <sku> same|not-this --note \"...\"",
-    "eval": "npx tsx eval/run.ts --model nemotron-3-nano:latest",
+    "eval": "npx tsx eval/run.ts --provider meterless --model nvidia/nemotron-3-ultra-550b-a55b",
     "api": "npm run api  →  POST /run {since, only?, limit?}",
     "docker": "docker build -t recallwhy . && docker run --rm -p 8000:8000 recallwhy"
   },
