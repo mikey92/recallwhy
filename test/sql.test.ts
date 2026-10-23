@@ -5,6 +5,10 @@ import { Trace } from "../src/trace.ts";
 import { sqlId } from "../src/sql/types.ts";
 import { coerceNumericFields } from "../src/sql/zetaris.ts";
 import { toDuckDialect, DuckSampleRunner } from "../src/sql/duck.ts";
+import { makeRunner } from "../src/sql/index.ts";
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 describe("sqlId", () => {
   it("is stable for the same normalised SQL", () => {
@@ -116,5 +120,19 @@ describe("DuckSampleRunner smoke", () => {
     assert.ok(Number(join.rows[0]!.n) > 0);
 
     await runner.close();
+  });
+});
+
+describe("makeRunner", () => {
+  it("falls back to sample mode when Zetaris does not answer, and says so in the trace", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "rw-fallback-"));
+    const trace = new Trace({ dir, quiet: true, runId: "fallback-test" });
+    const env = { ZETARIS_BASE_URL: "http://127.0.0.1:9", ZETARIS_USERNAME: "u", ZETARIS_PASSWORD: "p" };
+    const runner = await makeRunner(env, trace);
+    assert.equal(runner.engine, "duckdb-sample");
+    await runner.close();
+    const kinds = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l).kind);
+    assert.deepEqual(kinds.slice(0, 2), ["sql.error", "note"]);
+    await assert.rejects(makeRunner({ ...env, ZETARIS_FALLBACK: "false" }, trace));
   });
 });
