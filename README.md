@@ -118,6 +118,17 @@ npm run decide -- H-1378-2026 NW-100010 not-this --note "ours is MILD, recall is
 npm run agents -- --only H-1378-2026                    # Investigator follows the stored decision
 ```
 
+## Failure handling
+
+| Failure | What happens | Where |
+|---|---|---|
+| Zetaris configured but not answering | The run falls back to the sample stand-in; the trace has the `sql.error` and a note saying why (`ZETARIS_FALLBACK=false` to fail instead) | `src/sql/index.ts` |
+| No Zetaris credentials, or `SAMPLE_MODE=true` | Same agents and SQL on the DuckDB stand-in, labelled `duckdb-sample` | `src/sql/duck.ts` |
+| Nightshift 429, 502–504, first-token timeout | Retried after 3 s, 8 s and 20 s, each retry logged as `llm.retry` | `src/llm.ts` |
+| Model call still failing, or no token | The judge answers UNSURE and the pair goes to the human queue; lot reading falls back to the regex; the Briefer uses its template | `src/agents/investigator.ts`, `briefer.ts` |
+| Model claim not supported by the notice or the data | The Auditor blocks it and sends a critique; after 2 revisions the case is escalated to a human | `src/agents/auditor.ts` |
+| Bad request to `POST /run` | `400` with the reason; `409` if a run is already going | `src/api.ts` |
+
 ## Evaluation
 
 **Cartographer ablation.** With the Cartographer off, the Auditor joins ship-notice barcodes to the item master as written. Every GTIN-14 supplier then looks like a lot mismatch, and rules alone catch **15** covered pairs. With the Cartographer's normalised key they catch **103** (`eval/results/none-none-no-cartographer.json` vs `none-none.json`).
