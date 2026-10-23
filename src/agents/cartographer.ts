@@ -15,7 +15,9 @@ export type Transform = "no-leading-zeros" | "no-check-digit";
 /** A supplier whose barcodes need their own transform, learned from a case the Auditor sent back. */
 export interface SupplierRule { supplier: string; transform: Transform; rows: number; learnedFrom: string; sqlId: string }
 export interface JoinCheck { left: string; right: string; column: string; leftRows: number; asWritten: number; normalized: number; chosen: "as-written" | "normalized" | "none"; sqlIds: string[]; rules?: SupplierRule[] }
-export interface SourceMap { tables: TableInfo[]; skipped: { name: string; why: string }[]; barcodes: BarcodeProfile[]; joins: JoinCheck[] }
+/** How a live feed writes the identifiers our matching depends on. */
+export interface FeedProfile { view: string; notices: number; barcodeField?: number; barcodeInText?: number; barcodeInTextSplit?: number; models?: number; dateExample?: string; dateFormat?: string; sqlId: string }
+export interface SourceMap { tables: TableInfo[]; skipped: { name: string; why: string }[]; barcodes: BarcodeProfile[]; joins: JoinCheck[]; feeds?: FeedProfile[] }
 
 // Zetaris has no statement that lists schemastore containers, so the view container this
 // project creates (sql/01_feeds.sql) is named here.
@@ -85,6 +87,7 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
       + (open > 0 ? ` ${open} barcoded rows join neither way; left open until a case needs them — send me any you hit.` : ""),
       { join: j });
   }
+  map.feeds = await profileFeeds(ctx, map);
   const blanks = map.barcodes.filter((b) => (b.lengths["0"] ?? 0) > 0).map((b) => `${b.table} has ${b.lengths["0"]} rows with no barcode`);
   say(ctx, "Cartographer", "Orchestrator", `mapped ${map.tables.length} tables in ${new Set(map.tables.map((t) => t.source)).size} sources (${map.skipped.length} skipped). ${blanks.join("; ")}${blanks.length ? " — those rows are reachable by SKU only." : ""}`,
     { tables: map.tables.map((t) => `${t.kind}:${t.name}`), skipped: map.skipped });
@@ -183,4 +186,43 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
   say(ctx, "Cartographer", "Auditor", `${caseId}: ${notes.join("; ") || "every row already joins with the current key"}.${learned.length ? " Map corrected; re-run your check." : ""}`,
     { diagnosis: diag.sqlId, learned, before: current });
   return learned;
+}
+
+const dateFormat = (v: string) => (/^\d{8}$/.test(v) ? "yyyymmdd" : /^\d{4}-\d{2}-\d{2}/.test(v) ? "yyyy-mm-dd" : "unknown");
+
+/**
+ * The live feeds disagree with each other too: where (if anywhere) a notice carries a barcode,
+ * whether it has model numbers, and how it writes dates. Profiled on the live views, written to
+ * the World Model, and told to the Scout and the Investigator.
+ */
+async function profileFeeds(ctx: AgentContext, map: SourceMap): Promise<FeedProfile[]> {
+  const views = new Set(map.tables.filter((t) => t.kind === "view").map((t) => t.name));
+  const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
+  const digits = (col: string) => `length(regexp_extract(${col}, '[0-9]{12,14}', 0)) > 0`;
+  const out: FeedProfile[] = [];
+  if (views.has("recallfeeds.fda_food")) {
+    const r = await run(
+      `SELECT COUNT(*) AS n, SUM(CASE WHEN ${digits("product_description")} THEN 1 ELSE 0 END) AS run_digits,
+         SUM(CASE WHEN ${digits("regexp_replace(product_description, '[ -]', '')")} THEN 1 ELSE 0 END) AS split_digits,
+         MIN(report_date) AS date_example
+       FROM recallfeeds.fda_food`, "profile identifiers in the live FDA feed");
+    const x = r.rows[0] ?? {};
+    out.push({ view: "recallfeeds.fda_food", notices: Number(x.n ?? 0), barcodeInText: Number(x.run_digits ?? 0), barcodeInTextSplit: Number(x.split_digits ?? 0), dateExample: String(x.date_example ?? ""), dateFormat: dateFormat(String(x.date_example ?? "")), sqlId: r.sqlId });
+  }
+  if (views.has("recallfeeds.cpsc_recalls")) {
+    const r = await run(
+      `SELECT COUNT(*) AS n, SUM(CASE WHEN upcs <> '' THEN 1 ELSE 0 END) AS with_upc, SUM(CASE WHEN models <> '' THEN 1 ELSE 0 END) AS with_models,
+         MIN(recall_date) AS date_example
+       FROM recallfeeds.cpsc_recalls`, "profile identifiers in the live CPSC feed");
+    const x = r.rows[0] ?? {};
+    out.push({ view: "recallfeeds.cpsc_recalls", notices: Number(x.n ?? 0), barcodeField: Number(x.with_upc ?? 0), models: Number(x.with_models ?? 0), dateExample: String(x.date_example ?? ""), dateFormat: dateFormat(String(x.date_example ?? "")), sqlId: r.sqlId });
+  }
+  for (const f of out) {
+    const ent = await ctx.world.entity("feed", ctx.sql.engine, f.view, f.view, {}, { kind: ctx.sql.engine, by: "Cartographer", ref: f.sqlId });
+    for (const [k, v] of Object.entries(f)) if (k !== "view" && k !== "sqlId" && v !== undefined) await ctx.world.fact(ent, k, v, { kind: ctx.sql.engine, by: "Cartographer", ref: f.sqlId });
+  }
+  const fda = out.find((f) => f.view.endsWith("fda_food")), cpsc = out.find((f) => f.view.endsWith("cpsc_recalls"));
+  if (fda) say(ctx, "Cartographer", "Scout", `FDA feed: ${fda.notices} notices, no barcode field; ${fda.barcodeInText} print a 12–14 digit barcode in the product text and ${(fda.barcodeInTextSplit ?? 0) - (fda.barcodeInText ?? 0)} more only once spaces and dashes are removed ("0 87906-01018 7"), so match UPCs on digits only. Dates are ${fda.dateFormat} (${fda.dateExample}).`, { feed: fda });
+  if (cpsc) say(ctx, "Cartographer", "Investigator", `CPSC feed: ${cpsc.notices} notices, ${cpsc.barcodeField} with a UPC field and ${cpsc.models} with a model field, so CPSC matches rest on model numbers written in the notice text and on the text itself, not on barcodes. Dates are ${cpsc.dateFormat} (${cpsc.dateExample}).`, { feed: cpsc });
+  return out;
 }
