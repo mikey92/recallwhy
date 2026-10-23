@@ -10,7 +10,7 @@ h2{font-size:64px;line-height:1.08;margin:16px 0 34px;letter-spacing:-.015em}
 p,li{font-size:31px;line-height:1.45}.mute{color:#6b7280}.dark .mute{color:#9aa0ab}
 ul{padding-left:34px;margin:0}li{margin:10px 0}
 .foot{position:absolute;bottom:44px;left:110px;right:110px;display:flex;justify-content:space-between;font-size:20px;color:#9aa0ab}
-.grid{display:grid;gap:28px}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+.grid{display:grid;gap:28px}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr);gap:22px}
 .card{background:#fff;border:1px solid #e6e3dc;border-radius:18px;padding:30px 32px}.dark .card{background:#171a21;border-color:#2a2e38}
 .card h3{margin:0 0 10px;font-size:32px}.card p{font-size:25px;margin:0;line-height:1.4}
 .pill{display:inline-block;padding:8px 18px;border-radius:99px;color:#fff;font-weight:700;font-size:24px;margin:0 10px 12px 0}
@@ -22,10 +22,10 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 .arrow{font-size:40px;color:#9aa0ab}
 </style></head><body>
 
-<section class="s dark"><div class="k">Open Agent Hackathon 2026 · Track 2 — The Agent That Can Explain Why</div>
+<section class="s dark"><div class="k">Open Agent Hackathon 2026 · Track 1 — Solving Fragmented Intelligence</div>
 <h1 style="margin-top:220px;font-size:140px">RecallWhy</h1>
 <p style="font-size:42px;max-width:1400px">Agents that tell a retailer which recalled products are on its shelves, which lots, which stores, how many customers to call — <b>and why they believe it.</b></p>
-<p class="mute" style="margin-top:60px">Zetaris federated SQL · Meterless H-MEM + World Model · NVIDIA Nemotron · built in Cursor</p>
+<p class="mute" style="margin-top:60px">Zetaris federated SQL · Meterless H-MEM + World Model · Meterless Nightshift · NVIDIA Nemotron 3 Ultra · built in Cursor</p>
 <div class="foot"><span>Mike Kim · solo</span><span>github.com/mikey92/recallwhy</span></div></section>
 
 <section class="s"><div class="k">1 · Problem and users</div>
@@ -34,57 +34,59 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <p>A regional retailer's <b>product-safety / QA manager</b> reads every CPSC and FDA notice and must answer:</p>
 <ul><li>Do we sell this — or something that only looks like it?</li><li>Which lots? Which stores still hold them?</li><li>How many customers bought it since the recall began?</li><li>Who supplied it?</li></ul></div>
 <div><div class="card"><div class="big">184 + 333</div><p class="mute" style="margin-top:14px">CPSC recalls and FDA food enforcement reports, 1 Jul – 21 Oct 2026, read live by RecallWhy</p></div>
-<p style="margin-top:30px">The answers live in three places that don't talk to each other: the <b>recall feeds</b>, the <b>ERP</b> and the <b>supplier portal</b>. A wrong "not ours" leaves a contaminated lot on the shelf; a wrong "ours" pulls good stock.</p></div></div>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<p style="margin-top:30px">The answers live in four systems that were never meant to meet — two <b>recall feeds</b>, the <b>ERP</b> and the <b>supplier portal</b> — each writing a product its own way: UPC-12 in the ERP, GTIN-14 from a third of suppliers, digits buried in notice text. A wrong "not ours" leaves a contaminated lot on the shelf; a wrong "ours" pulls good stock.</p></div></div>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">2 · Solution</div>
-<h2>Four agents investigate every recall and return a verdict with its evidence.</h2>
-<div class="grid g4"><div class="card"><h3 style="color:#0891b2">Scout</h3><p>Reads both live feeds and the item master through Zetaris; one federated UPC sweep; opens a case per recall that touches the catalog.</p></div>
+<h2>Five agents map the fragments, then investigate every recall and return a verdict with its evidence.</h2>
+<div class="grid g5"><div class="card"><h3 style="color:#0e7490">Cartographer</h3><p>Lists every Zetaris source and column, profiles identifiers, tests cross-source joins. Finds the GTIN-14 suppliers: 9,251 of 14,180 join as written, all after normalising.</p></div>
+<div class="card"><h3 style="color:#0891b2">Scout</h3><p>Reads both live feeds and the item master through Zetaris; one federated UPC sweep; opens a case per recall that touches the catalog.</p></div>
 <div class="card"><h3 style="color:#ca8a04">Investigator</h3><p>UPC / model rules, Nemotron judge for text matches, lot codes, prior decisions from H-MEM, exposure by store and lot with federated SQL.</p></div>
 <div class="card"><h3 style="color:#a21caf">Auditor</h3><p><b>Can block.</b> Re-checks the live notice, quotes and lots verbatim, re-derives every number with its own SQL, checks each brief sentence. ≤2 revisions, then a human.</p></div>
 <div class="card"><h3 style="color:#16a34a">Briefer</h3><p>Writes only from the World Model context: numbered evidence, each with the SQL or model call behind it.</p></div></div>
 <div style="margin-top:44px"><span class="pill" style="background:#c0392b">ACT NOW</span><span class="pill" style="background:#d35400">NOTIFY</span><span class="pill" style="background:#2c7a7b">NO EXPOSURE</span><span class="pill" style="background:#6b7280">NOT OURS</span><span class="pill" style="background:#8e44ad">NEEDS HUMAN</span></div>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">3 · Architecture</div><h2>Every agent reads data only through Zetaris.</h2>
 <div class="flow" style="margin-top:30px">
 <div><div class="box">CPSC Recall API<br><span class="mute">REST · JSON array</span></div><div class="box" style="margin-top:14px">openFDA enforcement<br><span class="mute">REST · JSON</span></div><div class="box" style="margin-top:14px">ERP Postgres<br><span class="mute">JDBC · synthetic</span></div><div class="box" style="margin-top:14px">Supplier portal<br><span class="mute">JDBC · synthetic</span></div></div>
 <div class="arrow">→</div><div class="box" style="background:#1e3a8a;color:#fff;border-color:#1e3a8a;padding:40px 30px">Zetaris<br>Lightning SQL<br><span style="opacity:.8;font-size:22px">REST tables · schemastore views<br>JDBC datasources · federated joins</span></div>
 <div class="arrow">→</div>
-<div style="flex:1"><div class="flow"><div class="box">Scout</div><div class="arrow">→</div><div class="box">Investigator</div><div class="arrow">⇄</div><div class="box">Auditor</div><div class="arrow">→</div><div class="box">Briefer</div></div>
+<div style="flex:1"><div class="flow"><div class="box">Cartographer</div><div class="arrow">→</div><div class="box">Scout</div><div class="arrow">→</div><div class="box">Investigator</div><div class="arrow">⇄</div><div class="box">Auditor</div><div class="arrow">→</div><div class="box">Briefer</div></div>
 <div class="flow" style="margin-top:26px"><div class="box" style="flex:1;border-color:#a78bfa">Meterless <b>H-MEM</b><br><span class="mute">every decision, trust 0.6 agent / 0.95 human</span></div><div class="box" style="flex:1;border-color:#fbbf24">Meterless <b>World Model</b><br><span class="mute">facts + provenance → ContextBuilder</span></div></div>
-<div class="flow" style="margin-top:26px"><div class="box" style="flex:1;border-color:#76b900">NVIDIA <b>Nemotron 3 Nano</b> via one injected generator<br><span class="mute">judge · lot reader · why-paragraph · brief checker</span></div></div>
+<div class="flow" style="margin-top:26px"><div class="box" style="flex:1;border-color:#76b900">Meterless <b>Nightshift</b> → NVIDIA <b>Nemotron 3 Ultra 550B</b><br><span class="mute">one injected generator · judge · lot reader · why-paragraph · routed model + receipt on every call</span></div></div>
 <div class="flow" style="margin-top:26px"><div class="box" style="flex:1">logs/trace-&lt;run&gt;.jsonl · out/&lt;run&gt;/report.html · human queue</div></div></div></div>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">4 · Stack</div><h2>Small, typed, runnable from a clean clone.</h2>
 <table><tr><th>Layer</th><th>What</th></tr>
 <tr><td>Data access</td><td>Zetaris Lightning SQL over its REST API (<code>/api/proxy/sql-editor/sqls/run-query</code>)</td></tr>
-<tr><td>Agents</td><td>TypeScript on Node 22, no agent framework — four modules, one orchestrator, one trace</td></tr>
+<tr><td>Agents</td><td>TypeScript on Node 22, no agent framework — five agents, one orchestrator, one trace</td></tr>
 <tr><td>Memory &amp; state</td><td>Meterless H-MEM and World Model reference engines (Apache-2.0), mounted in <code>src/engines/</code></td></tr>
-<tr><td>Model</td><td>NVIDIA <b>nemotron-3-nano</b> (30B-A3B) via Ollama; any OpenAI-compatible endpoint by env var</td></tr>
+<tr><td>Model</td><td>Meterless <b>Nightshift</b> Runtime API (OpenAI-compatible) → NVIDIA <b>Nemotron 3 Ultra 550B-A55B</b>; no model and a human queue when Nightshift is absent</td></tr>
 <tr><td>Retailer data</td><td>Postgres 16 in Docker — synthetic ERP + supplier portal (seeded generator)</td></tr>
+<tr><td>Entry points</td><td><code>POST /run</code> API · Dockerfile · CLI · live trace viewer</td></tr>
 <tr><td>No-credential mode</td><td><code>SAMPLE_MODE=true</code>: same agents and SQL on an in-process DuckDB stand-in, labelled SAMPLE</td></tr>
-<tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 37 tests · <code>npm run view</code> live trace viewer</td></tr></table>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 44 tests incl. Meterless engine tests</td></tr></table>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s dark"><div class="k">5 · How Zetaris and Meterless are used</div><h2>Load-bearing, not bolted on.</h2>
-<div class="grid g2"><div class="card"><h3>Zetaris</h3><p>• 2 live Lightning REST tables → schemastore views<br>• 2 JDBC datasources (ERP, supplier portal)<br>• Scout: <b>REST × JDBC</b> join — live FDA notice digits ⋈ ERP UPCs<br>• Investigator: ship notices ⋈ suppliers ⋈ ERP item master<br>• Auditor: re-queries the live notice and re-aggregates every number itself<br>• Setup is code: <code>npm run setup:zetaris</code></p></div>
-<div class="card"><h3>Meterless</h3><p>• <b>H-MEM</b>: every adjudication stored with trust; human decisions (0.95) are followed on the next run; audited agent decisions are reused without a model call; trust ledger logs reads/writes<br>• <b>World Model</b>: recalls, cases, findings as facts; every write carries provenance (agent, SQL id, model call)<br>• <b>ContextBuilder</b> is the Briefer's only input — it cannot cite what the team didn't establish</p></div></div>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<div class="grid g2"><div class="card"><h3>Zetaris</h3><p>• Cartographer maps sources with Zetaris's catalog: <code>SHOW DATASOURCES</code>, <code>DESCRIBE DATASOURCE TABLE</code>, <code>SHOW LIGHTNING DATABASES</code> → profiles and join tests<br>• 2 live Lightning REST tables → schemastore views<br>• 2 JDBC datasources (ERP, supplier portal)<br>• Scout: <b>REST × JDBC</b> join — live FDA notice digits ⋈ ERP UPCs<br>• Investigator: ship notices ⋈ suppliers ⋈ ERP item master<br>• Auditor: re-queries the live notice and re-aggregates every number itself<br>• Setup is code: <code>npm run setup:zetaris</code></p></div>
+<div class="card"><h3>Meterless</h3><p>• <b>H-MEM</b>: every adjudication stored with trust; human decisions (0.95) are followed on the next run; audited agent decisions are reused without a model call; trust ledger logs reads/writes<br>• <b>World Model</b>: recalls, cases, findings as facts; every write carries provenance (agent, SQL id, model call)<br>• <b>ContextBuilder</b> is the Briefer's only input — it cannot cite what the team didn't establish<br>• <b>Nightshift</b> is the primary AI provider: every model call, with its receipt and routed model in the trace</p></div></div>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
-<section class="s"><div class="k">6 · What's unique</div><h2>The Auditor doesn't trust anyone — including the model.</h2>
-<ul><li><b>Re-derives every number in Zetaris</b> with differently written SQL; a mismatch blocks the brief.</li>
+<section class="s"><div class="k">6 · What's unique</div><h2>Map the fragments first. Then trust no one — including the model.</h2>
+<ul><li><b>The Cartographer finds the key the sources disagree on.</b> Without it the Auditor joins supplier barcodes as written and blocks every GTIN-14 supplier: rules-only matching catches <b>15</b> of 194 covered pairs instead of <b>103</b>.</li><li><b>Re-derives every number in Zetaris</b> with differently written SQL; a mismatch blocks the brief.</li>
 <li><b>Re-reads the live notice</b> (REST table) to confirm a UPC match, instead of trusting the parser.</li>
 <li><b>"Cheese ≠ pepperoni"</b>: a quote can be copied from the notice and still describe another variety — every product word of our item must appear in the notice. Live run: blocked, re-judged, ruled <i>not ours</i>.</li>
 <li><b>Lot codes the model reads must appear verbatim</b> in <code>code_info</code>; invented lots are dropped.</li>
 <li><b>Brief sentences are checked</b> against the evidence they cite — it caught a draft that invented stores in Kentucky and Ohio.</li>
 <li><b>Human decisions change the next run</b> through H-MEM, and the brief cites them.</li></ul>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s dark"><div class="k">7 · Product</div>
 <div class="grid g2" style="gap:36px;margin-top:10px"><div><img class="shot" src="report.png" style="height:760px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Brief: verdict, why (cited), actions, caveats, evidence with SQL ids — and the agent trace that produced it.</p></div>
-<div><img class="shot" src="live.png" style="height:380px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Live viewer: the four agents' events as they happen, from the trace file.</p><img class="shot" src="zetaris.png" style="margin-top:18px;height:330px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Zetaris: REST feeds and JDBC sources registered by <code>setup:zetaris</code>.</p></div></div></section>
+<div><img class="shot" src="live.png" style="height:380px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Live viewer: the agents' events as they happen, from the trace file.</p><img class="shot" src="zetaris.png" style="margin-top:18px;height:330px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Zetaris: REST feeds and JDBC sources registered by <code>setup:zetaris</code>.</p></div></div></section>
 
 <section class="s"><div class="k">8 · Results</div><h2>The judge proposes, the Auditor disposes:<br>207 false alarms → 7, nothing dismissed.</h2>
 <table style="margin-bottom:26px"><tr><th>Judge model</th><th>Caught (of 194)</th><th>Wrongly dismissed</th><th>False alarms (of 246)</th><th>To human</th></tr>
@@ -94,11 +96,11 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <tr><td>Gemma 4 E4B</td><td>178</td><td style="color:#c0392b">14</td><td>5</td><td>5</td></tr></table>
 <p style="font-size:28px">Nemotron 30B's first answers on text matches: <b>207 false alarms</b>. After the Auditor's checks and revisions: <b>7</b>. The Auditor can prune false matches but cannot recover a dismissal — so the judge must lean toward SAME, and the 30B does.</p>
 <p class="mute" style="font-size:24px">Real Investigator ⇄ Auditor loop on every candidate pair from 517 recalls (sample mode, DuckDB stand-in). A pair is "covered" if the SKU was generated from that recall or its UPC is printed in the notice. Retailer data is synthetic.</p>
-<div class="foot"><span>RecallWhy</span><span>Track 2</span></div></section>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">9 · Next</div><h2>From demo to a safety desk.</h2>
 <div class="grid g2"><ul><li>More feeds through Zetaris: USDA FSIS, NHTSA equipment (car seats), Health Canada</li><li>Lot capture from receiving scans instead of the item master</li><li>Customer notification through the loyalty system — counts today, messages tomorrow</li></ul>
-<ul><li>Hosted Nemotron through the Meterless runtime for shared deployments</li><li>Markovian engine for daily long-running sweeps</li><li>Review queue UI with one-click decide → H-MEM</li></ul></div>
-<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> synthetic retailer data; lexical Auditor checks; CPSC rarely prints UPCs; judge runs on a local Mac.</p>
-<div class="foot"><span>RecallWhy · github.com/mikey92/recallwhy</span><span>Track 2</span></div></section>
+<ul><li>Cartographer onboarding new feeds on its own: catalog → profile → join test</li><li>Markovian engine for daily long-running sweeps</li><li>Review queue UI with one-click decide → H-MEM</li></ul></div>
+<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> synthetic retailer data; lexical Auditor checks; CPSC rarely prints UPCs; Nemotron Super 120B not yet enabled on our NVIDIA account, so Ultra is used.</p>
+<div class="foot"><span>RecallWhy · github.com/mikey92/recallwhy</span><span>Track 1</span></div></section>
 </body></html>

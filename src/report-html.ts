@@ -23,6 +23,19 @@ function md(src: string): string {
 
 const COLOR: Record<string, string> = { "act-now": "#c0392b", notify: "#d35400", "needs-human": "#8e44ad", "no-exposure": "#2c7a7b", "not-ours": "#6b7280" };
 
+/** What the Cartographer found before any case: its messages and the facts it wrote, as recorded in the trace. */
+function sourceMap(evs: Ev[]): string {
+  const carto = evs.filter((e) => e.agent === "Cartographer");
+  if (!carto.length) return "";
+  const msgs = carto.filter((e) => e.kind === "msg").map((e) => `<li>→ ${esc(e.to ?? "")}: ${esc(e.text ?? "")}</li>`).join("");
+  const facts = carto.filter((e) => e.kind === "world.write").map((e) => {
+    const f = e as Ev & { about?: string; predicate?: string; value?: unknown; ref?: string };
+    return `<li><code>${esc(String(f.about ?? "").replace(/^[^:]+:[^:]+:/, ""))}</code> ${esc(String(f.predicate ?? "").replace(/_/g, " "))}: <b>${esc(typeof f.value === "string" ? f.value : JSON.stringify(f.value))}</b>${f.ref ? ` <span class="sql">(${esc(f.ref)})</span>` : ""}</li>`;
+  }).join("");
+  const sqls = carto.filter((e) => e.kind === "sql").length;
+  return `<section class="map"><h2>Source map (Cartographer, ${sqls} catalog and profiling queries)</h2><ul>${msgs}</ul><ul>${facts}</ul></section>`;
+}
+
 export function renderReport(outDir: string): string {
   const res = JSON.parse(readFileSync(`${outDir}/result.json`, "utf8"));
   const traceFile = `logs/trace-${res.runId}.jsonl`;
@@ -60,12 +73,14 @@ main{padding:8px 32px 40px;display:grid;gap:18px}
 blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--line);color:var(--mute)}
 .cite{font-size:11px;background:#2563eb22;color:#2563eb;border-radius:4px;padding:0 4px}
 .trace{border-left:1px solid var(--line);padding:12px 14px;font-size:12.5px;max-height:620px;overflow:auto}
+.map{background:var(--card);border:1px solid var(--line);border-left:6px solid #0e7490;border-radius:10px;padding:12px 22px}.map h2{font-size:18px;margin:6px 0}.map li{margin:4px 0}
 .ev{padding:3px 0;border-bottom:1px dashed var(--line)}.crit{color:#b91c1c}.sql{color:var(--mute)}.llm{color:#15803d}.mem{color:#7c3aed}
 code{font-size:12px}ul{margin:4px 0;padding-left:20px}
 @media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}}
 </style></head><body><header><h1>RecallWhy</h1>
 <div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(res.since)} → ${cases.length} cases</div>
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<span class="chip" style="background:${COLOR[k]}">${k} ${v}</span>`).join("")}</div></header><main>
+${sourceMap(evs)}
 ${cases.map((c: { id: string; verdict: string }) => `<section class="case" style="border-left-color:${COLOR[c.verdict]}"><div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
 <div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
 </main></body></html>`;
