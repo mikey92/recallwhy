@@ -50,3 +50,31 @@ test("the Auditor's mismatch goes back to the Cartographer, which learns the sup
     await sql.close();
   }
 });
+
+test("on Zetaris, the Cartographer reads the catalog statements and skips the sample databases", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-zcat-"));
+  const trace = new Trace({ dir, quiet: true, runId: "zcat" });
+  const seen: string[] = [];
+  // Responses shaped like the local Zetaris instance's answers to each catalog statement.
+  const answer = (sql: string): Record<string, unknown>[] => {
+    if (sql === "SHOW DATASOURCES") return [{ name: "erp" }, { name: "supplier_portal" }];
+    if (sql === "SHOW DATASOURCE TABLES erp") return [{ name: "skus" }];
+    if (sql === "SHOW DATASOURCE TABLES supplier_portal") return [{ name: "ship_notices" }];
+    if (sql.startsWith("DESCRIBE DATASOURCE TABLE")) return [{ col_name: "sku", data_type: "string" }, { col_name: "upc", data_type: "string" }];
+    if (sql === "SHOW LIGHTNING DATABASES") return [{ name: "recall_feeds", description: "live recall feeds" }, { name: "tpch", description: "TPC-H sample benchmark" }];
+    if (sql === "SHOW TABLES IN recall_feeds") return [{ table_identifier: "recall_feeds.fda_food_rest" }];
+    if (sql === "SHOW TABLES IN recallfeeds") return [{ table_identifier: "FDA_FOOD" }];
+    if (sql === "DESCRIBE recallfeeds.fda_food") return [{ col_name: "recall_number", data_type: "string" }];
+    if (sql.includes("GROUP BY length(upc)")) return sql.includes("ship_notices") ? [{ len: 12, n: 6 }, { len: 14, n: 6 }] : [{ len: 12, n: 10 }];
+    if (sql.includes("regexp_replace")) return [{ n: 12 }];
+    if (sql.includes("JOIN")) return [{ n: 6 }];
+    throw new Error(`unexpected SQL: ${sql}`);
+  };
+  const sql = { engine: "zetaris", run: async (q: string) => { seen.push(q); return { sqlId: `q-${seen.length}`, engine: "zetaris", columns: [], rows: answer(q), ms: 1 }; }, close: async () => {} };
+  const map = await chart({ sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext);
+  assert.deepEqual(map.skipped.map((s) => s.name), ["tpch"]);
+  assert.deepEqual(map.tables.map((t) => `${t.kind}:${t.name}`), ["jdbc:erp.skus", "jdbc:supplier_portal.ship_notices", "rest:recall_feeds.fda_food_rest", "view:recallfeeds.fda_food"]);
+  assert.ok(!seen.some((q) => q.includes("tpch")), "nothing is queried inside a skipped database");
+  const j = map.joins[0];
+  assert.deepEqual([j.left, j.asWritten, j.normalized, j.chosen], ["supplier_portal.ship_notices", 6, 12, "normalized"]);
+});
