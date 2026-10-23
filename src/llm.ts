@@ -79,7 +79,9 @@ async function openai(cfg: LlmConfig, prompt: string, opts: GenOpts): Promise<{ 
   const res = await fetch(`${cfg.baseUrl.replace(/\/$/, "")}/chat/completions`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ model: cfg.model, messages: messages(prompt, opts), temperature: 0, max_tokens: opts.maxTokens ?? 300 }),
+    // Nemotron 3 / 3.5 think out loud by default; the agents want only the answer.
+    body: JSON.stringify({ model: cfg.model, messages: messages(prompt, opts), temperature: 0, max_tokens: opts.maxTokens ?? 300,
+      ...(/nemotron-3/i.test(cfg.model) ? { chat_template_kwargs: { enable_thinking: false } } : {}) }),
     signal: AbortSignal.timeout(cfg.provider === "meterless" ? 180_000 : 120_000),
   });
   if (!res.ok) throw new Error(`${cfg.provider === "meterless" ? "Nightshift" : "model endpoint"} HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
