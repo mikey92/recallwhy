@@ -62,7 +62,7 @@ function render(e){const lane=["Scout","Investigator","Auditor","Briefer"].inclu
  let cls="",k=e.kind,body="";
  if(e.kind==="msg"){cls="msg";body="→ <b>"+esc(e.to)+"</b> "+esc(e.text);if(/^opening /.test(e.text))stats.cases++}
  else if(e.kind==="sql"){cls="sql";stats.sql++;body="["+esc(e.engine)+"] "+esc(e.purpose)+" · "+e.rows+" rows · "+e.ms+" ms <span class='k'>"+esc(e.sqlId)+"</span>"}
- else if(e.kind==="llm"){cls="llm";stats.llm++;body=esc(e.purpose)+" → <i>"+esc(String(e.output).slice(0,160))+"</i>"}
+ else if(e.kind==="llm"){cls="llm";stats.llm++;body=(e.served_model?"<b>"+esc(e.served_model)+"</b> ":esc(e.model||"")+" ")+esc(e.purpose)+" → <i>"+esc(String(e.output).slice(0,160))+"</i>"}
  else if(e.kind==="critique"){cls="crit";stats.crit++;body=esc(e.code)+": "+esc(e.detail)}
  else if(e.kind.startsWith("memory")){cls="mem";body=e.kind==="memory.write"?esc(e.text):"query "+esc(e.query)+" → "+(e.hits||[]).length+" hit(s)"}
  else if(e.kind.startsWith("world")){cls="world";body=e.kind==="world.context"?"context: "+e.evidenceCount+" evidence items":esc(e.predicate)+" = "+esc(JSON.stringify(e.value)).slice(0,90)}

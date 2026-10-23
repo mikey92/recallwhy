@@ -39,7 +39,7 @@ function pretty(ev: TraceEvent): string {
   let body = "";
   if (ev.kind === "msg") body = `→ ${ev.to}: ${ev.text}`;
   else if (ev.kind === "sql") body = `[${ev.engine}] ${ev.sqlId} ${ev.purpose} (${ev.rows} rows, ${ev.ms}ms)`;
-  else if (ev.kind === "llm") body = `${ev.model} ${ev.purpose} → ${String(ev.output).replace(/\s+/g, " ").slice(0, 100)}`;
+  else if (ev.kind === "llm") body = `${ev.served_model ? `${ev.model} ⇒ ${ev.served_model}` : ev.model} ${ev.purpose} → ${String(ev.output).replace(/\s+/g, " ").slice(0, 100)}`;
   else body = String(ev.text ?? ev.summary ?? JSON.stringify(Object.fromEntries(Object.entries(ev).filter(([x]) => !["t", "run", "seq", "kind", "agent"].includes(x))))).slice(0, 160);
   return `${C.dim}${String(ev.seq).padStart(4)}${C.reset} ${who} ${C.dim}${k}${C.reset} ${body}`;
 }

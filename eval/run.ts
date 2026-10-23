@@ -1,11 +1,12 @@
 // Match-level evaluation of the real Investigator ⇄ Auditor loop (no shortcuts):
 // every candidate pair the Scout finds since --since, final decision vs labels.
 // Runs on the sample snapshots with the DuckDB stand-in so it needs no Zetaris.
+//   npx tsx eval/run.ts --provider meterless --model nvidia/nemotron-3-super-120b-a12b   (through Nightshift)
 //   npx tsx eval/run.ts --model nemotron-3-nano:latest [--provider ollama|none] [--since 2026-07-01]
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { Trace } from "../src/trace.ts";
 import { DuckSampleRunner } from "../src/sql/duck.ts";
-import { makeGenerator, type LlmConfig } from "../src/llm.ts";
+import { makeGenerator, llmFromEnv, type LlmConfig } from "../src/llm.ts";
 import { CaseMemory } from "../src/memory.ts";
 import { World } from "../src/world.ts";
 import { scout } from "../src/agents/scout.ts";
@@ -25,7 +26,8 @@ rmSync(state, { recursive: true, force: true });
 rmSync(`logs/eval/trace-eval-${tag}.jsonl`, { force: true });
 const trace = new Trace({ dir: "logs/eval", quiet: true, runId: `eval-${tag}` });
 const sql = new DuckSampleRunner({ trace });
-const ctx = { sql, gen: makeGenerator({ provider, model, ollamaUrl: process.env.OLLAMA_URL }, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}` };
+const llm: LlmConfig = provider === "meterless" ? llmFromEnv({ ...process.env, LLM_PROVIDER: "meterless", METERLESS_MODEL: model }) : { provider, model, ollamaUrl: process.env.OLLAMA_URL };
+const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}` };
 
 const t0 = Date.now();
 const startedAt = new Date().toISOString();

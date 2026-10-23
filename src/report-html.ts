@@ -2,7 +2,7 @@
 // and the trace. Nothing here computes or changes a verdict; it only displays.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
-interface Ev { seq: number; kind: string; agent: string; to?: string; text?: string; caseId?: string; code?: string; detail?: string; sqlId?: string; purpose?: string; engine?: string; rows?: number; ms?: number; model?: string; output?: string; finding?: unknown }
+interface Ev { seq: number; kind: string; agent: string; to?: string; text?: string; caseId?: string; code?: string; detail?: string; sqlId?: string; purpose?: string; engine?: string; rows?: number; ms?: number; model?: string; served_model?: string; output?: string; finding?: unknown }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 function md(src: string): string {
@@ -41,7 +41,7 @@ export function renderReport(outDir: string): string {
     if (e.kind === "msg") return `<div class="ev msg a-${e.agent}"><b>${e.agent}</b> → ${esc(e.to ?? "")}: ${esc(e.text ?? "")}</div>`;
     if (e.kind === "critique") return `<div class="ev crit"><b>Auditor objection</b> ${esc(e.code ?? "")}: ${esc(e.detail ?? "")}</div>`;
     if (e.kind === "sql") return `<div class="ev sql"><b>${e.agent}</b> SQL <code>${e.sqlId}</code> [${e.engine}] ${esc(e.purpose ?? "")} — ${e.rows} rows, ${e.ms} ms</div>`;
-    if (e.kind === "llm") return `<div class="ev llm"><b>${e.agent}</b> ${esc(e.model ?? "")}: ${esc(e.purpose ?? "")} → <i>${esc(String(e.output ?? "").slice(0, 140))}</i></div>`;
+    if (e.kind === "llm") return `<div class="ev llm"><b>${e.agent}</b> ${esc(e.served_model ? `${e.model} ⇒ ${e.served_model}` : (e.model ?? ""))}: ${esc(e.purpose ?? "")} → <i>${esc(String(e.output ?? "").slice(0, 140))}</i></div>`;
     if (e.kind === "memory.read" || e.kind === "memory.write") return `<div class="ev mem"><b>${e.agent}</b> H-MEM ${e.kind.split(".")[1]}</div>`;
     if (e.kind === "escalate") return `<div class="ev crit"><b>Escalated to human</b></div>`;
     return "";

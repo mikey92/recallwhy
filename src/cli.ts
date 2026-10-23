@@ -6,7 +6,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { loadConfig } from "./config.ts";
 import { Trace } from "./trace.ts";
 import { makeRunner } from "./sql/index.ts";
-import { makeGenerator, type LlmConfig } from "./llm.ts";
+import { makeGenerator, llmFromEnv } from "./llm.ts";
 import { CaseMemory } from "./memory.ts";
 import { World } from "./world.ts";
 import { run } from "./orchestrator.ts";
@@ -41,7 +41,7 @@ async function main() {
   }
   const trace = new Trace();
   const sql = await makeRunner(env, trace);
-  const llm: LlmConfig = { provider: (env.LLM_PROVIDER as LlmConfig["provider"]) ?? "ollama", model: env.LLM_MODEL ?? "nemotron-3-nano", ollamaUrl: env.OLLAMA_URL, baseUrl: env.OPENAI_BASE_URL, apiKey: env.OPENAI_API_KEY };
+  const llm = llmFromEnv(env);
   const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace), world: new World(trace), trace, model: `${llm.provider}:${llm.model}` };
   try {
     const r = await run(ctx, { since: flag("since") ?? "2026-09-15", only: flag("only")?.split(","), limit: flag("limit") ? Number(flag("limit")) : undefined });
