@@ -1,28 +1,61 @@
 {
   "name": "RecallWhy",
   "tagline": "Agents that tell a retailer which recalled products are on its shelves — and why they believe it.",
-  "track": "Track 2: The Agent That Can Explain Why",
-  "team": ["Mike Kim"],
+  "track": "Track 1: Solving Fragmented Intelligence",
+  "team": [
+    "Mike Kim"
+  ],
   "repository": "https://github.com/mikey92/recallwhy",
   "demo_video": "https://youtu.be/_c3crNZhIUc",
   "slide_deck": "https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf",
-  "entry_points": { "run": "npm run agents -- --since 2026-09-15", "sample_mode": "SAMPLE_MODE=true npm run agents", "decide": "npm run decide -- <recall-id> <sku> same|not-this --note \"...\"", "eval": "npx tsx eval/run.ts --model nemotron-3-nano:latest" },
+  "entry_points": {
+    "run": "npm run agents -- --since 2026-09-15",
+    "sample_mode": "SAMPLE_MODE=true npm run agents",
+    "decide": "npm run decide -- <recall-id> <sku> same|not-this --note \"...\"",
+    "eval": "npx tsx eval/run.ts --model nemotron-3-nano:latest"
+  },
   "agents": [
-    { "name": "Scout", "role": "Reads live CPSC and FDA recall feeds and the item master through Zetaris; one federated REST x JDBC UPC sweep; opens one case per recall that touches the catalog." },
-    { "name": "Investigator", "role": "Decides which candidate SKUs a recall covers (UPC/model rules, NVIDIA Nemotron judge for text matches, H-MEM prior decisions), reads lot codes, computes exposure with federated SQL." },
-    { "name": "Auditor", "role": "Can block. Re-checks UPCs against the live notice in Zetaris, checks quotes and lot codes are verbatim in the notice, re-derives every exposure number with its own SQL, rejects briefs that state unsupported numbers. Max 2 revision rounds, then escalates to a human queue." },
-    { "name": "Briefer", "role": "Writes the action brief only from the World Model context builder, citing evidence ids." }
+    {
+      "name": "Cartographer",
+      "role": "Before any case, maps the fragmented sources through Zetaris: lists datasources, Lightning databases and views, tags barcode/SKU/lot columns, profiles barcode lengths and tests cross-source barcode joins as written and normalised (finds GTIN-14 padding from a third of suppliers). The Auditor uses the join it verified."
+    },
+    {
+      "name": "Scout",
+      "role": "Reads live CPSC and FDA recall feeds and the item master through Zetaris; one federated REST x JDBC UPC sweep; opens one case per recall that touches the catalog."
+    },
+    {
+      "name": "Investigator",
+      "role": "Decides which candidate SKUs a recall covers (UPC/model rules, NVIDIA Nemotron judge for text matches, H-MEM prior decisions), reads lot codes, computes exposure with federated SQL."
+    },
+    {
+      "name": "Auditor",
+      "role": "Can block. Re-checks UPCs against the live notice in Zetaris, checks quotes and lot codes are verbatim in the notice, re-derives every exposure number with its own SQL, rejects briefs that state unsupported numbers. Max 2 revision rounds, then escalates to a human queue."
+    },
+    {
+      "name": "Briefer",
+      "role": "Writes the action brief only from the World Model context builder, citing evidence ids."
+    }
   ],
   "sponsor_technologies": {
     "zetaris": {
       "used": true,
       "how": "All agent data access is Zetaris Lightning SQL over its REST API. Two live Lightning REST tables (saferproducts.gov CPSC recalls, a top-level JSON array; api.fda.gov food enforcement) flattened into schemastore views, and two JDBC datasources (synthetic ERP and supplier-portal Postgres databases). Agents run federated queries joining live REST feeds with JDBC tables and the two databases with each other; the Auditor re-queries Zetaris independently to verify numbers.",
-      "files": ["sql/01_feeds.sql", "sql/02_retail_sources.sql", "src/sql/zetaris.ts", "src/agents/*.ts"]
+      "files": [
+        "sql/01_feeds.sql",
+        "sql/02_retail_sources.sql",
+        "src/sql/zetaris.ts",
+        "src/agents/*.ts"
+      ]
     },
     "meterless": {
       "used": true,
       "how": "Two Meterless agent engines mounted from github.com/Meterless/Meterless (Apache-2.0 reference implementations): H-MEM stores every adjudication (agent, medium trust) and every human decision (high trust) and is read before each judgement; World Model holds recall, case and finding facts with provenance (which SQL, which agent, which model call), and its context builder is the only input the Briefer sees.",
-      "files": ["src/engines/hmem/", "src/engines/world-model/", "src/memory.ts", "src/world.ts"]
+      "files": [
+        "src/engines/hmem/",
+        "src/engines/world-model/",
+        "src/memory.ts",
+        "src/world.ts"
+      ]
     },
     "cursor": {
       "used": true,
@@ -31,12 +64,18 @@
     "nvidia": {
       "used": true,
       "how": "NVIDIA Nemotron 3 Nano (30B-A3B, via Ollama) is the default model behind the single injected generator: it judges text matches between a recall notice and an item-master line, reads lot codes out of messy code_info text, and writes the why-paragraph that the Auditor checks. Any OpenAI-compatible endpoint (NVIDIA API Catalog, Meterless runtime) can replace it via env vars.",
-      "models": ["nemotron-3-nano:latest (30B-A3B)", "nemotron-3-nano:4b"],
+      "models": [
+        "nemotron-3-nano:latest (30B-A3B)",
+        "nemotron-3-nano:4b"
+      ],
       "evaluation": "eval/EVAL.md: 189/194 covered pairs caught, 0 wrongly dismissed, 7 false alarms over 440 pairs; judge-alone false alarms 207 → 7 after the Auditor loop"
     }
   },
   "data": {
-    "live": ["CPSC SaferProducts Recall API (U.S. government, public domain)", "openFDA food enforcement API (public domain, CC0 per open.fda.gov/license)"],
+    "live": [
+      "CPSC SaferProducts Recall API (U.S. government, public domain)",
+      "openFDA food enforcement API (public domain, CC0 per open.fda.gov/license)"
+    ],
     "synthetic": "Northwind Mercantile retailer: stores, item master, inventory lots, weekly sales, supplier ship notices — generated by scripts/gen-synthetic.ts (seeded). About 120 SKUs are deliberately derived from real recall notices so the catalog overlaps the feeds; ground truth for evaluation is kept in data/synthetic/eval/ and never read by the agents. No personal data.",
     "sample_snapshots": "sample/ holds feed snapshots captured on the date in sample/CAPTURED_AT for SAMPLE_MODE."
   },

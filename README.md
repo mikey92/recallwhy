@@ -2,11 +2,11 @@
 
 **Demo video:** https://youtu.be/_c3crNZhIUc · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
-**Open Agent Hackathon 2026 · Track 2: The Agent That Can Explain Why**
+**Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence**
 
 A retailer's safety team gets dozens of federal recall notices a week. For each one they need to know: *do we sell this, which lots, which stores still have it, how many customers bought it — and why do we believe that?* Today that means hand-checking the recall feed against the ERP and the supplier portal.
 
-RecallWhy is a team of four agents that investigates every new CPSC and FDA recall across those sources through **Zetaris** federated SQL. For each recall it returns an evidence-backed action brief, a "not ours" with the reason, or an escalation to a human when the evidence isn't strong enough. Every number in a brief traces back to the SQL query that produced it. Every claim about the notice traces back to words that are literally in the notice.
+The answer is spread over four systems that were never meant to meet: two federal feeds (REST), the ERP and the supplier portal (two Postgres databases), each with its own way of writing a product. RecallWhy is a team of five agents that first maps those fragments through **Zetaris** (what tables exist, which identifier columns are really the same key, and where they disagree) and then investigates every new CPSC and FDA recall across them with federated SQL. For each recall it returns an evidence-backed action brief, a "not ours" with the reason, or an escalation to a human when the evidence isn't strong enough. Every number in a brief traces back to the SQL query that produced it. Every claim about the notice traces back to words that are literally in the notice.
 
 ```
  live CPSC feed ─┐  (Zetaris Lightning REST tables)
@@ -14,7 +14,8 @@ RecallWhy is a team of four agents that investigates every new CPSC and FDA reca
                  ├── Zetaris ── federated SQL ──┐
  ERP (Postgres) ─┤  (JDBC datasources)          │
  supplier portal ┘                              ▼
-        Scout ──► Investigator ◄──critique── Auditor ──► Briefer ──► brief.md
+  Cartographer ──► Scout ──► Investigator ◄──critique── Auditor ──► Briefer ──► brief.md
+  (catalog, join tests)                                  ▲ uses the verified barcode join
                    │   ▲  (≤2 revisions, then human queue)  ▲
                    ▼   │                                    │
            H-MEM (decisions, trust)      World Model (facts + provenance) ─┘
@@ -26,6 +27,7 @@ RecallWhy is a team of four agents that investigates every new CPSC and FDA reca
 
 | Agent | Does | Can |
 |---|---|---|
+| **Cartographer** | Before any case: lists every Zetaris datasource, Lightning database and schemastore view, describes their columns and tags barcode, SKU and lot columns. Profiles barcode lengths and tests each cross-source barcode join as written and without leading zeros. Finds that a third of the suppliers send GTIN-14 (UPC-12 padded with `00`): 9,251 of 14,180 barcoded ship notices join as written, all 14,180 after normalising. Skips the Zetaris sample databases with the reason logged. | Tell the Auditor which join to trust |
 | **Scout** | Pulls recalls since a date from the two live feed views. Loads the item master. Runs one federated query that joins the live FDA feed (REST) with ERP SKUs (JDBC) on UPC digits. Opens a case for each recall that touches our catalog. | Delegate cases to the Investigator |
 | **Investigator** | Reads prior decisions from H-MEM. Decides each candidate: UPC or model number → rule; text match → **NVIDIA Nemotron** judge, which must quote the notice. Reads lot codes (regex plus Nemotron). Computes exposure with federated SQL: on-hand units by store and lot, units sold since the recall date, loyalty customers to notify, and the supplier from ship notices. | Revise when the Auditor blocks it |
 | **Auditor** | Re-checks each UPC match against the *live notice in Zetaris*. Checks that judge quotes and lot codes are verbatim in the notice, and that every product word of our item appears in the notice (catches "cheese pizza" ≠ "pepperoni pizza"). **Re-derives every exposure number with its own SQL**, aggregated in the database rather than in code. Confirms affected lots against supplier ship notices. Rejects briefs that cite missing evidence or state numbers not in the evidence. | **Block** (max 2 revision rounds, then escalate to the human queue) |
@@ -71,7 +73,7 @@ docker compose up -d && npm run load     # synthetic ERP + supplier portal
 npm run setup:zetaris                    # register feeds + datasources in Zetaris
 ollama pull nemotron-3-nano
 npm run agents -- --since 2026-09-15     # → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
-npm run view                             # http://127.0.0.1:8899 — watch the four agents live, open reports
+npm run view                             # http://127.0.0.1:8899 — watch the five agents live, open reports
 ```
 
 Real outputs from these commands, with their traces, are in [`examples/`](examples/): a live Zetaris run, the human review step, the re-run that follows the human decision, and a sample-mode run.

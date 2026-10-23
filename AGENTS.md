@@ -1,6 +1,6 @@
 # RecallWhy — build spec (read before editing)
 
-Open Agent Hackathon 2026, Track 2: "The Agent That Can Explain Why".
+Open Agent Hackathon 2026, Track 1: "Solving Fragmented Intelligence".
 
 ## Problem
 A regional retailer's safety team gets dozens of federal recall notices a week (CPSC consumer
