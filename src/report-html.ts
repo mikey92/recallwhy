@@ -2,7 +2,83 @@
 // and the trace. Nothing here computes or changes a verdict; it only displays.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
-interface Ev { seq: number; kind: string; agent: string; to?: string; text?: string; caseId?: string; code?: string; detail?: string; sqlId?: string; purpose?: string; engine?: string; rows?: number; ms?: number; model?: string; served_model?: string; output?: string; finding?: unknown }
+interface Ev { seq: number; kind: string; agent: string; to?: string; text?: string; caseId?: string; code?: string; detail?: string; sqlId?: string; purpose?: string; engine?: string; rows?: number; ms?: number; model?: string; served_model?: string; output?: string; finding?: unknown; checks?: string[]; learned?: Learned[]; since?: string }
+interface Learned { supplier?: string; transform?: string; rows?: number; sqlId?: string; proposedBy?: string }
+
+/** One banner line: `kind` picks the chip colour, `text` is built only from fields of this case's trace events. */
+export interface Highlight { kind: "map" | "human" | "audit" | "stats"; text: string }
+
+/**
+ * "What the agents did" for one case, derived from that case's trace slice alone. Every number and name is read
+ * from an event (Cartographer `learned`, Auditor `checks`/critiques, Investigator messages, sql/llm counts);
+ * nothing is hardcoded per case. Returns one to four lines; an empty slice gives none.
+ */
+export function whatTheAgentsDid(slice: Ev[]): Highlight[] {
+  const out: Highlight[] = [];
+  const msgs = slice.filter((e) => e.kind === "msg");
+  const uniq = <T,>(xs: T[]) => [...new Set(xs)];
+
+  // 1. Map corrections the Cartographer made mid-case, each proven by SQL over every ship notice of that supplier.
+  for (const m of msgs.filter((e) => e.agent === "Cartographer" && e.to === "Auditor")) {
+    const shape = m.text?.match(/(SUP\d+) sends (\d+)-digit barcodes against our (\d+)-digit UPCs/);
+    const all = m.text?.match(/holds for all (\d+) of its ship notices/);
+    const learned = m.learned?.length ? m.learned : shape ? [{ supplier: shape[1], transform: undefined, rows: all ? Number(all[1]) : undefined }] : [];
+    for (const l of learned) {
+      const n = l.rows ?? (all ? Number(all[1]) : undefined);
+      const proof = n !== undefined ? `proven by SQL on ${n}/${n} ship notices` : "proven by SQL";
+      const digits = shape && shape[1] === l.supplier ? ` (${shape[2]}-digit barcodes vs our ${shape[3]}-digit UPCs)` : "";
+      if (l.proposedBy || l.transform === "proposed") {
+        const by = l.proposedBy ?? slice.find((e) => e.kind === "llm" && e.agent === "Cartographer" && /propose a barcode transform/.test(e.purpose ?? ""))?.served_model;
+        out.push({ kind: "map", text: `Model-proposed transform for ${l.supplier ?? "a supplier"}${digits}${by ? `, by ${by}` : ""} — ${proof}` });
+      } else {
+        out.push({ kind: "map", text: `Map corrected mid-run: ${l.supplier ?? "a supplier"}${l.transform ? ` ${l.transform}` : ""}${digits} — ${proof}` });
+      }
+    }
+  }
+
+  // 2. Memory: a human's decision was followed, or an earlier run's decision reused.
+  for (const m of msgs.filter((e) => e.agent === "Investigator")) {
+    const h = m.text?.match(/following human decision (mem-\d+)/);
+    if (h) out.push({ kind: "human", text: `Followed a human decision (${h[1]})` });
+    const r = m.text?.match(/reusing decision (mem-\d+) from run:(\S+)/);
+    if (r) out.push({ kind: "human", text: `Reused decision ${r[1]} from run ${r[2]}` });
+  }
+
+  // 3. The Auditor: objections and escalation, or the checks it passed (live notice re-read, numbers re-derived).
+  const crit = slice.filter((e) => e.kind === "critique");
+  const esc = slice.find((e) => e.kind === "escalate");
+  const rounds = msgs.map((e) => e.text?.match(/escalated after (\d+) rounds/)?.[1]).find(Boolean);
+  if (crit.length) {
+    const codes = uniq(crit.map((e) => e.code).filter(Boolean)).join(", ");
+    out.push({ kind: "audit", text: `Auditor blocked ${crit.length} claim${crit.length === 1 ? "" : "s"}${codes ? ` (${codes})` : ""}${esc ? ` → escalated to a human${rounds ? ` after ${rounds} rounds` : ""}` : ""}` });
+  } else if (esc) out.push({ kind: "audit", text: "Escalated to a human" });
+  const approved = msgs.filter((e) => e.agent === "Auditor" && /approved/.test(e.text ?? "")).at(-1);
+  // An undecided pair passes the Auditor's checks but still goes to a person; say that, not "approved".
+  const undecided = msgs.some((e) => e.agent === "Investigator" && /round \d+: needs-human/.test(e.text ?? ""));
+  if (undecided && !crit.length && !esc) {
+    const why = slice.map((e) => (e as Ev & { predicate?: string; value?: unknown }))
+      .filter((e) => e.kind === "world.write" && e.predicate === "match_decision" && typeof e.value === "string")
+      .map((e) => String(e.value).match(/unsure — (.+)$/)?.[1]).find(Boolean);
+    out.push({ kind: "audit", text: `Undecided → sent to a reviewer${why ? `: ${why}` : ""}` });
+  } else if (approved) {
+    const checks = approved.checks ?? [];
+    const extras = [
+      checks.some((c) => /live notice/.test(c)) ? "live notice re-read" : "",
+      checks.some((c) => /re-derived independently/.test(c)) ? "exposure re-derived independently" : "",
+      checks.some((c) => /human decision .* respected/.test(c)) ? "human decision respected" : "",
+    ].filter(Boolean);
+    out.push({ kind: "audit", text: `Auditor approved after ${checks.length} check${checks.length === 1 ? "" : "s"}${extras.length ? ` (${extras.join(", ")})` : ""}` });
+  }
+
+  // 4. Work done: SQL queries by engine, model calls by served model.
+  const sqls = slice.filter((e) => e.kind === "sql"), llms = slice.filter((e) => e.kind === "llm");
+  const engines = uniq(sqls.map((e) => e.engine).filter(Boolean)).join("/");
+  const models = uniq(llms.map((e) => e.served_model ?? e.model).filter(Boolean)).join(", ");
+  const parts = [sqls.length ? `${sqls.length} SQL quer${sqls.length === 1 ? "y" : "ies"}${engines ? ` on ${engines}` : ""}` : "", llms.length ? `${llms.length} model call${llms.length === 1 ? "" : "s"}${models ? ` (${models})` : ""}` : "no model calls"].filter(Boolean);
+  if (sqls.length || llms.length) out.push({ kind: "stats", text: parts.join(" · ") });
+
+  return out.slice(0, 4);
+}
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 function md(src: string): string {
@@ -36,10 +112,12 @@ function sourceMap(evs: Ev[]): string {
   return `<section class="map"><h2>Source map (Cartographer, ${sqls} catalog and profiling queries)</h2><ul>${msgs}</ul><ul>${facts}</ul></section>`;
 }
 
-export function renderReport(outDir: string): string {
+/** `tracePath` overrides the default logs/trace-<runId>.jsonl, e.g. to re-render a committed example from its own trace. */
+export function renderReport(outDir: string, tracePath?: string): string {
   const res = JSON.parse(readFileSync(`${outDir}/result.json`, "utf8"));
-  const traceFile = `logs/trace-${res.runId}.jsonl`;
+  const traceFile = tracePath ?? `logs/trace-${res.runId}.jsonl`;
   const evs: Ev[] = existsSync(traceFile) ? readFileSync(traceFile, "utf8").trim().split("\n").map((l) => JSON.parse(l)) : [];
+  const since = res.since ?? evs.find((e) => e.kind === "run.start")?.since ?? "";
   const order = ["act-now", "notify", "needs-human", "no-exposure", "not-ours"];
   const cases = [...res.cases].sort((a: { verdict: string }, b: { verdict: string }) => order.indexOf(a.verdict) - order.indexOf(b.verdict));
   // Trace slice per case: events between the Investigator opening it and the Briefer finishing it.
@@ -59,6 +137,11 @@ export function renderReport(outDir: string): string {
     if (e.kind === "escalate") return `<div class="ev crit"><b>Escalated to human</b></div>`;
     return "";
   };
+  // Banner at the top of each case card: one chip per highlight, spanning both columns; empty when the trace has nothing.
+  const banner = (slice: Ev[]) => {
+    const hs = whatTheAgentsDid(slice);
+    return hs.length ? `<div class="did"><span class="did-h">What the agents did</span>${hs.map((h) => `<span class="hl hl-${h.kind}">${esc(h.text)}</span>`).join("")}</div>` : "";
+  };
   const counts = cases.reduce((a: Record<string, number>, c: { verdict: string }) => ((a[c.verdict] = (a[c.verdict] ?? 0) + 1), a), {});
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RecallWhy run ${esc(res.runId)}</title><style>
@@ -77,19 +160,26 @@ blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--line);color
 .map{background:var(--card);border:1px solid var(--line);border-left:6px solid #0e7490;border-radius:10px;padding:12px 22px}.map h2{font-size:18px;margin:6px 0}.map li{margin:4px 0}
 .ev{padding:3px 0;border-bottom:1px dashed var(--line)}.crit{color:#b91c1c}.sql{color:var(--mute)}.llm{color:#15803d}.mem{color:#7c3aed}
 code{font-size:12px}ul{margin:4px 0;padding-left:20px}
-@media (prefers-color-scheme:dark){.crit{color:#f87171}.mem{color:#c084fc}.llm{color:#4ade80}.cite{color:#93c5fd;background:#2563eb44}}
+/* "What the agents did": chips across the top of a case card, one per highlight read from that case's trace. */
+.did{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 22px;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
+.did-h{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;margin-right:4px}
+.hl{padding:3px 9px;border-radius:7px;border:1px solid transparent;overflow-wrap:anywhere;line-height:1.35}
+.hl-map{background:#0e749018;color:#0e7490;border-color:#0e749033}.hl-human{background:#7c3aed18;color:#6d28d9;border-color:#7c3aed33}
+.hl-audit{background:#c2410c14;color:#9a3412;border-color:#c2410c33}.hl-stats{background:transparent;color:var(--mute);border-color:var(--line)}
+@media (prefers-color-scheme:dark){.crit{color:#f87171}.mem{color:#c084fc}.llm{color:#4ade80}.cite{color:#93c5fd;background:#2563eb44}
+.hl-map{color:#67e8f9;background:#0e749033}.hl-human{color:#d8b4fe;background:#7c3aed33}.hl-audit{color:#fdba74;background:#c2410c2e}}
 /* Motion: the header fades in, the source map and cases rise in one after another (stagger), counts count up. Ease-out, short; off with reduced motion. */
 @keyframes fade{from{opacity:0}}@keyframes rise{from{opacity:0;transform:translateY(10px)}}
 header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
 .map,.case{animation:rise .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(min(var(--i,0),8) * 70ms + 120ms)}
 @media (prefers-reduced-motion:reduce){header,.map,.case{animation:none}}
 @media print{header,.map,.case{animation:none}}
-@media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}}
+@media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}.did{padding:8px 14px}.brief{padding-left:14px;padding-right:14px}}
 </style></head><body><header><h1>RecallWhy</h1>
-<div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(res.since)} → ${cases.length} cases</div>
+<div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(since)} → ${cases.length} cases</div>
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
 ${sourceMap(evs)}
-${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}><div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
+${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
 <div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
 </main>
 <script>/* count-up: the final number is in the HTML; this only animates it from 0 */
@@ -102,4 +192,4 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) for (const el of do
   return `${outDir}/report.html`;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) console.log(renderReport(process.argv[2]));
+if (import.meta.url === `file://${process.argv[1]}`) console.log(renderReport(process.argv[2], process.argv[3]));

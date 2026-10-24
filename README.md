@@ -12,6 +12,8 @@ Retailers get this wrong today. In December 2025 the FDA sent warning letters to
 
 ![Live viewer: the Cartographer maps the sources through Zetaris, then corrects the map when the Auditor sends rows back](docs/img/live-agents.gif)
 
+![A case from a live run: the banner says what the agents did — a barcode transform proposed by Nemotron 3 Ultra and proven by Zetaris SQL on 299/299 ship notices, a human decision followed, the Auditor's checks — above the cited brief and the trace](docs/img/report-case.png)
+
 A retailer's safety team gets dozens of federal recall notices a week. For each one they need to know: *do we sell this, which lots, which stores still have it, how many customers bought it — and why do we believe that?* Today that means hand-checking the recall feed against the ERP and the supplier portal.
 
 The answer is spread over four systems that were never meant to meet: two federal feeds (REST), the ERP and the supplier portal (two Postgres databases), each with its own way of writing a product. RecallWhy is a team of five agents that first maps those fragments through **Zetaris** (what tables exist, which identifier columns are really the same key, and where they disagree) and then investigates every new CPSC and FDA recall across them with federated SQL. For each recall it returns an evidence-backed action brief, a "not ours" with the reason, or an escalation to a human when the evidence isn't strong enough. Every number in a brief traces back to the SQL query that produced it. Every claim about the notice traces back to words that are literally in the notice.
