@@ -6,7 +6,7 @@
     "Mike Kim"
   ],
   "repository": "https://github.com/mikey92/recallwhy",
-  "demo_video": "https://iframe.mediadelivery.net/embed/778121/7ba9d226-5c2b-404e-aa61-2ad2cff5c1a6",
+  "demo_video": "https://iframe.mediadelivery.net/embed/778121/db345221-4d9b-496b-9740-06cc59f82837",
   "slide_deck": "https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf",
   "entry_points": {
     "run": "npm run agents -- --since 2026-09-15",

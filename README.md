@@ -1,6 +1,6 @@
 # RecallWhy
 
-**Demo video (3:08):** https://iframe.mediadelivery.net/embed/778121/7ba9d226-5c2b-404e-aa61-2ad2cff5c1a6 · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
+**Demo video (3:52):** https://iframe.mediadelivery.net/embed/778121/db345221-4d9b-496b-9740-06cc59f82837 · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
 **Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence**
 
@@ -8,7 +8,7 @@ Retailers get this wrong today. In December 2025 the FDA sent warning letters to
 
 **What RecallWhy changes:** over 440 recall/SKU pairs from 517 notices, the agents settle 417 (95%) without a person, 408 of them correctly, and send 23 to a reviewer with the reason; 187 of 194 recalled items are caught (rules alone: 22). See [Evaluation](#evaluation).
 
-**See it without running anything:** the agents working live (Cartographer lane: Zetaris catalog, feed profiling, then the Auditor sends back rows the map cannot reach and the map is corrected), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one rendered](https://htmlpreview.github.io/?https://github.com/mikey92/recallwhy/blob/main/examples/output/example_3_after_human_decision/report.html)).
+**See it without running anything:** the five agents working live (the Auditor sends back ship-notice rows the barcode map cannot reach, and the Cartographer proves a supplier rule and corrects the map), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one rendered](https://htmlpreview.github.io/?https://github.com/mikey92/recallwhy/blob/main/examples/output/example_3_after_human_decision/report.html)).
 
 ![Live viewer: the Cartographer maps the sources through Zetaris, then corrects the map when the Auditor sends rows back](docs/img/live-agents.gif)
 
