@@ -123,7 +123,7 @@ The same through the API, in the container with no credentials:
 
 ```bash
 curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1407-2026"]}'   # needs-human
-curl localhost:8000/queue                                                                                                 # the Auditor's objection
+curl localhost:8000/queue                                                                                                 # why it needs a reviewer
 curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1407-2026","sku":"NW-100005","verdict":"same"}'
 curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1407-2026"]}'   # act-now, following the decision
 ```
