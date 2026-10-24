@@ -33,7 +33,7 @@ rmSync(`logs/eval/trace-eval-${tag}.jsonl`, { force: true });
 const trace = new Trace({ dir: "logs/eval", quiet: true, runId: `eval-${tag}` });
 const sql = new DuckSampleRunner({ trace });
 const llm: LlmConfig = provider === "meterless" ? llmFromEnv({ ...process.env, LLM_PROVIDER: "meterless", METERLESS_MODEL: model }) : { provider, model, ollamaUrl: process.env.OLLAMA_URL };
-const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}` };
+const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}`, queueFile: `${state}/review-queue.json` };
 
 const t0 = Date.now();
 const startedAt = new Date().toISOString();

@@ -1,6 +1,6 @@
 {
   "model": "none:none",
-  "startedAt": "2026-10-24T03:25:49.287Z",
+  "startedAt": "2026-10-24T03:29:17.600Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
@@ -28,12 +28,6 @@
   "revisedCases": 1,
   "cartographerRules": [
     {
-      "supplier": "SUP009",
-      "transform": "no-leading-zeros",
-      "rows": 269,
-      "learnedFrom": "case-fda-H-1166-2026"
-    },
-    {
       "supplier": "SUP027",
       "transform": "no-leading-zeros",
       "rows": 317,
@@ -43,6 +37,12 @@
       "supplier": "SUP015",
       "transform": "no-leading-zeros",
       "rows": 482,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP009",
+      "transform": "no-leading-zeros",
+      "rows": 269,
       "learnedFrom": "case-fda-H-1166-2026"
     },
     {

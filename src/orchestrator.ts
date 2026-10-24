@@ -2,6 +2,7 @@
 // escalates what the Auditor still blocks, records decisions in H-MEM and the
 // finding in the World Model, then asks the Briefer for the brief.
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { dirname } from "node:path";
 import { audit } from "./agents/auditor.ts";
 import { brief, type Brief } from "./agents/briefer.ts";
 import { say, type AgentContext } from "./agents/context.ts";
@@ -43,13 +44,17 @@ export async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding:
   let f = await investigate(ctx, k);
   for (;;) {
     const a = await audit(ctx, k, f);
-    if (a.ok) return { finding: f, open: [], openSkus: [] };
+    if (a.ok) {
+      // Approved, but nobody could decide a pair (no model, or the judge was unsure): that is the reviewer's too.
+      if (f.verdict === "needs-human") queue(ctx, k, f, f.decisions.filter((d) => d.verdict === "unsure").map((d) => `${d.sku} undecided: ${d.why}`));
+      return { finding: f, open: [], openSkus: [] };
+    }
     if (f.round > MAX_REVISIONS) {
       const open = a.critiques.map((c) => c.detail);
       f = { ...f, verdict: "needs-human" };
       ctx.trace.emit("escalate", "Orchestrator", { caseId: k.id, open });
       say(ctx, "Orchestrator", "Human", `${k.id}: escalated after ${f.round} rounds — ${open.join("; ")}`.slice(0, 400));
-      queue(k, f, open);
+      queue(ctx, k, f, open);
       return { finding: f, open, openSkus: a.critiques.flatMap((c) => (c.sku ? [c.sku] : [])) };
     }
     f = await revise(ctx, k, f, a.critiques);
@@ -80,10 +85,11 @@ async function record(ctx: AgentContext, k: Case, f: Finding): Promise<string[]>
   return [k.recallEntity, caseEntity];
 }
 
-function queue(k: Case, f: Finding, open: string[]) {
-  const file = "state/review-queue.json";
-  mkdirSync("state", { recursive: true });
-  const q = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : [];
+function queue(ctx: AgentContext, k: Case, f: Finding, open: string[]) {
+  const file = ctx.queueFile ?? "state/review-queue.json";
+  mkdirSync(dirname(file), { recursive: true });
+  // One entry per case: a re-run replaces the old one.
+  const q = (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : []).filter((c: { caseId: string }) => c.caseId !== k.id);
   q.push({ caseId: k.id, recall: k.recall.id, skus: f.decisions.map((d) => ({ sku: d.sku, title: d.title, verdict: d.verdict, why: d.why })), open, at: new Date().toISOString() });
   writeFileSync(file, JSON.stringify(q, null, 2));
 }

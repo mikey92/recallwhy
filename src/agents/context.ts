@@ -12,6 +12,8 @@ export interface AgentContext {
   map?: SourceMap;
   /** false only in the evaluation's ablation: no source map and no Auditor → Cartographer loop */
   cartographer?: boolean;
+  /** Where escalated cases go (default state/review-queue.json); the evaluation keeps its own. */
+  queueFile?: string;
 }
 
 export type AgentName = "Orchestrator" | "Cartographer" | "Scout" | "Investigator" | "Auditor" | "Briefer";
