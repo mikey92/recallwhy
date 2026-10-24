@@ -76,7 +76,8 @@ docker compose up -d && npm run load     # synthetic ERP + supplier portal
 npm run setup:zetaris                    # register feeds + datasources in Zetaris
 # Nightshift running, NVIDIA key added under Setup ▸ Providers (LLM_PROVIDER=meterless is the default)
 npm run agents -- --since 2026-09-15     # → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
-npm run view                             # http://127.0.0.1:8899 — watch the five agents live, open reports
+npm run view                             # http://127.0.0.1:8899 — watch the five agents live, open reports;
+                                         # /review — decide escalated cases (stored in H-MEM, followed next run)
 ```
 
 Real outputs from these commands, with their traces, are in [`examples/`](examples/): a live Zetaris run, the human review step, the re-run that follows the human decision, and a sample-mode run.

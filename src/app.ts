@@ -38,3 +38,15 @@ export function reviewQueue(): unknown[] {
   const f = "state/review-queue.json";
   return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : [];
 }
+
+/** Reviewer decisions already stored in H-MEM, so a review screen can show what is settled. */
+export function humanDecisions(): { recall: string; sku: string; verdict: string; memoryId: string; note: string }[] {
+  const mem = new CaseMemory(new Trace({ quiet: true, dir: "logs/review" }));
+  return mem.hmem.store.all().filter((m) => m.tags.includes("by:human") && !m.supersededBy).map((m) => ({
+    recall: m.tags.find((t) => t.startsWith("recall:"))!.slice(7),
+    sku: m.tags.find((t) => t.startsWith("sku:"))!.slice(4),
+    verdict: m.tags.find((t) => t.startsWith("verdict:"))!.slice(8),
+    memoryId: m.id,
+    note: m.content.replace(/^.*?: /, ""),
+  }));
+}

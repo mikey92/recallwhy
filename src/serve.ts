@@ -1,16 +1,29 @@
-// Local viewer: streams a run's trace as it happens and links to finished reports.
-//   npm run view   →  http://127.0.0.1:8899
-// Read-only: it only reads logs/ and out/; it never runs agents or changes results.
+// Local viewer: streams a run's trace as it happens, links to finished reports, and has the
+// review screen where a person decides escalated cases.
+//   npm run view   →  http://127.0.0.1:8899   (review: /review)
+// It never runs agents or changes results; the only thing it writes is a reviewer's decision to
+// H-MEM, which the next run follows. It listens on 127.0.0.1 only.
 import { createServer } from "node:http";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, normalize } from "node:path";
+import { decide, humanDecisions, reviewQueue } from "./app.ts";
 
 const PORT = Number(process.env.VIEW_PORT ?? 8899);
 const runs = () => readdirSync("logs").filter((f) => /^trace-.*\.jsonl$/.test(f)).map((f) => f.slice(6, -6))
   .sort((a, b) => statSync(`logs/trace-${b}.jsonl`).mtimeMs - statSync(`logs/trace-${a}.jsonl`).mtimeMs);
 
-createServer((req, res) => {
+createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
+  if (url.pathname === "/api/queue") return json(res, { queue: reviewQueue(), decided: humanDecisions() });
+  if (url.pathname === "/api/decide" && req.method === "POST") {
+    const chunks: Buffer[] = [];
+    for await (const c of req) chunks.push(c as Buffer);
+    let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown } = {};
+    try { d = JSON.parse(Buffer.concat(chunks).toString("utf8")); } catch { /* answered below */ }
+    if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this")) { res.writeHead(400); return res.end("recall, sku and verdict (same | not-this) are required"); }
+    return json(res, decide(d.recall, d.sku, d.verdict, typeof d.note === "string" && d.note.trim() ? d.note.trim() : undefined));
+  }
+  if (url.pathname === "/review") { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }); return res.end(readFileSync(new URL("./review.html", import.meta.url))); }
   if (url.pathname === "/api/runs") return json(res, runs().slice(0, 30).map((r) => ({ run: r, report: existsSync(`out/${r}/report.html`) })));
   if (url.pathname === "/api/trace") {
     const run = url.searchParams.get("run") ?? runs()[0];
@@ -39,7 +52,7 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,system-ui,sans-serif}
 header{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
 h1{font-size:19px;margin:0}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px}
-.stat{color:var(--mute)}.stat b{color:var(--ink)}a{color:#60a5fa}
+#rev{margin-left:auto}.stat{color:var(--mute)}.stat b{color:var(--ink)}a{color:#60a5fa}
 main{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:12px 20px}
 .lane{background:var(--card);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;height:calc(100vh - 150px)}
 .lane h2{margin:0;padding:10px 12px;font-size:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
@@ -52,7 +65,7 @@ main{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding
 footer{padding:0 20px 10px;color:var(--mute);font-size:12px}
 @media (max-width:1100px){main{grid-template-columns:1fr 1fr}.lane{height:50vh}}
 </style></head><body>
-<header><h1>RecallWhy</h1><select id="run"></select><span class="stat" id="stat"></span><span id="rep"></span></header>
+<header><h1>RecallWhy</h1><select id="run"></select><span class="stat" id="stat"></span><span id="rep"></span><a id="rev" href="/review">Review queue</a></header>
 <main>${["Cartographer", "Scout", "Investigator", "Auditor", "Briefer"].map((a) => `<section class="lane ${a}"><h2>${a}<span class="k" id="n-${a}">0</span></h2><div class="feed" id="f-${a}"></div></section>`).join("")}</main>
 <footer>Streaming logs/trace-&lt;run&gt;.jsonl as the agents write it. Every line here is an event the code emitted.</footer>
 <script>
@@ -78,3 +91,4 @@ async function init(){const rs=await (await fetch("/api/runs")).json();$("#run")
  $("#run").onchange=()=>{location.search="?run="+$("#run").value};setInterval(poll,700);poll();}
 init();
 </script></body></html>`;
+

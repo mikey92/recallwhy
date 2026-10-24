@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RecallWhy review</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--mute:#6e6e73;--line:#d2d2d7;--act:#c9302c;--ok:#1f7a3a;--focus:#0071e3}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--mute:#a1a1a6;--line:#38383a;--act:#ff6961;--ok:#30d158;--focus:#0a84ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:1;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:baseline;gap:16px}
+h1{font-size:22px;margin:0;font-weight:700}
+header p{margin:0;color:var(--mute);font-size:15px}
+header a{margin-left:auto;color:var(--focus);font-size:15px}
+main{max-width:880px;margin:0 auto;padding:24px}
+.empty{color:var(--mute);text-align:center;padding:60px 0}
+.case{background:var(--card);border-radius:14px;padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.case h2{font-size:19px;margin:0 0 2px}
+.meta{color:var(--mute);font-size:15px;margin:0 0 12px}
+.notice{border-left:3px solid var(--line);padding:2px 0 2px 12px;color:var(--mute);font-size:15px;margin:0 0 14px}
+.sku{border-top:1px solid var(--line);padding:14px 0 4px}
+.sku h3{font-size:17px;margin:0 0 4px}
+.sku h3 span{color:var(--mute);font-weight:400;font-size:15px}
+.why{font-size:15px;margin:0 0 6px}
+.obj{font-size:15px;color:var(--act);margin:0 0 10px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.sr{position:absolute;left:-9999px}
+input[type=text]{flex:1 1 260px;min-height:44px;font:inherit;font-size:15px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit}
+button{min-height:44px;min-width:44px;padding:0 18px;border-radius:10px;border:0;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+button.same{background:var(--act);color:#fff}
+button.not{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.done{font-size:15px;color:var(--ok);margin:6px 0 0}
+</style>
+</head>
+<body>
+<header><h1>Review queue</h1><p id="sum"></p><a href="/">Live view</a></header>
+<main id="list" aria-live="polite"></main>
+<script>
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const label = { "same": "Same product", "not-this": "Not this product", "unsure": "Undecided" };
+let n = 0;
+
+function skuBlock(c, s, done) {
+  const d = done.get(c.recall + " " + s.sku);
+  const objections = c.open.filter((o) => (c.skus.length === 1 || o.includes(s.sku) || o.includes(s.title)) && !o.includes(s.why));
+  const id = "n" + (n++);
+  return `<div class="sku"><h3>${esc(s.title)} <span>${esc(s.sku)}</span></h3>
+    <p class="why">Agents: <b>${label[s.verdict] ?? esc(s.verdict)}</b> — ${esc(s.why)}</p>
+    ${objections.map((o) => `<p class="obj">${esc(o)}</p>`).join("")}
+    ${d ? `<p class="done">Decided: ${label[d.verdict]} (${esc(d.memoryId)}). The next run follows it.</p>`
+        : `<div class="row" data-recall="${esc(c.recall)}" data-sku="${esc(s.sku)}">
+             <label class="sr" for="${id}">Note for ${esc(s.sku)}</label>
+             <input type="text" id="${id}" placeholder="Note for the record (optional)">
+             <button class="same" data-verdict="same">Same product</button>
+             <button class="not" data-verdict="not-this">Not this product</button></div>`}</div>`;
+}
+
+async function load() {
+  const { queue, decided } = await (await fetch("/api/queue")).json();
+  const done = new Map(decided.map((d) => [d.recall + " " + d.sku, d]));
+  const waiting = queue.flatMap((c) => c.skus.filter((s) => !done.has(c.recall + " " + s.sku))).length;
+  n = 0;
+  document.getElementById("list").innerHTML = queue.length
+    ? queue.slice().reverse().map((c) => `<section class="case"><h2>${esc(c.recall)}</h2>
+        <p class="meta">${esc(c.firm || "")}${c.date ? " · " + esc(c.date) : ""}</p>
+        ${c.notice ? `<p class="notice">${esc(c.notice)}</p>` : ""}
+        ${c.skus.map((s) => skuBlock(c, s, done)).join("")}</section>`).join("")
+    : `<p class="empty">Nothing to review. Cases the agents cannot settle appear here.</p>`;
+  document.getElementById("sum").textContent = waiting ? `${waiting} decision${waiting > 1 ? "s" : ""} waiting` : "All decided";
+}
+
+document.getElementById("list").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-verdict]");
+  if (!b) return;
+  const row = b.closest(".row");
+  b.disabled = true;
+  const r = await fetch("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ recall: row.dataset.recall, sku: row.dataset.sku, verdict: b.dataset.verdict, note: row.querySelector("input").value }) });
+  if (!r.ok) { b.disabled = false; alert(await r.text()); return; }
+  load();
+});
+load();
+</script>
+</body>
+</html>

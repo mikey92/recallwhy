@@ -90,7 +90,7 @@ function queue(ctx: AgentContext, k: Case, f: Finding, open: string[]) {
   mkdirSync(dirname(file), { recursive: true });
   // One entry per case: a re-run replaces the old one.
   const q = (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : []).filter((c: { caseId: string }) => c.caseId !== k.id);
-  q.push({ caseId: k.id, recall: k.recall.id, skus: f.decisions.map((d) => ({ sku: d.sku, title: d.title, verdict: d.verdict, why: d.why })), open, at: new Date().toISOString() });
+  q.push({ caseId: k.id, recall: k.recall.id, firm: k.recall.firm, date: k.recall.date, notice: k.recall.text.slice(0, 600), skus: f.decisions.map((d) => ({ sku: d.sku, title: d.title, verdict: d.verdict, why: d.why })), open, at: new Date().toISOString() });
   writeFileSync(file, JSON.stringify(q, null, 2));
 }
 
