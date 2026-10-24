@@ -1,35 +1,79 @@
 {
   "model": "meterless:nvidia/nemotron-3-ultra-550b-a55b",
-  "startedAt": "2026-10-24T00:00:47.676Z",
+  "startedAt": "2026-10-24T04:40:46.799Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
-  "seconds": 7649,
+  "seconds": 4329,
   "all": {
     "pairs": 440,
     "positives": 194,
-    "caught": 186,
+    "caught": 187,
     "falseAlarms": 6,
-    "wronglyDismissed": 4,
+    "wronglyDismissed": 3,
     "toHuman": 23,
     "precision": 0.969,
-    "recall": 0.959
+    "recall": 0.964
   },
   "textOnly": {
     "pairs": 336,
     "positives": 90,
-    "caught": 84,
+    "caught": 85,
     "falseAlarms": 6,
-    "wronglyDismissed": 4,
+    "wronglyDismissed": 3,
     "toHuman": 21,
-    "precision": 0.933,
-    "recall": 0.933
+    "precision": 0.934,
+    "recall": 0.944
   },
-  "revisedCases": 30,
+  "revisedCases": 28,
   "modelCalls": {
-    "total": 537,
+    "total": 538,
     "failedAfterRetries": 0
   },
+  "cartographerRules": [
+    {
+      "supplier": "SUP001",
+      "transform": "proposed",
+      "rows": 276,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP019",
+      "transform": "proposed",
+      "rows": 269,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP007",
+      "transform": "no-check-digit",
+      "rows": 484,
+      "learnedFrom": "case-fda-H-1355-2026"
+    },
+    {
+      "supplier": "SUP028",
+      "transform": "no-check-digit",
+      "rows": 250,
+      "learnedFrom": "case-fda-H-1252-2026"
+    },
+    {
+      "supplier": "SUP010",
+      "transform": "proposed",
+      "rows": 299,
+      "learnedFrom": "case-fda-H-1351-2026"
+    },
+    {
+      "supplier": "SUP014",
+      "transform": "no-check-digit",
+      "rows": 187,
+      "learnedFrom": "case-fda-H-1136-2026"
+    },
+    {
+      "supplier": "SUP035",
+      "transform": "no-check-digit",
+      "rows": 474,
+      "learnedFrom": "case-fda-H-1326-2026"
+    }
+  ],
   "rows": [
     {
       "recall": "fda:H-1166-2026",
@@ -1213,7 +1257,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1289-2026",
@@ -1221,7 +1265,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1373-2026",
@@ -1845,7 +1889,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1291-2026",
@@ -1853,7 +1897,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1291-2026",
@@ -1861,7 +1905,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1291-2026",
@@ -1869,7 +1913,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1170-2026",
@@ -2508,7 +2552,7 @@
       "sku": "NW-100107",
       "basis": "text",
       "label": "same",
-      "final": "not-this",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -2685,7 +2729,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1359-2026",
@@ -3277,7 +3321,7 @@
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "cpsc:26717",
@@ -3285,7 +3329,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "cpsc:26724",

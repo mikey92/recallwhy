@@ -6,7 +6,7 @@
 
 Retailers get this wrong today. In December 2025 the FDA sent warning letters to Kroger, Albertsons, Target and Walmart: recalled ByHeart infant formula was still on shelves in over 175 locations across 36 states, in one case for more than three weeks. Store associates cited not knowing about the recall, "confusion regarding which specific lots were affected", and not removing all the affected product ([FDA](https://content.govdelivery.com/accounts/USFDA/bulletins/4000713), [Food Safety News](https://www.foodsafetynews.com/2025/12/fda-warns-retailers-who-failed-to-pull-recalled-byheart-formula/)).
 
-**What RecallWhy changes:** over 440 recall/SKU pairs from 517 notices, the agents settle 417 (95%) without a person, 407 of them correctly, and send 23 to a reviewer with the reason; 186 of 194 recalled items are caught (rules alone: 103). See [Evaluation](#evaluation).
+**What RecallWhy changes:** over 440 recall/SKU pairs from 517 notices, the agents settle 417 (95%) without a person, 408 of them correctly, and send 23 to a reviewer with the reason; 187 of 194 recalled items are caught (rules alone: 22). See [Evaluation](#evaluation).
 
 A retailer's safety team gets dozens of federal recall notices a week. For each one they need to know: *do we sell this, which lots, which stores still have it, how many customers bought it — and why do we believe that?* Today that means hand-checking the recall feed against the ERP and the supplier portal.
 
@@ -163,20 +163,20 @@ Three suppliers send a 10-digit core (no leading digit, no check digit), a forma
 
 | Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries |
 |---|---|---|---|---|---|
-| none (rules only) | 103 | 0 | 0 | 337 | — |
-| NVIDIA Nemotron 3.5 Lightning 30B, through Meterless Nightshift | 141 | 10 | 2 | 63 | 0 of 648 |
-| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** (default) | **186** | **4** | **6** | 23 | 0 of 537 |
+| none (rules only) | 22 | 0 | 0 | 418 | — |
+| NVIDIA Nemotron 3.5 Lightning 30B, through Meterless Nightshift | 139 | 10 | 2 | 66 | 0 of 652 |
+| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** (default) | **187** | **3** | **6** | 23 | 0 of 538 |
 
 **What the Auditor adds** (text matches only, 336 pairs, 90 covered; "first answer" is the judge's first reply in the same trace):
 
 | | Caught | Wrongly dismissed | False alarms | Sent to human |
 |---|---|---|---|---|
-| Ultra, judge's first answer | 78 | 12 | 9 | 0 |
-| Ultra, after the Auditor loop | 84 | **4** | **6** | 21 |
-| Lightning, judge's first answer | 15 | 75 | 0 | 0 |
-| Lightning, after the Auditor loop | 39 | 10 | 2 | 61 |
+| Ultra, judge's first answer | 80 | 10 | 10 | 0 |
+| Ultra, after the Auditor loop | 85 | **3** | **6** | 21 |
+| Lightning, judge's first answer | 14 | 76 | 1 | 0 |
+| Lightning, after the Auditor loop | 37 | 10 | 2 | 64 |
 
-A dismissed recall is the dangerous error: recalled stock stays on the shelf. The smaller Lightning model dismisses 75 of 90 covered text matches on its first answer; the Auditor wins back 65 of them. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
+A dismissed recall is the dangerous error: recalled stock stays on the shelf. The smaller Lightning model dismisses 76 of 90 covered text matches on its first answer; the Auditor wins back 66 of them. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
 
 ## Data
 

@@ -12,20 +12,21 @@ Everything else counts as *not covered*. Labels are strict, so a few "false alar
 
 | Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries | Time |
 |---|---|---|---|---|---|---|
-| none (rules only, `--provider none`) | 103 | 0 | 0 | 337 | — | 14 s |
-| NVIDIA Nemotron 3.5 Lightning 30B-A3B, through Meterless Nightshift | 141 | 10 | 2 | 63 | 0 of 648 | 1,269 s |
-| **NVIDIA Nemotron 3 Ultra 550B-A55B, through Meterless Nightshift** | **186** | **4** | **6** | 23 | 0 of 537 | 7,649 s |
+| none (rules only, `--provider none`) | 22 | 0 | 0 | 418 | — | 14 s |
+| none for the judge, Ultra for the Cartographer only (`--provider none --map-model …`) | 103 | 0 | 0 | 337 | — | 20 s |
+| NVIDIA Nemotron 3.5 Lightning 30B-A3B, through Meterless Nightshift | 139 | 10 | 2 | 66 | 0 of 652 | 1,181 s |
+| **NVIDIA Nemotron 3 Ultra 550B-A55B, through Meterless Nightshift** | **187** | **3** | **6** | 23 | 0 of 538 | 4,329 s |
 
 Text matches only (336 pairs, 90 covered), judge's first answer vs the final decision (`python3 eval/first-vs-final.py meterless-nvidia_nemotron-3-ultra-550b-a55b`; the first answers are committed in `eval/results/*-first-answers.json`, so this runs from a clean clone):
 
 | | Caught | Wrongly dismissed | False alarms | Sent to human |
 |---|---|---|---|---|
-| Ultra, judge's first answer | 78 | 12 | 9 | 0 |
-| Ultra, after the Auditor loop | 84 | 4 | 6 | 21 |
-| Lightning, judge's first answer | 15 | 75 | 0 | 0 |
-| Lightning, after the Auditor loop | 39 | 10 | 2 | 61 |
+| Ultra, judge's first answer | 80 | 10 | 10 | 0 |
+| Ultra, after the Auditor loop | 85 | 3 | 6 | 21 |
+| Lightning, judge's first answer | 14 | 76 | 1 | 0 |
+| Lightning, after the Auditor loop | 37 | 10 | 2 | 64 |
 
-Lightning is six times faster but conservative: it answers DIFFERENT for 75 of the 90 covered text matches. The dismissal check sends 65 of those back, where they end up caught or with a human. Ultra is the default because it misses the fewest recalls.
+Lightning is almost four times faster but conservative: it answers DIFFERENT for 76 of the 90 covered text matches. The dismissal check sends 66 of those back, where they end up caught or with a human. Ultra is the default because it misses the fewest recalls.
 
 **What changed to get here, and why.** The first Ultra run dismissed 16 covered pairs. Reading them showed two causes, both ours:
 - The judge prompt introduced the item master's `brand` column as the brand. It holds the vendor we buy from (taken from the recalling firm), e.g. "Conair Of Stamford" for a Cuisinart grill brush, so a strict model answered "different brand". The prompt now calls it the vendor and says titles are abbreviated.
@@ -33,7 +34,7 @@ Lightning is six times faster but conservative: it answers DIFFERENT for 75 of t
 
 The hosted model rate-limits per minute. With three retries, 60 of 522 calls failed in one run and fell back to UNSURE, which inflated "sent to human". The client now waits up to five times (3–90 s); the run above had no failed calls. Every run's JSON reports `modelCalls.failedAfterRetries`.
 
-The 4 remaining wrongly dismissed pairs are generator artefacts more than model errors: one SKU's barcode was derived wrongly from the notice's GTIN (`WINFIELD'S CWB 8OZ`, 008100798339 vs the notice's 00810079833030), and three generated titles name no product at all (`16 OZ PACKAGED IN FOAM`, `LIGHT-UP CHILDREN'S TOYS`, `CORDLESS VACUUM CLEANERS WITH LITHIUM-ION` against a notice listing model numbers). We left the data as it is rather than fix it to suit the model.
+The 3 remaining wrongly dismissed pairs are generator artefacts more than model errors: one SKU's barcode was derived wrongly from the notice's GTIN (`WINFIELD'S CWB 8OZ`, 008100798339 vs the notice's 00810079833030), and two generated titles name no product at all (`LIGHT-UP CHILDREN'S TOYS`, `CORDLESS VACUUM CLEANERS WITH LITHIUM-ION` against a notice listing model numbers). We left the data as it is rather than fix it to suit the model.
 
 ## Earlier runs (21 Oct, older prompt, data and Auditor — not comparable with the table above)
 

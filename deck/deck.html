@@ -15,7 +15,7 @@ ul{padding-left:34px;margin:0}li{margin:10px 0}
 .card h3{margin:0 0 10px;font-size:32px}.card p{font-size:25px;margin:0;line-height:1.4}
 .pill{display:inline-block;padding:8px 18px;border-radius:99px;color:#fff;font-weight:700;font-size:24px;margin:0 10px 12px 0}
 img.shot{width:100%;border-radius:14px;border:1px solid #2a2e38;box-shadow:0 20px 60px #0004}
-table{border-collapse:collapse;font-size:28px;width:100%}td,th{padding:14px 18px;border-bottom:1px solid #e6e3dc;text-align:left}th{color:#6b7280;font-weight:600;font-size:22px;text-transform:uppercase;letter-spacing:.06em}
+table{border-collapse:collapse;font-size:28px;width:100%}table.tight{font-size:25px}table.tight td,table.tight th{padding:9px 18px}td,th{padding:14px 18px;border-bottom:1px solid #e6e3dc;text-align:left}th{color:#6b7280;font-weight:600;font-size:22px;text-transform:uppercase;letter-spacing:.06em}
 .big{font-size:150px;font-weight:800;letter-spacing:-.04em;line-height:1}
 code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padding:2px 8px;border-radius:6px}.dark code{background:#fff1}
 .flow{display:flex;align-items:center;gap:18px;font-size:27px}.box{border:2px solid #d6d1c7;border-radius:14px;padding:18px 22px;background:#fff;text-align:center}
@@ -89,22 +89,23 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="grid g2" style="gap:36px;margin-top:10px"><div><img class="shot" src="report.png" style="height:760px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Brief: verdict, why (cited), actions, caveats, evidence with SQL ids — and the agent trace that produced it.</p></div>
 <div><img class="shot" src="live.png" style="height:380px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Live viewer: the agents' events as they happen, from the trace file.</p><img class="shot" src="zetaris.png" style="margin-top:18px;height:330px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Zetaris: REST feeds and JDBC sources registered by <code>setup:zetaris</code>.</p></div></div></section>
 
-<section class="s"><div class="k">8 · Results</div><h2>186 of 194 recalled items caught. The Auditor cuts missed recalls 12 → 4.</h2>
-<table style="margin-bottom:22px"><tr><th>Setup (440 recall/SKU pairs)</th><th>Caught (of 194)</th><th>Wrongly dismissed</th><th>False alarms (of 246)</th><th>To human</th></tr>
-<tr><td>No Cartographer — rules only</td><td>12</td><td>0</td><td>0</td><td>428</td></tr>
-<tr><td>Cartographer — rules only</td><td>103</td><td>0</td><td>0</td><td>337</td></tr>
-<tr><td>+ Nemotron 3.5 Lightning 30B via Nightshift</td><td>141</td><td>10</td><td>2</td><td>63</td></tr>
-<tr style="font-weight:700"><td>+ NVIDIA Nemotron 3 Ultra via Nightshift</td><td>186</td><td>4</td><td>6</td><td>23</td></tr></table>
-<table style="margin-bottom:22px"><tr><th>Text matches (90 covered of 336)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
-<tr><td>Ultra: judge's first answer</td><td>78</td><td style="color:#c0392b">12</td><td>9</td><td>0</td></tr>
-<tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>84</td><td>4</td><td>6</td><td>21</td></tr></table>
-<p style="font-size:26px"><b>417 of 440 pairs (95%) settled without a person, 407 correctly; 23 go to a reviewer with the reason.</b> The Auditor checks dismissals too. 0 of 537 model calls failed.</p>
+<section class="s"><div class="k">8 · Results</div><h2>187 of 194 recalled items caught. The Auditor cuts missed recalls 10 → 3.</h2>
+<table class="tight" style="margin-bottom:14px"><tr><th>Setup (440 recall/SKU pairs)</th><th>Caught (of 194)</th><th>Wrongly dismissed</th><th>False alarms (of 246)</th><th>To human</th></tr>
+<tr><td>No Cartographer — rules only</td><td>11</td><td>0</td><td>0</td><td>429</td></tr>
+<tr><td>Cartographer, known rules only</td><td>22</td><td>0</td><td>0</td><td>418</td></tr>
+<tr><td>Cartographer + model-proposed transforms (no judge)</td><td>103</td><td>0</td><td>0</td><td>337</td></tr>
+<tr><td>+ Nemotron 3.5 Lightning 30B via Nightshift</td><td>139</td><td>10</td><td>2</td><td>66</td></tr>
+<tr style="font-weight:700"><td>+ NVIDIA Nemotron 3 Ultra via Nightshift</td><td>187</td><td>3</td><td>6</td><td>23</td></tr></table>
+<table class="tight" style="margin-bottom:14px"><tr><th>Text matches (90 covered of 336)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
+<tr><td>Ultra: judge's first answer</td><td>80</td><td style="color:#c0392b">10</td><td>10</td><td>0</td></tr>
+<tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>85</td><td>3</td><td>6</td><td>21</td></tr></table>
+<p style="font-size:26px"><b>417 of 440 pairs (95%) settled without a person, 408 correctly; 23 go to a reviewer with the reason.</b> The Auditor checks dismissals too. 0 of 538 model calls failed.</p>
 <p class="mute" style="font-size:22px">Real Investigator ⇄ Auditor loop on every candidate pair from 517 recalls (sample-mode data). Covered = SKU generated from that recall, or its UPC printed in the notice. Retailer data is synthetic. Details: eval/EVAL.md.</p>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">9 · Next</div><h2>From demo to a safety desk.</h2>
 <div class="grid g2"><ul><li>More feeds through Zetaris: USDA FSIS, NHTSA equipment (car seats), Health Canada</li><li>Lot capture from receiving scans instead of the item master</li><li>Customer notification through the loyalty system — counts today, messages tomorrow</li></ul>
 <ul><li>Cartographer onboarding new feeds on its own: catalog → profile → join test</li><li>Markovian engine for daily long-running sweeps</li><li>Review screen for a team: assignment, and each decision's history from the H-MEM trust ledger</li></ul></div>
-<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> synthetic retailer data; proposed transforms are limited to string ops; lexical Auditor checks; CPSC rarely prints UPCs; hosted model rate limits make a full evaluation take two hours.</p>
+<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> synthetic retailer data; proposed transforms are limited to string ops; lexical Auditor checks; CPSC rarely prints UPCs; hosted model rate limits make a full evaluation take over an hour.</p>
 <div class="foot"><span>RecallWhy · github.com/mikey92/recallwhy</span><span>Track 1</span></div></section>
 </body></html>
