@@ -148,16 +148,19 @@ Without the Cartographer, every GTIN-14 or check-digit supplier looks like a lot
 | Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries |
 |---|---|---|---|---|---|
 | none (rules only) | 103 | 0 | 0 | 337 | — |
-| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** | **186** | **4** | **6** | 23 | 0 of 537 |
+| NVIDIA Nemotron 3.5 Lightning 30B, through Meterless Nightshift | 141 | 10 | 2 | 63 | 0 of 648 |
+| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** (default) | **186** | **4** | **6** | 23 | 0 of 537 |
 
 **What the Auditor adds** (text matches only, 336 pairs, 90 covered; "first answer" is the judge's first reply in the same trace):
 
 | | Caught | Wrongly dismissed | False alarms | Sent to human |
 |---|---|---|---|---|
-| Judge's first answer | 78 | 12 | 9 | 0 |
-| After the Auditor loop | 84 | **4** | **6** | 21 |
+| Ultra, judge's first answer | 78 | 12 | 9 | 0 |
+| Ultra, after the Auditor loop | 84 | **4** | **6** | 21 |
+| Lightning, judge's first answer | 15 | 75 | 0 | 0 |
+| Lightning, after the Auditor loop | 39 | 10 | 2 | 61 |
 
-A dismissed recall is the dangerous error: recalled stock stays on the shelf. The Auditor now checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
+A dismissed recall is the dangerous error: recalled stock stays on the shelf. The smaller Lightning model dismisses 75 of 90 covered text matches on its first answer; the Auditor wins back 65 of them. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
 
 ## Data
 
