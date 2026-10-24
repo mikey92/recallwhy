@@ -6,7 +6,7 @@
 - the synthetic SKU was generated from that recall (`data/synthetic/eval/ground_truth.csv`, never read by the agents), or
 - the SKU's UPC is printed in the notice.
 
-Everything else counts as *not covered*. Labels are strict, so a few "false alarms" are really the same product appearing in a second notice: of the 7 for Nemotron 3 Nano 30B in the 21 Oct run, CPSC 26601 is an expansion of the same grill-brush recall; of Ultra's 6 today, the same grill brush (CPSC 26601) counts again, and the Clover Hill cheese snack pack is labelled with H-1205-2026 but is also named in H-1207-2026.
+Everything else counts as *not covered*. A covered SKU's title is generated from the notice's product text (upper-cased, clipped to 48 characters, size or model appended; `scripts/gen-synthetic.ts` `fdaRetailerTitle`, `cpscRetailerTitle`), so its words overlap the notice more than a real item master would. Read the text-match numbers with that in mind. Labels are strict, so a few "false alarms" are really the same product appearing in a second notice: of the 7 for Nemotron 3 Nano 30B in the 21 Oct run, CPSC 26601 is an expansion of the same grill-brush recall; of Ultra's 6 today, the same grill brush (CPSC 26601) counts again, and the Clover Hill cheese snack pack is labelled with H-1205-2026 but is also named in H-1207-2026.
 
 ## Current code (24 Oct 2026)
 
