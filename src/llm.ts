@@ -41,12 +41,13 @@ function nightshiftToken(): string | undefined {
 
 export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
   return async (prompt, opts) => {
+    // No model: callers fall back (judge → UNSURE, lots → regex, brief → template); nothing was called, so nothing is logged.
+    if (cfg.provider === "none") throw new Error("no model configured (LLM_PROVIDER=none)");
     const t0 = Date.now();
     let output = "";
     let error: string | undefined;
     let served: Served = {};
     try {
-      if (cfg.provider === "none") throw new Error("no model configured (LLM_PROVIDER=none)");
       if (cfg.provider === "ollama") output = await ollama(cfg, prompt, opts);
       else {
         // Rate limits (429) and slow first tokens (502/504) from the hosted model are transient:

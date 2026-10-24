@@ -1,10 +1,13 @@
-# Example runs (real outputs copied from `out/` and `logs/`; only the trace path in report.md was changed)
+# Examples (real runs, not edited)
 
-| Folder | What | Engine |
+Each request in `input/` was sent to `POST /run` on the API (`npm run api`) with live Zetaris, Meterless Nightshift and `nvidia/nemotron-3-ultra-550b-a55b`, on 23–24 Oct 2026, starting from empty H-MEM and World Model state. `output/example_N.json` is the API's response, unchanged. `output/example_N/` holds the run's full `trace.jsonl` and its `report.html` / `report.md` (open the HTML in a browser). The `trace` and `outDir` paths inside the JSON point at where the files were written in the working copy.
+
+| Request | Response | What to look for in `trace.jsonl` (seq) |
 |---|---|---|
-| `01-live-zetaris-run1/` | Recalls since 2026-10-01, first 8 cases. The Auditor blocks "frozen cheese pizza" against a pepperoni-pizza notice three times and escalates it. | Zetaris (live REST feeds + JDBC) |
-| `02-human-review.txt` | `npm run queue` shows the escalated case; `npm run decide` stores the reviewer's decision in H-MEM | — |
-| `03-live-zetaris-run2-after-human-decision/` | Same input again. The Investigator follows the human decision (`following human decision mem-…`), reuses audited decisions from run 1, and needs 18 model calls instead of 25. | Zetaris |
-| `04-sample-mode/` | `SAMPLE_MODE=true`, recalls since 2026-09-20, first 6 cases | DuckDB stand-in (no Zetaris) |
+| `example_1.json`: recalls since 2026-09-15, first 5 | 2 act-now, 2 not-ours, 1 needs-human | 3, 12: the Cartographer reads Zetaris's catalog (`SHOW DATASOURCES`, `SHOW LIGHTNING DATABASES`, …). 40: it profiles how the live feeds write barcodes and dates. 46: the Scout's REST × JDBC join (live FDA feed × ERP). 435: a judge call answered by `nvidia/nemotron-3-ultra-550b-a55b` (`served_model`, `receipt`). 475–489: the judge dismisses a SKU whose own quote names it; the Auditor blocks the dismissal three times (`dismissal-names-our-item`) and the case is escalated to a human. 483: an `llm.retry` after a rate limit. 546–550: the Auditor sends ship-notice rows its barcode key cannot reach to the Cartographer, which learns that SUP007 drops the UPC check digit, checks it on all 484 of SUP007's ship notices, and corrects the map. |
+| `example_2.json`: H-1355-2026 and H-1378-2026 | 2 act-now | 77–81: the same Auditor → Cartographer correction, in a two-case run you can read end to end. |
+| `example_3.json`: recalls since 2026-10-01, first 3 | 1 act-now, 1 not-ours, 1 needs-human | 172–178: the Auditor blocks the dismissal of NW-100005. 183: the judge call still fails after every retry (429 from the hosted model); the judge's answer becomes UNSURE and the pair goes to the human queue. 199: the lot reader fails the same way and falls back to the regex. |
+| Human review, then `example_3.json` again → `example_3_after_human_decision.json` | 2 act-now, 1 not-ours | Between the runs: `npm run decide -- H-1407-2026 NW-100005 same --note "same Todd's Seeds sprouting mixture; our item master's 4LB is the 1/4 lb bag the notice lists"`. 166: the Investigator follows the stored human decision (`mem-13`) without asking the model. |
+| `example_1.json` with `SAMPLE_MODE=true LLM_PROVIDER=none` → `example_1_sample_mode.json` | 3 act-now, 2 not-ours | No Zetaris, no Nightshift: the same agents and SQL on the DuckDB stand-in, no model calls. 445: the human decision from the previous row is still in H-MEM and is followed. 507–511: the Cartographer correction happens here too. |
 
-Each folder has `report.md`/`report.html` (open in a browser), `briefs/`, `result.json`, and the full `trace.jsonl`. Traces are not hand-edited.
+The Nightshift calls hit the hosted NVIDIA rate limit during these runs (the `llm.retry` events and the failed call at seq 183 in example 3). These runs used three retries; the code now waits up to five times (3–90 s).
