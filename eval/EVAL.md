@@ -1,12 +1,36 @@
 # Evaluation
 
-`npx tsx eval/run.ts --model <ollama model>` runs the **real Investigator ⇄ Auditor loop**: the same code as a live run, without briefs. It covers every recall from 2026-07-01 in the sample snapshots (517 notices, 225 cases, 440 SKU pairs). It runs on the DuckDB stand-in, so it needs no Zetaris instance.
+`npx tsx eval/run.ts` (defaults: `--provider meterless --model nvidia/nemotron-3-ultra-550b-a55b`) runs the **real Investigator ⇄ Auditor loop**: the same code as a live run, without briefs. It covers every recall from 2026-07-01 in the sample snapshots (517 notices, 225 cases, 440 SKU pairs). It runs on the DuckDB stand-in, so it needs no Zetaris instance.
 
 **Labels.** A pair counts as *covered* when either:
 - the synthetic SKU was generated from that recall (`data/synthetic/eval/ground_truth.csv`, never read by the agents), or
 - the SKU's UPC is printed in the notice.
 
 Everything else counts as *not covered*. Labels are strict, so a few "false alarms" are really the same product appearing in a second notice: of the 7 for Nemotron 30B, CPSC 26601 is an expansion of the same grill-brush recall.
+
+## Current code (24 Oct 2026)
+
+| Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries | Time |
+|---|---|---|---|---|---|---|
+| none (rules only, `--provider none`) | 103 | 0 | 0 | 337 | — | 20 s |
+| **NVIDIA Nemotron 3 Ultra 550B-A55B, through Meterless Nightshift** | **186** | **4** | **6** | 23 | 0 of 537 | 7,649 s |
+
+Text matches only (336 pairs, 90 covered), judge's first answer vs the final decision (`python3 eval/first-vs-final.py meterless-nvidia_nemotron-3-ultra-550b-a55b`):
+
+| | Caught | Wrongly dismissed | False alarms | Sent to human |
+|---|---|---|---|---|
+| Judge's first answer | 78 | 12 | 9 | 0 |
+| After the Auditor loop | 84 | 4 | 6 | 21 |
+
+**What changed to get here, and why.** The first Ultra run dismissed 16 covered pairs. Reading them showed two causes, both ours:
+- The judge prompt introduced the item master's `brand` column as the brand. It holds the vendor we buy from (taken from the recalling firm), e.g. "Conair Of Stamford" for a Cuisinart grill brush, so a strict model answered "different brand". The prompt now calls it the vendor and says titles are abbreviated.
+- The Auditor only checked matches. It now also rejects a dismissal whose own quote names every product word of our item; if the judge holds to it, the pair goes to a human.
+
+The hosted model rate-limits per minute. With three retries, 60 of 522 calls failed in one run and fell back to UNSURE, which inflated "sent to human". The client now waits up to five times (3–90 s); the run above had no failed calls. Every run's JSON reports `modelCalls.failedAfterRetries`.
+
+The 4 remaining wrongly dismissed pairs are generator artefacts more than model errors: one SKU's barcode was derived wrongly from the notice's GTIN (`WINFIELD'S CWB 8OZ`, 008100798339 vs the notice's 00810079833030), and three generated titles name no product at all (`16 OZ PACKAGED IN FOAM`, `LIGHT-UP CHILDREN'S TOYS`, `CORDLESS VACUUM CLEANERS WITH LITHIUM-ION` against a notice listing model numbers). We left the data as it is rather than fix it to suit the model.
+
+## Earlier runs (21 Oct, older prompt, data and Auditor — not comparable with the table above)
 
 | Judge model (via the one injected generator) | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Time |
 |---|---|---|---|---|---|

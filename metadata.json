@@ -75,7 +75,7 @@
         "nvidia/nemotron-3.5-lightning-30b-a3b (via Nightshift)",
         "nemotron-3-nano:latest and :4b (via Ollama, earlier evaluation)"
       ],
-      "evaluation": "eval/EVAL.md: 189/194 covered pairs caught, 0 wrongly dismissed, 7 false alarms over 440 pairs; judge-alone false alarms 207 → 7 after the Auditor loop"
+      "evaluation": "eval/EVAL.md: Nemotron 3 Ultra through Nightshift catches 186/194 covered pairs over 440 (rules alone: 103), 4 wrongly dismissed, 6 false alarms, 23 to a human, 0 of 537 model calls failed; on text matches the Auditor cuts the judge's first-answer dismissals 12 → 4 and false alarms 9 → 6"
     }
   },
   "data": {

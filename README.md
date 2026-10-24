@@ -143,16 +143,21 @@ npm run agents -- --only H-1378-2026                    # Investigator follows t
 Without the Cartographer, every GTIN-14 or check-digit supplier looks like a lot that was never shipped, so the Auditor blocks real matches. Files: `eval/results/none-none*.json`.
 
 
-`eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample mode) on every candidate pair since 2026-07-01: 517 recalls scanned, 225 cases, 440 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice.
+`eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample-mode data, model calls through Nightshift) on every candidate pair since 2026-07-01: 517 recalls scanned, 225 cases, 440 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice.
 
-| Judge model (earlier run, through Ollama) | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human |
+| Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries |
+|---|---|---|---|---|---|
+| none (rules only) | 103 | 0 | 0 | 337 | — |
+| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** | **186** | **4** | **6** | 23 | 0 of 537 |
+
+**What the Auditor adds** (text matches only, 336 pairs, 90 covered; "first answer" is the judge's first reply in the same trace):
+
+| | Caught | Wrongly dismissed | False alarms | Sent to human |
 |---|---|---|---|---|
-| none (rules only) | 103 | 0 | 0 | 337 |
-| **NVIDIA Nemotron 3 Nano 30B** | **189** | **0** | **7** | 35 |
-| NVIDIA Nemotron 3 Nano 4B | 175 | 18 | 5 | 7 |
-| Gemma 4 E4B | 178 | 14 | 5 | 5 |
+| Judge's first answer | 78 | 12 | 9 | 0 |
+| After the Auditor loop | 84 | **4** | **6** | 21 |
 
-On text matches, the Nemotron 30B judge's first answers would have raised **207 false alarms**. After the Auditor's checks and the revision loop, **7** remain, with nothing wrongly dismissed. The smaller models dismiss 14–18 real matches, and no Auditor check can win those back. Details and caveats (strict labels, one false alarm is the same product in an expanded recall): [`eval/EVAL.md`](eval/EVAL.md).
+A dismissed recall is the dangerous error: recalled stock stays on the shelf. The Auditor now checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
 
 ## Data
 

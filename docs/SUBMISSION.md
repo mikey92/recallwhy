@@ -34,7 +34,7 @@ Setup is code (`npm run setup:zetaris`). If Zetaris does not answer, a run falls
 - **World Model** (reference engine, `src/engines/world-model`) holds the source map, recalls, cases and findings as facts with provenance (agent, SQL id, model call). Our context builder over its fact view is the Briefer's only input.
 - Tests: `test/engines.test.ts`, `test/llm.test.ts`.
 
-**NVIDIA.** `nvidia/nemotron-3-ultra-550b-a55b`, reached through Nightshift, is the default model: the match judge, the lot-code reader and the why-paragraph. Evaluation over 440 recall/SKU pairs: see the README's Evaluation section and `eval/EVAL.md`.
+**NVIDIA.** `nvidia/nemotron-3-ultra-550b-a55b`, reached through Nightshift, is the default model: the match judge, the lot-code reader and the why-paragraph. Over 440 recall/SKU pairs it catches 186 of 194 covered pairs (rules alone: 103), with 4 wrongly dismissed, 6 false alarms and 23 sent to a human; 0 of 537 calls failed after retries. On text matches the Auditor cuts the judge's first-answer dismissals from 12 to 4 (`eval/EVAL.md`).
 
 **Cursor (with Space XAI).** The Cursor agent did the scaffolding, the synthetic data generator and Postgres loader, the Zetaris REST runner, the DuckDB sample-mode runner and their tests (commits marked "Cursor agent"). Each change was reviewed and corrected before commit.
 

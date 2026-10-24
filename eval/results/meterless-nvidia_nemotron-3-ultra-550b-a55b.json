@@ -1,31 +1,35 @@
 {
   "model": "meterless:nvidia/nemotron-3-ultra-550b-a55b",
-  "startedAt": "2026-10-23T21:32:50.972Z",
+  "startedAt": "2026-10-24T00:00:47.676Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
-  "seconds": 7973,
+  "seconds": 7649,
   "all": {
     "pairs": 440,
     "positives": 194,
-    "caught": 175,
-    "falseAlarms": 4,
-    "wronglyDismissed": 3,
-    "toHuman": 59,
-    "precision": 0.978,
-    "recall": 0.902
+    "caught": 186,
+    "falseAlarms": 6,
+    "wronglyDismissed": 4,
+    "toHuman": 23,
+    "precision": 0.969,
+    "recall": 0.959
   },
   "textOnly": {
     "pairs": 336,
     "positives": 90,
-    "caught": 73,
-    "falseAlarms": 4,
-    "wronglyDismissed": 3,
-    "toHuman": 57,
-    "precision": 0.948,
-    "recall": 0.811
+    "caught": 84,
+    "falseAlarms": 6,
+    "wronglyDismissed": 4,
+    "toHuman": 21,
+    "precision": 0.933,
+    "recall": 0.933
   },
-  "revisedCases": 23,
+  "revisedCases": 30,
+  "modelCalls": {
+    "total": 537,
+    "failedAfterRetries": 0
+  },
   "rows": [
     {
       "recall": "fda:H-1166-2026",
@@ -152,7 +156,7 @@
       "sku": "NW-100115",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -224,7 +228,7 @@
       "sku": "NW-100096",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -233,7 +237,7 @@
       "basis": "text",
       "label": "same",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1396-2026",
@@ -264,7 +268,7 @@
       "sku": "NW-100002",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -416,7 +420,7 @@
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -568,7 +572,7 @@
       "sku": "NW-100080",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -609,7 +613,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1297-2026",
@@ -617,7 +621,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1297-2026",
@@ -625,7 +629,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-0021-2027",
@@ -640,7 +644,7 @@
       "sku": "NW-100047",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -728,7 +732,7 @@
       "sku": "NW-100064",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -768,7 +772,7 @@
       "sku": "NW-100082",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -824,16 +828,16 @@
       "sku": "NW-100039",
       "basis": "text",
       "label": "not-this",
-      "final": "not-this",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1349-2026",
       "sku": "NW-100080",
       "basis": "text",
       "label": "not-this",
-      "final": "not-this",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1349-2026",
@@ -841,7 +845,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1101-2026",
@@ -920,7 +924,7 @@
       "sku": "NW-100092",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -936,7 +940,7 @@
       "sku": "NW-100067",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -952,7 +956,7 @@
       "sku": "NW-100063",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -1080,7 +1084,7 @@
       "sku": "NW-100039",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -1096,7 +1100,7 @@
       "sku": "NW-100063",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -1192,7 +1196,7 @@
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -1208,8 +1212,8 @@
       "sku": "NW-100101",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
-      "rounds": 1
+      "final": "same",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1289-2026",
@@ -1217,7 +1221,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1373-2026",
@@ -1248,7 +1252,7 @@
       "sku": "NW-100096",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -1441,15 +1445,15 @@
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1090-2026",
       "sku": "NW-100063",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
-      "rounds": 1
+      "final": "not-this",
+      "rounds": 2
     },
     {
       "recall": "fda:H-1090-2026",
@@ -1457,7 +1461,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1372-2026",
@@ -1472,7 +1476,7 @@
       "sku": "NW-100115",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -1745,7 +1749,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1098-2026",
@@ -1841,7 +1845,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1291-2026",
@@ -1849,7 +1853,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1291-2026",
@@ -1857,7 +1861,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1291-2026",
@@ -1865,7 +1869,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1170-2026",
@@ -2081,7 +2085,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1285-2026",
@@ -2089,7 +2093,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 1
     },
     {
       "recall": "fda:H-1288-2026",
@@ -2160,7 +2164,7 @@
       "sku": "NW-100073",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2224,7 +2228,7 @@
       "sku": "NW-100080",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2377,7 +2381,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1346-2026",
@@ -2392,7 +2396,7 @@
       "sku": "NW-100002",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2504,7 +2508,7 @@
       "sku": "NW-100107",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2592,7 +2596,7 @@
       "sku": "NW-100073",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2600,7 +2604,7 @@
       "sku": "NW-100123",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 2
     },
     {
@@ -2616,7 +2620,7 @@
       "sku": "NW-100092",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2681,7 +2685,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "fda:H-1359-2026",
@@ -2704,7 +2708,7 @@
       "sku": "NW-100079",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 2
     },
     {
@@ -2744,7 +2748,7 @@
       "sku": "NW-100005",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2800,7 +2804,7 @@
       "sku": "NW-100063",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2881,7 +2885,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1367-2026",
@@ -2889,7 +2893,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1332-2026",
@@ -2928,7 +2932,7 @@
       "sku": "NW-100122",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -2952,7 +2956,7 @@
       "sku": "NW-100120",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "not-this",
       "rounds": 1
     },
     {
@@ -3152,7 +3156,7 @@
       "sku": "NW-100168",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -3240,8 +3244,8 @@
       "sku": "NW-100196",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
-      "rounds": 1
+      "final": "same",
+      "rounds": 2
     },
     {
       "recall": "cpsc:26738",
@@ -3264,7 +3268,7 @@
       "sku": "NW-100205",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -3273,7 +3277,7 @@
       "basis": "text",
       "label": "same",
       "final": "same",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "cpsc:26717",
@@ -3281,7 +3285,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "not-this",
-      "rounds": 1
+      "rounds": 2
     },
     {
       "recall": "cpsc:26724",
@@ -3312,7 +3316,7 @@
       "sku": "NW-100149",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -3360,7 +3364,7 @@
       "sku": "NW-100195",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -3424,7 +3428,7 @@
       "sku": "NW-100161",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -3456,7 +3460,7 @@
       "sku": "NW-100134",
       "basis": "text",
       "label": "same",
-      "final": "unsure",
+      "final": "same",
       "rounds": 1
     },
     {
@@ -3504,7 +3508,7 @@
       "sku": "NW-100172",
       "basis": "text",
       "label": "not-this",
-      "final": "unsure",
+      "final": "same",
       "rounds": 2
     },
     {
