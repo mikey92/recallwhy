@@ -103,3 +103,28 @@ test("a live feed that is down does not stop the run: the Scout goes on with the
     await duck.close();
   }
 });
+
+test("for a barcode format it has no rule for, the model proposes a transform and SQL decides", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-propose-"));
+  const trace = new Trace({ dir, quiet: true, runId: "propose" });
+  const sql = new DuckSampleRunner({ trace });
+  await sql.ready;
+  try {
+    const rows = (await sql.run("SELECT sku, lot_code FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP019' AND length(upc) = 10 LIMIT 5", { agent: "test", purpose: "pick rows" })).rows;
+    const skus = rows.map((r) => String(r.sku)), lots = rows.map((r) => String(r.lot_code));
+    const withReply = async (reply: string) => {
+      const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => reply, model: "test:model" } as unknown as AgentContext;
+      ctx.map = await chart(ctx);
+      return reconcile(ctx, "case-test", skus, lots);
+    };
+    const wrong = await withReply('{"supplier": ["take_last:10"], "ours": ["drop_last:2"], "why": "guess"}');
+    assert.deepEqual(wrong, [], "a proposal SQL disproves is not adopted");
+    assert.deepEqual(await withReply('{"supplier": ["digits_only"], "ours": ["x\') OR 1=1 --"]}'), [], "anything outside the op set is refused");
+    const right = await withReply('{"supplier": ["digits_only", "take_last:10"], "ours": ["digits_only", "drop_first:1", "drop_last:1"], "why": "10-digit core"}');
+    assert.deepEqual(right.map((r) => [r.supplier, r.transform, r.proposedBy]), [["SUP019", "proposed", "test:model"]]);
+    const n = Number((await sql.run("SELECT COUNT(*) AS n FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP019' AND upc <> ''", { agent: "test", purpose: "count" })).rows[0]?.n);
+    assert.equal(right[0].rows, n, "proven on every SUP019 ship notice");
+  } finally {
+    await sql.close();
+  }
+});

@@ -1,6 +1,6 @@
 {
   "model": "none:none",
-  "startedAt": "2026-10-24T03:28:55.225Z",
+  "startedAt": "2026-10-24T04:39:05.534Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
@@ -8,12 +8,12 @@
   "all": {
     "pairs": 440,
     "positives": 194,
-    "caught": 103,
+    "caught": 22,
     "falseAlarms": 0,
     "wronglyDismissed": 0,
-    "toHuman": 337,
+    "toHuman": 418,
     "precision": 1,
-    "recall": 0.531
+    "recall": 0.113
   },
   "textOnly": {
     "pairs": 336,
@@ -25,7 +25,7 @@
     "precision": null,
     "recall": 0
   },
-  "revisedCases": 1,
+  "revisedCases": 18,
   "cartographerRules": [
     {
       "supplier": "SUP007",
@@ -58,40 +58,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1166-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1166-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1166-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1166-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1258-2026",
@@ -338,40 +338,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1172-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1172-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1172-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1172-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1241-2026",
@@ -474,40 +474,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1160-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1160-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1160-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1160-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1214-2026",
@@ -578,8 +578,8 @@
       "sku": "NW-100020",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1351-2026",
@@ -587,7 +587,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1351-2026",
@@ -595,7 +595,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1136-2026",
@@ -810,40 +810,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1159-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1159-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1159-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1159-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1349-2026",
@@ -898,40 +898,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1171-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1171-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1171-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1171-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1125-2026",
@@ -1314,40 +1314,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1169-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1169-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1169-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1169-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1357-2026",
@@ -1370,40 +1370,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1167-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1167-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1167-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1167-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1384-2026",
@@ -1506,40 +1506,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1165-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1165-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1165-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1165-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1244-2026",
@@ -1562,40 +1562,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1168-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1168-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1168-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1168-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1363-2026",
@@ -1698,40 +1698,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1173-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1173-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1173-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1173-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1282-2026",
@@ -1818,40 +1818,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1161-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1161-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1161-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1161-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1275-2026",
@@ -1898,40 +1898,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1170-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1170-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1170-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1170-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1200-2026",
@@ -1978,40 +1978,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1163-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1163-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1163-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1163-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1247-2026",
@@ -2266,40 +2266,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1158-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1158-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1158-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1158-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1156-2026",
@@ -2338,40 +2338,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1164-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1164-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1164-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1164-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-0024-2027",
@@ -3002,40 +3002,40 @@
       "sku": "NW-100033",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1162-2026",
       "sku": "NW-100049",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1162-2026",
       "sku": "NW-100050",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1162-2026",
       "sku": "NW-100059",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1162-2026",
       "sku": "NW-100108",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1295-2026",

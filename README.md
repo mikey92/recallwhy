@@ -32,7 +32,7 @@ The answer is spread over four systems that were never meant to meet: two federa
 
 | Agent | Does | Can |
 |---|---|---|
-| **Cartographer** | Before any case: lists every Zetaris datasource, Lightning database and schemastore view, describes their columns and tags barcode, SKU and lot columns. Profiles barcode lengths and tests each cross-source barcode join as written and without leading zeros. Finds that a third of the suppliers send GTIN-14 (UPC-12 padded with `00`): 7,856 of 14,180 barcoded ship notices join as written, 12,785 after stripping leading zeros. The other 1,395 join neither way; it says so and leaves them open. When the Auditor sends back rows its key cannot reach, it diagnoses that supplier's barcodes, tests the fix on **every** ship notice from that supplier, and only then corrects the map (for example: SUP007 sends the 11-digit UPC without its check digit, 484 of 484 rows). It also profiles the live feeds: the FDA feed has no barcode field (92 of 333 notices print one in the product text, 50 more only once spaces and dashes are removed) and writes dates as `yyyymmdd`; CPSC has a UPC field on 4 of 189 notices and writes ISO dates. Skips the Zetaris sample databases with the reason logged. | Tell the Auditor which join to trust; correct the map mid-run |
+| **Cartographer** | Before any case: lists every Zetaris datasource, Lightning database and schemastore view, describes their columns and tags barcode, SKU and lot columns. Profiles barcode lengths and tests each cross-source barcode join as written and without leading zeros. Finds that a third of the suppliers send GTIN-14 (UPC-12 padded with `00`): 6,697 of 14,180 barcoded ship notices join as written, 11,626 after stripping leading zeros. The other 2,554 join neither way; it says so and leaves them open. When the Auditor sends back rows its key cannot reach, it diagnoses that supplier's barcodes, tests the fix on **every** ship notice from that supplier, and only then corrects the map (for example: SUP007 sends the 11-digit UPC without its check digit, 484 of 484 rows). For a format it has no rule for, the model proposes a transform from sampled pairs in a fixed op set and SQL proves it on all rows (SUP019 sends a 10-digit core: Nemotron 3 Ultra proposed `take_last:10` against our UPC with `drop_first:1 → drop_last:1`, which held on 269 of 269). It also profiles the live feeds: the FDA feed has no barcode field (92 of 333 notices print one in the product text, 50 more only once spaces and dashes are removed) and writes dates as `yyyymmdd`; CPSC has a UPC field on 4 of 189 notices and writes ISO dates. Skips the Zetaris sample databases with the reason logged. | Tell the Auditor which join to trust; correct the map mid-run |
 | **Scout** | Pulls recalls since a date from the two live feed views. Loads the item master. Runs one federated query that joins the live FDA feed (REST) with ERP SKUs (JDBC) on UPC digits. Opens a case for each recall that touches our catalog. | Delegate cases to the Investigator |
 | **Investigator** | Reads prior decisions from H-MEM. Decides each candidate: UPC or model number → rule; text match → **NVIDIA Nemotron** judge, which must quote the notice. Reads lot codes (regex plus Nemotron). Computes exposure with federated SQL: on-hand units by store and lot, units sold since the recall date, loyalty customers to notify, and the supplier from ship notices. | Revise when the Auditor blocks it |
 | **Auditor** | Re-checks each UPC match against the *live notice in Zetaris*. Checks that judge quotes and lot codes are verbatim in the notice, and that every product word of our item appears in the notice (catches "cheese pizza" ≠ "pepperoni pizza"). **Re-derives every exposure number with its own SQL**, aggregated in the database rather than in code. Confirms affected lots against supplier ship notices, reached by barcode (a different key than the Investigator's SKU join). If the barcode reaches fewer lots than the SKU, it sends those rows to the Cartographer rather than blocking the Investigator, which could not fix a key format. Rejects briefs that cite missing evidence or state numbers not in the evidence. | **Block** (max 2 revision rounds, then escalate to the human queue) |
@@ -120,17 +120,17 @@ The same agents and the same SQL run against an in-process DuckDB stand-in, over
 
 ```bash
 npm run queue                                           # escalated cases
-npm run decide -- H-1407-2026 NW-100005 same --note "our 4LB is the 1/4 lb bag the notice lists"
-npm run agents -- --since 2026-07-01 --only H-1407-2026 # Investigator follows the stored decision
+npm run decide -- H-1259-2026 NW-100058 same --note "same rice balls as the notice"
+npm run agents -- --since 2026-07-01 --only H-1259-2026 # Investigator follows the stored decision
 ```
 
 The same through the API, in the container with no credentials:
 
 ```bash
-curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1407-2026"]}'   # needs-human
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1259-2026"]}'   # needs-human
 curl localhost:8000/queue                                                                                                 # why it needs a reviewer
-curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1407-2026","sku":"NW-100005","verdict":"same"}'
-curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1407-2026"]}'   # act-now, following the decision
+curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1259-2026","sku":"NW-100058","verdict":"same"}'
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1259-2026"]}'   # act-now, following the decision
 ```
 
 ## Failure handling
@@ -147,15 +147,16 @@ curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since"
 
 ## Evaluation
 
-**Cartographer ablation** (rules only, so the model plays no part; same 440 pairs):
+**Cartographer ablation** (the judge is off, so no model reads a notice; same 440 pairs):
 
 | Setup | Covered caught (of 194) | Sent to human | Cartographer corrections |
 |---|---|---|---|
-| No Cartographer: barcodes join as written, no loop | 12 | 428 | — |
-| Map only on demand: no upfront map, the Auditor sends every mismatch back | 103 | 337 | 11 supplier rules learned from cases (7 padding, 4 check digit) |
-| **Upfront map + loop** (default) | **103** | 337 | padding found upfront; all 4 check-digit suppliers learned from cases |
+| No Cartographer: barcodes join as written, no loop | 11 | 429 | — |
+| Map only on demand: no upfront map, the Auditor sends every mismatch back | 22 | 418 | 11 rules from cases (7 padding, 4 check digit); 3 suppliers left unexplained |
+| Upfront map + loop, known transforms only | 22 | 418 | padding found upfront, 4 check-digit rules from cases; 3 suppliers left unexplained |
+| **Upfront map + loop, model proposes, SQL proves** (default) | **103** | 337 | the 4 check-digit rules, plus 3 transforms Nemotron 3 Ultra proposed and SQL proved on every ship notice of the supplier (269, 276, 299 rows) |
 
-Without the Cartographer, every GTIN-14 or check-digit supplier looks like a lot that was never shipped, so the Auditor blocks real matches. Files: `eval/results/none-none*.json`.
+Three suppliers send a 10-digit core (no leading digit, no check digit), a format the code has no rule for. The Cartographer samples six barcode pairs from the supplier with SQL and asks the model for a transform in a small DSL (`digits_only`, `strip_leading_zeros`, `drop_first:N`, `drop_last:N`, `take_first:N`, `take_last:N`; nothing else is accepted, no free SQL). The proposal is compiled to SQL and adopted only if it holds for every ship notice from that supplier; the World Model fact keeps the ops, the model and the SQL id. Ultra proposed `take_last:10` for theirs and `drop_first:1 → drop_last:1` for ours, and it held on all rows. Without the Cartographer, every GTIN-14, check-digit or 10-digit supplier looks like a lot that was never shipped, so the Auditor blocks real matches. Files: `eval/results/none-none*.json` (`none-none-map-…` is the row with model proposals: judge off, Cartographer on Ultra).
 
 
 `eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample-mode data, model calls through Nightshift) on every candidate pair since 2026-07-01: 517 recalls scanned, 225 cases, 440 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice.
@@ -189,9 +190,9 @@ A dismissed recall is the dangerous error: recalled stock stays on the shelf. Th
 
 ## Limitations
 
-- The retailer data is synthetic. Its barcode quirks (a third of suppliers sending GTIN-14, four sending the UPC without its check digit) are planted by `scripts/gen-synthetic.ts`, modelled on real EDI feeds; the Cartographer's code does not know which suppliers they are. Real item masters abbreviate harder, and real lot codes come from receiving scans.
+- The retailer data is synthetic. Its barcode quirks (a third of suppliers sending GTIN-14, four sending the UPC without its check digit, three sending a 10-digit core) are planted by `scripts/gen-synthetic.ts`, modelled on real EDI feeds; the Cartographer's code does not know which suppliers they are. Real item masters abbreviate harder, and real lot codes come from receiving scans.
 - A text match rests on one model reading English (Nemotron 3 Ultra by default), and the Auditor's checks are lexical: grounding, item words, lot tokens. Ambiguous cases go to a human instead of being guessed.
-- The Cartographer tries two barcode transforms when it diagnoses a supplier (leading-zero padding, a dropped UPC check digit), the two the synthetic data contains. A supplier with another format is reported as unexplained and its rows stay with the SKU join; teaching it more formats, or letting the model propose a transform that SQL then proves, is future work.
+- The Cartographer knows two barcode transforms (leading-zero padding, a dropped check digit); for anything else the model proposes one from a fixed set of string ops and SQL proves it on all of the supplier's rows. A format those ops cannot express (a remapped prefix, a per-row lookup) is still reported as unexplained, and its rows stay with the SKU join.
 - CPSC notices carry no distribution states in our feed view, so the "shipped outside the recall's distribution" caveat only fires for FDA recalls.
 - The loyalty-customer count sums weekly distinct counts, so it is an upper bound.
 - CPSC notices rarely print UPCs (4 of 184 in the `sample/` snapshot of 22 Oct, 4 of 189 in the live feed on 24 Oct), so CPSC matching leans on model numbers and the judge.

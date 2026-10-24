@@ -1,6 +1,6 @@
 {
   "model": "none:none",
-  "startedAt": "2026-10-24T03:29:31.831Z",
+  "startedAt": "2026-10-24T04:39:35.237Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
@@ -8,12 +8,12 @@
   "all": {
     "pairs": 440,
     "positives": 194,
-    "caught": 12,
+    "caught": 11,
     "falseAlarms": 0,
     "wronglyDismissed": 0,
-    "toHuman": 428,
+    "toHuman": 429,
     "precision": 1,
-    "recall": 0.062
+    "recall": 0.057
   },
   "textOnly": {
     "pairs": 336,
@@ -25,7 +25,7 @@
     "precision": null,
     "recall": 0
   },
-  "revisedCases": 28,
+  "revisedCases": 29,
   "cartographerRules": [],
   "rows": [
     {
@@ -553,8 +553,8 @@
       "sku": "NW-100020",
       "basis": "upc",
       "label": "same",
-      "final": "same",
-      "rounds": 1
+      "final": "unsure",
+      "rounds": 3
     },
     {
       "recall": "fda:H-1351-2026",
@@ -562,7 +562,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1351-2026",
@@ -570,7 +570,7 @@
       "basis": "text",
       "label": "not-this",
       "final": "unsure",
-      "rounds": 1
+      "rounds": 3
     },
     {
       "recall": "fda:H-1136-2026",
