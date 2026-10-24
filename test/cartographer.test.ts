@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { barcodeJoin, chart, reconcile } from "../src/agents/cartographer.ts";
+import { scout } from "../src/agents/scout.ts";
 import type { AgentContext } from "../src/agents/context.ts";
 import { DuckSampleRunner } from "../src/sql/duck.ts";
 import { CaseMemory } from "../src/memory.ts";
@@ -77,4 +78,26 @@ test("on Zetaris, the Cartographer reads the catalog statements and skips the sa
   assert.ok(!seen.some((q) => q.includes("tpch")), "nothing is queried inside a skipped database");
   const j = map.joins[0];
   assert.deepEqual([j.left, j.asWritten, j.normalized, j.chosen], ["supplier_portal.ship_notices", 6, 12, "normalized"]);
+});
+
+test("a live feed that is down does not stop the run: the Scout goes on with the other feed and says so", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-feeddown-"));
+  const trace = new Trace({ dir, quiet: true, runId: "feeddown" });
+  const duck = new DuckSampleRunner({ trace });
+  await duck.ready;
+  try {
+    // Like openFDA answering 500 through Zetaris: every query that touches the FDA feed fails.
+    const sql = { engine: duck.engine, close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) =>
+      q.includes("recallfeeds.fda_food") ? Promise.reject(new Error("Zetaris query failed 400: REST API call failed: HTTP 500 for api.fda.gov")) : duck.run(q, meta) };
+    const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
+    const map = await chart(ctx);
+    assert.ok(map.joins.length > 0, "the map stands without the feed profile");
+    const { cases } = await scout(ctx, { since: "2026-07-01" });
+    assert.ok(cases.length > 0 && cases.every((k) => k.recall.feed === "cpsc"));
+    const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text);
+    assert.ok(msgs.some((t) => /FDA feed unavailable/.test(t)));
+    assert.ok(msgs.some((t) => /could not profile the live feeds/.test(t)));
+  } finally {
+    await duck.close();
+  }
 });

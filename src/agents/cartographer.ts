@@ -87,7 +87,11 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
       + (open > 0 ? ` ${open} barcoded rows join neither way; left open until a case needs them — send me any you hit.` : ""),
       { join: j });
   }
-  map.feeds = await profileFeeds(ctx, map);
+  // Profiling queries the live feeds; one that is down must not stop the map.
+  map.feeds = await profileFeeds(ctx, map).catch((e) => {
+    say(ctx, "Cartographer", "Orchestrator", `could not profile the live feeds (${String(e instanceof Error ? e.message : e).split("\n")[0].slice(0, 160)}); the rest of the map stands`);
+    return [];
+  });
   const blanks = map.barcodes.filter((b) => (b.lengths["0"] ?? 0) > 0).map((b) => `${b.table} has ${b.lengths["0"]} rows with no barcode`);
   say(ctx, "Cartographer", "Orchestrator", `mapped ${map.tables.length} tables in ${new Set(map.tables.map((t) => t.source)).size} sources (${map.skipped.length} skipped). ${blanks.join("; ")}${blanks.length ? " — those rows are reachable by SKU only." : ""}`,
     { tables: map.tables.map((t) => `${t.kind}:${t.name}`), skipped: map.skipped });

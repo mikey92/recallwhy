@@ -138,6 +138,7 @@ curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since"
 | Failure | What happens | Where |
 |---|---|---|
 | Zetaris configured but not answering | The run falls back to the sample stand-in; the trace has the `sql.error` and a note saying why (`ZETARIS_FALLBACK=false` to fail instead) | `src/sql/index.ts` |
+| A live feed is down (openFDA answers 500 at times; it did during this build) | The Scout reports it and goes on with the other feed; the Cartographer keeps the map without the feed profile | `src/agents/scout.ts`, `cartographer.ts` |
 | No Zetaris credentials, or `SAMPLE_MODE=true` | Same agents and SQL on the DuckDB stand-in, labelled `duckdb-sample` | `src/sql/duck.ts` |
 | Nightshift 429, 502–504, first-token timeout | Retried after 3, 8, 20, 45 and 90 s (the hosted NVIDIA limits are per minute), each retry logged as `llm.retry` | `src/llm.ts` |
 | Model call still failing, or no token | The judge answers UNSURE and the pair goes to the human queue; lot reading falls back to the regex; the Briefer uses its template | `src/agents/investigator.ts`, `briefer.ts` |
