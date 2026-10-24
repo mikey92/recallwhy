@@ -5,6 +5,7 @@ import { lotAppears, lotsFromCodeInfo, type Recall } from "../feeds.ts";
 import { designatorConflict, type Candidate } from "../match.ts";
 import { inList, lit, say, type AgentContext } from "./context.ts";
 import type { Case } from "./scout.ts";
+import { decisionNote } from "../memory.ts";
 
 export type MatchVerdict = "same" | "not-this" | "unsure";
 export interface MatchDecision {
@@ -50,7 +51,7 @@ export function parseJudge(text: string): { label: "SAME" | "DIFFERENT" | "UNSUR
 async function judge(ctx: AgentContext, k: Case, c: Candidate, strict?: string): Promise<MatchDecision> {
   const base = { sku: c.sku.sku, title: c.sku.title, basis: c.basis };
   const similar = ctx.memory.similar(`${k.recall.firm} ${c.sku.title}`, "Investigator", 3).map((m) => m.content);
-  const out = await ctx.gen(judgePrompt(k.recall, c, similar, strict), { agent: "Investigator", purpose: `judge ${c.sku.sku} vs ${k.recall.id}`, system: JUDGE_SYSTEM, maxTokens: 120 }).catch((e) => `UNSURE: model error ${e.message}`);
+  const out = await ctx.gen(judgePrompt(k.recall, c, similar, strict), { agent: "Investigator", purpose: `judge ${c.sku.sku} vs ${k.recall.id}`, system: JUDGE_SYSTEM, maxTokens: 120 }).catch((e) => (/no model configured/.test(e.message) ? "UNSURE: no model is configured, so a reviewer decides this text match" : `UNSURE: the model call failed (${e.message.slice(0, 80)}), so a reviewer decides`));
   const a = parseJudge(out);
   if (!a) return { ...base, verdict: "unsure", why: "judge gave no usable answer", decidedBy: "judge" };
   const verdict: MatchVerdict = a.label === "SAME" ? "same" : a.label === "DIFFERENT" ? "not-this" : "unsure";
@@ -64,7 +65,8 @@ export async function decide(ctx: AgentContext, k: Case, c: Candidate): Promise<
   if (human) {
     const v = (human.tags.find((t) => t.startsWith("verdict:"))?.slice(8) ?? "unsure") as MatchVerdict;
     say(ctx, "Investigator", "Orchestrator", `${c.sku.sku}: following human decision ${human.id} (${v})`);
-    return { ...base, verdict: v, why: `human reviewer decided: ${human.content}`, decidedBy: "human-memory", memoryId: human.id };
+    const note = decisionNote(human.content);
+    return { ...base, verdict: v, why: `a reviewer decided ${v === "same" ? "it is this product" : "it is not this product"}${note ? `: ${note}` : ""}`, decidedBy: "human-memory", memoryId: human.id };
   }
   // An earlier run's audited decision on this exact pair is reused (no new model call);
   // the Auditor still re-checks it against the notice.

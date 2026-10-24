@@ -81,7 +81,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <li><b>Re-reads the live notice</b> (REST table) to confirm a UPC match, instead of trusting the parser.</li>
 <li><b>"Cheese ≠ pepperoni"</b>: a quote can be copied from the notice and still describe another variety — every product word of our item must appear in the notice. Live run: blocked, re-judged, ruled <i>not ours</i>.</li>
 <li><b>Lot codes the model reads must appear verbatim</b> in <code>code_info</code>; invented lots are dropped.</li>
-<li><b>Brief sentences are checked</b> against the evidence they cite — it caught a draft that invented stores in Kentucky and Ohio.</li>
+<li><b>Brief sentences are checked</b> against the evidence they cite; a draft that fails the check is rewritten or replaced by the template.</li>
 <li><b>Human decisions change the next run</b> through H-MEM, and the brief cites them.</li></ul>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
@@ -98,13 +98,13 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <table style="margin-bottom:22px"><tr><th>Text matches (90 covered of 336)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
 <tr><td>Ultra: judge's first answer</td><td>78</td><td style="color:#c0392b">12</td><td>9</td><td>0</td></tr>
 <tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>84</td><td>4</td><td>6</td><td>21</td></tr></table>
-<p style="font-size:26px">A missed recall leaves stock on the shelf, so the Auditor checks dismissals too: a dismissal whose own quote names our product is sent back, then to a human. 0 of 537 model calls failed (rate limits retried).</p>
+<p style="font-size:26px"><b>417 of 440 pairs (95%) settled without a person, 407 correctly; 23 go to a reviewer with the reason.</b> The Auditor checks dismissals too. 0 of 537 model calls failed.</p>
 <p class="mute" style="font-size:22px">Real Investigator ⇄ Auditor loop on every candidate pair from 517 recalls (sample-mode data). Covered = SKU generated from that recall, or its UPC printed in the notice. Retailer data is synthetic. Details: eval/EVAL.md.</p>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">9 · Next</div><h2>From demo to a safety desk.</h2>
 <div class="grid g2"><ul><li>More feeds through Zetaris: USDA FSIS, NHTSA equipment (car seats), Health Canada</li><li>Lot capture from receiving scans instead of the item master</li><li>Customer notification through the loyalty system — counts today, messages tomorrow</li></ul>
-<ul><li>Cartographer onboarding new feeds on its own: catalog → profile → join test</li><li>Markovian engine for daily long-running sweeps</li><li>Review queue UI with one-click decide → H-MEM</li></ul></div>
-<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> synthetic retailer data; lexical Auditor checks; CPSC rarely prints UPCs; hosted model rate limits make a full evaluation take two hours.</p>
+<ul><li>Cartographer onboarding new feeds on its own: catalog → profile → join test</li><li>Markovian engine for daily long-running sweeps</li><li>Review screen for a team: assignment, and each decision's history from the H-MEM trust ledger</li></ul></div>
+<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> synthetic retailer data; the Cartographer knows two barcode transforms (next: the model proposes one, SQL proves it); lexical Auditor checks; CPSC rarely prints UPCs; hosted model rate limits make a full evaluation take two hours.</p>
 <div class="foot"><span>RecallWhy · github.com/mikey92/recallwhy</span><span>Track 1</span></div></section>
 </body></html>

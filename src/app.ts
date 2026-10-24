@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { Trace } from "./trace.ts";
 import { makeRunner } from "./sql/index.ts";
 import { makeGenerator, llmFromEnv } from "./llm.ts";
-import { CaseMemory } from "./memory.ts";
+import { CaseMemory, decisionNote } from "./memory.ts";
 import { World } from "./world.ts";
 import { run, type RunResult } from "./orchestrator.ts";
 
@@ -25,10 +25,13 @@ export async function runOnce(env: NodeJS.ProcessEnv, opts: RunOptions, trace = 
   }
 }
 
+/** "H-1407-2026" → "fda:H-1407-2026", "26717" → "cpsc:26717"; already-prefixed ids pass through. */
+const recallKey = (r: string) => (r.includes(":") ? r : /^[A-Z]-\d+-\d{4}$/.test(r) ? `fda:${r}` : `cpsc:${r}`);
+
 /** A reviewer's decision, stored in H-MEM with high trust; the next run follows it. Shared by the CLI and the API. */
-export function decide(recallId: string, sku: string, verdict: "same" | "not-this", note = "no note"): { recall: string; memoryId: string } {
+export function decide(recallId: string, sku: string, verdict: "same" | "not-this", note = ""): { recall: string; memoryId: string } {
   const trace = new Trace({ quiet: true });
-  const id = recallId.includes(":") ? recallId : /^[A-Z]-\d+-\d{4}$/.test(recallId) ? `fda:${recallId}` : `cpsc:${recallId}`;
+  const id = recallKey(recallId);
   const rec = new CaseMemory(trace).record({ recallId: id, sku, verdict, reason: note, by: "human", runId: trace.runId }, "Human");
   return { recall: id, memoryId: rec.id };
 }
@@ -47,6 +50,12 @@ export function humanDecisions(): { recall: string; sku: string; verdict: string
     sku: m.tags.find((t) => t.startsWith("sku:"))!.slice(4),
     verdict: m.tags.find((t) => t.startsWith("verdict:"))!.slice(8),
     memoryId: m.id,
-    note: m.content.replace(/^.*?: /, ""),
+    note: decisionNote(m.content),
   }));
+}
+
+/** Is this recall/SKU pair waiting in the review queue? The API and the review screen only take decisions for those. */
+export function inQueue(recallId: string, sku: string): boolean {
+  const id = recallKey(recallId);
+  return (reviewQueue() as { recall: string; skus: { sku: string }[] }[]).some((c) => c.recall === id && c.skus.some((s) => s.sku === sku));
 }

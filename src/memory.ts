@@ -5,7 +5,10 @@
 import { HMEM, type MemoryRecord } from "./engines/hmem/index.ts";
 import type { Trace } from "./trace.ts";
 
-export interface Decision { recallId: string; sku: string; verdict: "same" | "not-this" | "unsure"; reason: string; by: "agent" | "human"; runId: string }
+export interface Decision { recallId: string; sku: string; verdict: "same" | "not-this" | "unsure"; reason: string; by: "agent" | "human"; runId: string; title?: string; firm?: string }
+
+/** What a stored decision says after the "... decided ... recall X" preamble (a reviewer's note, an agent's reason). */
+export const decisionNote = (content: string) => content.split(": ").slice(1).join(": ");
 
 export class CaseMemory {
   readonly hmem: HMEM;
@@ -15,7 +18,8 @@ export class CaseMemory {
 
   record(d: Decision, agent: string): MemoryRecord {
     const rec = this.hmem.add({
-      content: `${d.by === "human" ? "Human reviewer" : "Agents"} decided ${d.sku} is ${d.verdict === "same" ? "COVERED by" : d.verdict === "not-this" ? "NOT covered by" : "UNCLEAR for"} recall ${d.recallId}: ${d.reason}`,
+      // Product words and the firm are in the text so that similar() finds this decision for related recalls.
+      content: `${d.by === "human" ? "Human reviewer" : "Agents"} decided ${d.sku}${d.title ? ` (${d.title})` : ""} is ${d.verdict === "same" ? "COVERED by" : d.verdict === "not-this" ? "NOT covered by" : "UNCLEAR for"} recall ${d.recallId}${d.firm ? ` from ${d.firm}` : ""}${d.reason ? `: ${d.reason}` : ""}`,
       type: "factual", layer: d.by === "human" ? "long_term" : "working",
       tags: [`recall:${d.recallId}`, `sku:${d.sku}`, `verdict:${d.verdict}`, `by:${d.by}`],
       confidence: d.by === "human" ? 0.95 : 0.6,

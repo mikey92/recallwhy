@@ -7,7 +7,7 @@
 import { createServer } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
 import { loadConfig } from "./config.ts";
-import { decide, reviewQueue, runOnce } from "./app.ts";
+import { decide, inQueue, reviewQueue, runOnce } from "./app.ts";
 
 const PORT = Number(process.env.PORT ?? 8000);
 let busy = false;
@@ -33,10 +33,11 @@ createServer(async (req, res) => {
   }
   if (req.method === "GET" && url.pathname === "/queue") return send(200, reviewQueue());
   if (req.method === "POST" && url.pathname === "/decide") {
-    let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown };
+    let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown; force?: unknown };
     try { d = JSON.parse(await body(req) || "{}"); } catch { return send(400, { error: "body must be JSON" }); }
     if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this"))
       return send(400, { error: 'body must be {"recall": "H-1407-2026", "sku": "NW-100005", "verdict": "same" | "not-this", "note"?: "..."}' });
+    if (!inQueue(d.recall, d.sku) && d.force !== true) return send(409, { error: `${d.sku} for ${d.recall} is not in the review queue (GET /queue); send "force": true to record it anyway` });
     return send(200, { stored: true, ...decide(d.recall, d.sku, d.verdict, typeof d.note === "string" ? d.note : undefined), usedOn: "the next POST /run" });
   }
   if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report, GET /queue, POST /decide or GET /health" });

@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RecallWhy review</title>
 <style>
-:root{color-scheme:light dark;--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--mute:#6e6e73;--line:#d2d2d7;--act:#c9302c;--ok:#1f7a3a;--focus:#0071e3}
-@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--mute:#a1a1a6;--line:#38383a;--act:#ff6961;--ok:#30d158;--focus:#0a84ff}}
+:root{color-scheme:light dark;--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--mute:#6e6e73;--line:#d2d2d7;--warn:#b42318;--ok:#1f7a3a;--focus:#0071e3;--primary:#0066cc}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--mute:#a1a1a6;--line:#38383a;--warn:#ff8a80;--ok:#30d158;--focus:#0a84ff;--primary:#0060c7}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
 header{position:sticky;top:0;z-index:1;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:baseline;gap:16px}
 h1{font-size:22px;margin:0;font-weight:700}
 header p{margin:0;color:var(--mute);font-size:15px}
-header a{margin-left:auto;color:var(--focus);font-size:15px}
+header a{margin-left:auto;color:var(--focus);font-size:15px;padding:11px 0}
 main{max-width:880px;margin:0 auto;padding:24px}
 .empty{color:var(--mute);text-align:center;padding:60px 0}
 .case{background:var(--card);border-radius:14px;padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
@@ -23,20 +24,23 @@ main{max-width:880px;margin:0 auto;padding:24px}
 .sku h3{font-size:17px;margin:0 0 4px}
 .sku h3 span{color:var(--mute);font-weight:400;font-size:15px}
 .why{font-size:15px;margin:0 0 6px}
-.obj{font-size:15px;color:var(--act);margin:0 0 10px}
+.obj{font-size:15px;color:var(--warn);margin:0 0 10px}
+.facts{font-size:15px;color:var(--mute);margin:0 0 8px}.facts b{color:var(--ink);font-weight:600}
+.case h2 a{color:inherit;text-decoration:none}.report{font-size:15px;color:var(--focus)}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .sr{position:absolute;left:-9999px}
 input[type=text]{flex:1 1 260px;min-height:44px;font:inherit;font-size:15px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit}
 button{min-height:44px;min-width:44px;padding:0 18px;border-radius:10px;border:0;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
-button.same{background:var(--act);color:#fff}
+button.same{background:var(--primary);color:#fff}
+button.link{background:transparent;color:var(--focus);padding:0 8px;font-weight:500}
 button.not{background:transparent;color:var(--ink);border:1px solid var(--line)}
 button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .done{font-size:15px;color:var(--ok);margin:6px 0 0}
 </style>
 </head>
 <body>
-<header><h1>Review queue</h1><p id="sum"></p><a href="/">Live view</a></header>
-<main id="list" aria-live="polite"></main>
+<header><h1>Review queue</h1><p id="sum" role="status" aria-live="polite"></p><a href="/">Live view</a></header>
+<main id="list"></main>
 <script>
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const label = { "same": "Same product", "not-this": "Not this product", "unsure": "Undecided" };
@@ -49,12 +53,16 @@ function skuBlock(c, s, done) {
   return `<div class="sku"><h3>${esc(s.title)} <span>${esc(s.sku)}</span></h3>
     <p class="why">Agents: <b>${label[s.verdict] ?? esc(s.verdict)}</b> — ${esc(s.why)}</p>
     ${objections.map((o) => `<p class="obj">${esc(o)}</p>`).join("")}
-    ${d ? `<p class="done">Decided: ${label[d.verdict]} (${esc(d.memoryId)}). The next run follows it.</p>`
+    <p class="facts">Our UPC <b>${esc(s.upc || "none")}</b> · vendor <b>${esc(s.vendor || "unknown")}</b></p>
+    ${d ? `<p class="done">Decided: ${label[d.verdict]} (${esc(d.memoryId)}). The next run follows it.
+             <span class="row" style="display:inline-flex" data-recall="${esc(c.recall)}" data-sku="${esc(s.sku)}"><input type="hidden" value="changed by reviewer">
+             <button class="link" data-verdict="${d.verdict === "same" ? "not-this" : "same"}" aria-label="Change decision for ${esc(s.sku)} to ${label[d.verdict === "same" ? "not-this" : "same"]}">Change to “${label[d.verdict === "same" ? "not-this" : "same"]}”</button></span></p>`
         : `<div class="row" data-recall="${esc(c.recall)}" data-sku="${esc(s.sku)}">
              <label class="sr" for="${id}">Note for ${esc(s.sku)}</label>
              <input type="text" id="${id}" placeholder="Note for the record (optional)">
-             <button class="same" data-verdict="same">Same product</button>
-             <button class="not" data-verdict="not-this">Not this product</button></div>`}</div>`;
+             <button class="same" data-verdict="same" aria-label="Same product: ${esc(s.sku)}">Same product</button>
+             <button class="not" data-verdict="not-this" aria-label="Not this product: ${esc(s.sku)}">Not this product</button></div>`}
+    <p class="obj" hidden></p></div>`;
 }
 
 async function load() {
@@ -63,8 +71,8 @@ async function load() {
   const waiting = queue.flatMap((c) => c.skus.filter((s) => !done.has(c.recall + " " + s.sku))).length;
   n = 0;
   document.getElementById("list").innerHTML = queue.length
-    ? queue.slice().reverse().map((c) => `<section class="case"><h2>${esc(c.recall)}</h2>
-        <p class="meta">${esc(c.firm || "")}${c.date ? " · " + esc(c.date) : ""}</p>
+    ? queue.slice().reverse().map((c) => `<section class="case"><h2>${esc(c.firm || c.recall)}</h2>
+        <p class="meta">${esc(c.recall)}${c.date ? " · recalled " + esc(c.date) : ""}${c.runId ? ` · <a class="report" href="/out/${esc(c.runId)}/report.html" target="_blank">Report and agent trace</a>` : ""}</p>
         ${c.notice ? `<p class="notice">${esc(c.notice)}</p>` : ""}
         ${c.skus.map((s) => skuBlock(c, s, done)).join("")}</section>`).join("")
     : `<p class="empty">Nothing to review. Cases the agents cannot settle appear here.</p>`;
@@ -75,11 +83,15 @@ document.getElementById("list").addEventListener("click", async (e) => {
   const b = e.target.closest("button[data-verdict]");
   if (!b) return;
   const row = b.closest(".row");
+  const what = label[b.dataset.verdict];
+  // A decision is stored with high trust and every later run follows it: confirm before recording.
+  if (!confirm(`Record “${what}” for ${row.dataset.sku}?\n\nIt is stored in memory with high trust and the next run follows it. You can change it until then.`)) return;
   b.disabled = true;
   const r = await fetch("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ recall: row.dataset.recall, sku: row.dataset.sku, verdict: b.dataset.verdict, note: row.querySelector("input").value }) });
-  if (!r.ok) { b.disabled = false; alert(await r.text()); return; }
-  load();
+  if (!r.ok) { b.disabled = false; const p = row.closest(".sku").querySelector(".obj[hidden]"); p.textContent = await r.text(); p.hidden = false; return; }
+  await load();
+  document.getElementById("sum").textContent = `Recorded “${what}” for ${row.dataset.sku}. ` + document.getElementById("sum").textContent;
 });
 load();
 </script>

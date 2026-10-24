@@ -6,7 +6,7 @@
 import { createServer } from "node:http";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, normalize } from "node:path";
-import { decide, humanDecisions, reviewQueue } from "./app.ts";
+import { decide, humanDecisions, inQueue, reviewQueue } from "./app.ts";
 
 const PORT = Number(process.env.VIEW_PORT ?? 8899);
 const runs = () => readdirSync("logs").filter((f) => /^trace-.*\.jsonl$/.test(f)).map((f) => f.slice(6, -6))
@@ -21,6 +21,7 @@ createServer(async (req, res) => {
     let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown } = {};
     try { d = JSON.parse(Buffer.concat(chunks).toString("utf8")); } catch { /* answered below */ }
     if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this")) { res.writeHead(400); return res.end("recall, sku and verdict (same | not-this) are required"); }
+    if (!inQueue(d.recall, d.sku)) { res.writeHead(409); return res.end("This case is no longer in the review queue. Reload the page."); }
     return json(res, decide(d.recall, d.sku, d.verdict, typeof d.note === "string" && d.note.trim() ? d.note.trim() : undefined));
   }
   if (url.pathname === "/review") { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }); return res.end(readFileSync(new URL("./review.html", import.meta.url))); }
@@ -50,20 +51,22 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 <style>
 :root{--bg:#0f1115;--card:#171a21;--ink:#e8e8ea;--mute:#8b90a0;--line:#262a34}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,system-ui,sans-serif}
-header{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
-h1{font-size:19px;margin:0}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px}
-#rev{margin-left:auto}.stat{color:var(--mute)}.stat b{color:var(--ink)}a{color:#60a5fa}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
+h1{font-size:19px;margin:0}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:4px 8px;min-height:36px;font:inherit}
+#rev{margin-left:auto}header a{display:inline-flex;align-items:center;min-height:36px}a:focus-visible,select:focus-visible{outline:3px solid #0a84ff;outline-offset:2px}.stat{color:var(--mute)}.stat b{color:var(--ink)}a{color:#60a5fa}
 main{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:12px 20px}
 .lane{background:var(--card);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;height:calc(100vh - 150px)}
 .lane h2{margin:0;padding:10px 12px;font-size:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
 .lane .feed{overflow:auto;padding:6px 10px;flex:1}
-.ev{padding:5px 0;border-bottom:1px dashed var(--line);font-size:12.5px;animation:in .4s}
+.ev{padding:5px 0;border-bottom:1px dashed var(--line);font-size:13.5px;animation:in .4s}
+@media (prefers-reduced-motion:reduce){.ev{animation:none}}
 @keyframes in{from{background:#facc1533}to{background:transparent}}
-.k{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+.k{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
 .sql .k{color:#38bdf8}.llm .k{color:#4ade80}.crit{color:#fca5a5}.crit .k{color:#f87171}.mem .k{color:#c084fc}.world .k{color:#fbbf24}.msg b{color:#fff}
 .Cartographer h2{color:#fb923c}.Scout h2{color:#22d3ee}.Investigator h2{color:#facc15}.Auditor h2{color:#e879f9}.Briefer h2{color:#4ade80}
 footer{padding:0 20px 10px;color:var(--mute);font-size:12px}
-@media (max-width:1100px){main{grid-template-columns:1fr 1fr}.lane{height:50vh}}
+@media (max-width:640px){main{grid-template-columns:minmax(0,1fr)}.lane{height:auto;max-height:60vh}}
+@media (max-width:1100px) and (min-width:641px){main{grid-template-columns:1fr 1fr}.lane{height:50vh}}
 </style></head><body>
 <header><h1>RecallWhy</h1><select id="run"></select><span class="stat" id="stat"></span><span id="rep"></span><a id="rev" href="/review">Review queue</a></header>
 <main>${["Cartographer", "Scout", "Investigator", "Auditor", "Briefer"].map((a) => `<section class="lane ${a}"><h2>${a}<span class="k" id="n-${a}">0</span></h2><div class="feed" id="f-${a}"></div></section>`).join("")}</main>

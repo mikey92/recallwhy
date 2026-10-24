@@ -27,6 +27,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   const briefs: Brief[] = [];
   for (const k of todo) {
     const { finding, open } = await adjudicate(ctx, k);
+    if (finding.verdict !== "needs-human") unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
     const entities = await record(ctx, k, finding);
     const b = await brief(ctx, k, finding, entities, open);
     writeFileSync(`${outDir}/briefs/${k.id}.md`, b.markdown);
@@ -67,7 +68,7 @@ async function record(ctx: AgentContext, k: Case, f: Finding): Promise<string[]>
   for (const d of f.decisions) {
     await ctx.world.fact(caseEntity, "match_decision", `${d.sku} ${d.title}: ${d.verdict} — ${d.why}`, { kind: d.decidedBy === "judge" ? "model" : d.decidedBy.endsWith("memory") ? "h-mem" : "rule", by: "Investigator", ref: d.memoryId }, d.decidedBy === "judge" ? 0.7 : 0.95);
     // An escalated case is the reviewer's to decide, and an UNSURE call is no answer: neither is remembered as the agents'.
-    if ((d.decidedBy === "rule" || d.decidedBy === "judge") && f.verdict !== "needs-human" && d.verdict !== "unsure") ctx.memory.record({ recallId: k.recall.id, sku: d.sku, verdict: d.verdict, reason: d.why, by: "agent", runId: ctx.trace.runId }, "Investigator");
+    if ((d.decidedBy === "rule" || d.decidedBy === "judge") && f.verdict !== "needs-human" && d.verdict !== "unsure") ctx.memory.record({ recallId: k.recall.id, sku: d.sku, verdict: d.verdict, reason: d.why, by: "agent", runId: ctx.trace.runId, title: d.title, firm: k.recall.firm }, "Investigator");
   }
   const n = f.numbers;
   if (n) {
@@ -85,12 +86,21 @@ async function record(ctx: AgentContext, k: Case, f: Finding): Promise<string[]>
   return [k.recallEntity, caseEntity];
 }
 
+function unqueue(ctx: AgentContext, caseId: string) {
+  const file = ctx.queueFile ?? "state/review-queue.json";
+  if (!existsSync(file)) return;
+  const q = JSON.parse(readFileSync(file, "utf8")) as { caseId: string }[];
+  if (q.some((c) => c.caseId === caseId)) writeFileSync(file, JSON.stringify(q.filter((c) => c.caseId !== caseId), null, 2));
+}
+
 function queue(ctx: AgentContext, k: Case, f: Finding, open: string[]) {
   const file = ctx.queueFile ?? "state/review-queue.json";
   mkdirSync(dirname(file), { recursive: true });
   // One entry per case: a re-run replaces the old one.
   const q = (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : []).filter((c: { caseId: string }) => c.caseId !== k.id);
-  q.push({ caseId: k.id, recall: k.recall.id, firm: k.recall.firm, date: k.recall.date, notice: k.recall.text.slice(0, 600), skus: f.decisions.map((d) => ({ sku: d.sku, title: d.title, verdict: d.verdict, why: d.why })), open, at: new Date().toISOString() });
+  const cand = (sku: string) => k.candidates.find((c) => c.sku.sku === sku)?.sku;
+  q.push({ caseId: k.id, recall: k.recall.id, firm: k.recall.firm, date: k.recall.date, notice: k.recall.text.slice(0, 600), runId: ctx.trace.runId,
+    skus: f.decisions.map((d) => ({ sku: d.sku, title: d.title, upc: cand(d.sku)?.upc ?? "", vendor: cand(d.sku)?.brand ?? "", verdict: d.verdict, why: d.why })), open, at: new Date().toISOString() });
   writeFileSync(file, JSON.stringify(q, null, 2));
 }
 

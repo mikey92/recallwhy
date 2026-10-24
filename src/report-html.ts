@@ -21,7 +21,7 @@ function md(src: string): string {
   return out.join("\n");
 }
 
-const COLOR: Record<string, string> = { "act-now": "#c0392b", notify: "#d35400", "needs-human": "#8e44ad", "no-exposure": "#2c7a7b", "not-ours": "#6b7280" };
+const COLOR: Record<string, string> = { "act-now": "#c0392b", notify: "#c2410c", "needs-human": "#8e44ad", "no-exposure": "#2c7a7b", "not-ours": "#6b7280" };
 
 /** What the Cartographer found before any case: its messages and the facts it wrote, as recorded in the trace. */
 function sourceMap(evs: Ev[]): string {
@@ -67,21 +67,23 @@ export function renderReport(outDir: string): string {
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,sans-serif}
 header{padding:28px 32px 8px}h1{margin:0;font-size:26px}.sub{color:var(--mute)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.chip{padding:4px 10px;border-radius:99px;color:#fff;font-weight:600;font-size:13px}
-main{padding:8px 32px 40px;display:grid;gap:18px}
+main{padding:8px 32px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.brief,.map,.trace{min-width:0;overflow-wrap:anywhere}a.chip{text-decoration:none}
 .case{background:var(--card);border:1px solid var(--line);border-left:6px solid;border-radius:10px;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
 .brief{padding:6px 22px 14px}.brief h2{font-size:18px;margin:14px 0 4px}.brief h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:16px 0 4px}
 blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--line);color:var(--mute)}
-.cite{font-size:11px;background:#2563eb22;color:#2563eb;border-radius:4px;padding:0 4px}
+.cite{font-size:12px;background:#2563eb22;color:#1d4ed8;border-radius:4px;padding:0 4px}
 .trace{border-left:1px solid var(--line);padding:12px 14px;font-size:12.5px;max-height:620px;overflow:auto}
 .map{background:var(--card);border:1px solid var(--line);border-left:6px solid #0e7490;border-radius:10px;padding:12px 22px}.map h2{font-size:18px;margin:6px 0}.map li{margin:4px 0}
 .ev{padding:3px 0;border-bottom:1px dashed var(--line)}.crit{color:#b91c1c}.sql{color:var(--mute)}.llm{color:#15803d}.mem{color:#7c3aed}
 code{font-size:12px}ul{margin:4px 0;padding-left:20px}
+@media (prefers-color-scheme:dark){.crit{color:#f87171}.mem{color:#c084fc}.llm{color:#4ade80}.cite{color:#93c5fd;background:#2563eb44}}
 @media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}}
 </style></head><body><header><h1>RecallWhy</h1>
 <div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(res.since)} → ${cases.length} cases</div>
-<div class="chips">${Object.entries(counts).map(([k, v]) => `<span class="chip" style="background:${COLOR[k]}">${k} ${v}</span>`).join("")}</div></header><main>
+<div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} ${v}</a>`).join("")}</div></header><main>
 ${sourceMap(evs)}
-${cases.map((c: { id: string; verdict: string }) => `<section class="case" style="border-left-color:${COLOR[c.verdict]}"><div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
+${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""} style="border-left-color:${COLOR[c.verdict]}"><div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
 <div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
 </main></body></html>`;
   writeFileSync(`${outDir}/report.html`, html);
