@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { describe, it } from "node:test";
 import { Trace } from "../src/trace.ts";
 import { sqlId } from "../src/sql/types.ts";
-import { coerceNumericFields } from "../src/sql/zetaris.ts";
+import { coerceNumericFields, ZetarisRunner } from "../src/sql/zetaris.ts";
 import { toDuckDialect, DuckSampleRunner } from "../src/sql/duck.ts";
 import { makeRunner } from "../src/sql/index.ts";
 import { mkdtempSync, readFileSync } from "node:fs";
@@ -134,5 +134,42 @@ describe("makeRunner", () => {
     const kinds = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l).kind);
     assert.deepEqual(kinds.slice(0, 2), ["sql.error", "note"]);
     await assert.rejects(makeRunner({ ...env, ZETARIS_FALLBACK: "false" }, trace));
+  });
+});
+
+describe("ZetarisRunner", () => {
+  it("logs in, sends each query with a fresh request id, re-logs in on 401, and traces failures", async () => {
+    const trace = new Trace({ quiet: true, dir: mkdtempSync(`${tmpdir()}/rw-zrun-`) });
+    const calls: { url: string; headers: Record<string, string>; body: { sql?: string; limit?: number } }[] = [];
+    let logins = 0, queries = 0;
+    // Shaped like the local Zetaris instance's answers to /api/auth/login and run-query.
+    const fetchFn = (async (url: string, init: { headers: Record<string, string>; body: string }) => {
+      calls.push({ url, headers: init.headers, body: JSON.parse(init.body) });
+      const json = (status: number, body: unknown) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+      if (url.endsWith("/api/auth/login")) return json(200, { idToken: `token-${++logins}`, orgId: "org-7" });
+      queries++;
+      if (queries === 2) return json(401, { msg: "expired" });
+      if (queries === 4) return json(400, { msg: "Table or view not found: erp.nope" });
+      return json(200, { headers: ["sku", "on_hand"], data: [["NW-100005", "12"]], total: 1, timeUsed: 9 });
+    }) as unknown as typeof fetch;
+    const z = new ZetarisRunner({ baseUrl: "http://zetaris:3000/", username: "u", password: "p", trace, fetchFn });
+
+    const r = await z.run("SELECT sku, on_hand FROM erp.inventory", { agent: "Investigator", purpose: "test" });
+    assert.deepEqual(r.rows, [{ sku: "NW-100005", on_hand: 12 }], "numeric columns are coerced, ids stay strings");
+    const q1 = calls.find((c) => c.url.endsWith("run-query"))!;
+    assert.equal(q1.url, "http://zetaris:3000/api/proxy/sql-editor/sqls/run-query");
+    assert.equal(q1.headers.Authorization, "Bearer token-1");
+    assert.equal(q1.headers["X-Org-ID"], "org-7", "the org id from the login answer is used");
+
+    await z.run("SELECT 1 AS n", { agent: "Investigator", purpose: "after expiry" });
+    assert.equal(logins, 2, "a 401 triggers one new login");
+    assert.equal(calls.at(-1)!.headers.Authorization, "Bearer token-2");
+    const ids = calls.filter((c) => c.url.endsWith("run-query")).map((c) => c.headers["X-Request-ID"]);
+    assert.equal(new Set(ids).size, ids.length, "every request has its own X-Request-ID");
+
+    await assert.rejects(z.run("SELECT * FROM erp.nope", { agent: "Auditor", purpose: "bad table" }), /Table or view not found/);
+    const last = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).at(-1);
+    assert.equal(last.kind, "sql.error");
+    assert.equal(last.agent, "Auditor");
   });
 });
