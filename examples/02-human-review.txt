@@ -1,7 +1,0 @@
-$ npm run queue
-case-fda-H-0021-2027  (fda:H-0021-2027)
-  NW-100117 FROZEN CHEESE PIZZA 17OZ: same — notice names "Saint Francis Apizza Frozen Pepperoni Pizza"
-  Auditor objection: our item "FROZEN CHEESE PIZZA 17OZ" says "cheese", which the notice never mentions
-
-$ npm run decide -- H-0021-2027 NW-100117 not-this --note "ours is the cheese pizza; this notice covers the pepperoni pizza only"
-stored: NW-100117 not-this for fda:H-0021-2027 (high trust; used on the next run)

@@ -11,7 +11,8 @@ export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string }
 
 const NIGHTSHIFT_URL = "http://127.0.0.1:8088/v1";
-const RETRIES = [3_000, 8_000, 20_000]; // backoff before attempts 2, 3 and 4
+// Hosted NVIDIA endpoints rate-limit per minute, so the last waits reach past a minute.
+const RETRIES = [3_000, 8_000, 20_000, 45_000, 90_000]; // backoff before attempts 2-6
 
 /** Provider settings from the environment. Meterless Nightshift is the default (hackathon rule: primary AI provider). */
 export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
