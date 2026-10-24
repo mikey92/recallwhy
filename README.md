@@ -1,6 +1,6 @@
 # RecallWhy
 
-**Demo video (2:58):** https://iframe.mediadelivery.net/embed/778121/465f5bea-a8c8-406f-ae99-fb8b08590c4f · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
+**Demo video (3:08):** https://iframe.mediadelivery.net/embed/778121/7ba9d226-5c2b-404e-aa61-2ad2cff5c1a6 · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
 **Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence**
 
