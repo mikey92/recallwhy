@@ -2,11 +2,8 @@
 // recallwhy run [--since YYYY-MM-DD] [--only H-1361-2026,27024] [--limit N]
 // recallwhy decide <recall-id> <sku> same|not-this [--note "..."]
 // recallwhy queue
-import { readFileSync, existsSync } from "node:fs";
 import { loadConfig } from "./config.ts";
-import { Trace } from "./trace.ts";
-import { CaseMemory } from "./memory.ts";
-import { runOnce } from "./app.ts";
+import { decide, reviewQueue, runOnce } from "./app.ts";
 
 const args = process.argv.slice(2);
 const flag = (name: string) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : undefined; };
@@ -17,16 +14,12 @@ async function main() {
   if (cmd === "decide") {
     const [, recallId, sku, verdict] = args;
     if (!recallId || !sku || !["same", "not-this"].includes(verdict)) throw new Error('usage: decide <recall-id> <sku> same|not-this [--note "..."]');
-    const trace = new Trace({ quiet: true });
-    const mem = new CaseMemory(trace);
-    const id = recallId.includes(":") ? recallId : /^[A-Z]-\d+-\d{4}$/.test(recallId) ? `fda:${recallId}` : `cpsc:${recallId}`;
-    mem.record({ recallId: id, sku, verdict: verdict as "same" | "not-this", reason: flag("note") ?? "no note", by: "human", runId: trace.runId }, "Human");
-    console.log(`stored: ${sku} ${verdict} for ${id} (high trust; used on the next run)`);
+    const { recall } = decide(recallId, sku, verdict as "same" | "not-this", flag("note"));
+    console.log(`stored: ${sku} ${verdict} for ${recall} (high trust; used on the next run)`);
     return;
   }
   if (cmd === "queue") {
-    const f = "state/review-queue.json";
-    const q = existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as { caseId: string; recall: string; skus: { sku: string; title: string; verdict: string; why: string }[]; open: string[] }[]) : [];
+    const q = reviewQueue() as { caseId: string; recall: string; skus: { sku: string; title: string; verdict: string; why: string }[]; open: string[] }[];
     if (args.includes("--json")) { console.log(JSON.stringify(q, null, 2)); return; }
     if (!q.length) console.log("review queue is empty");
     for (const c of q) {

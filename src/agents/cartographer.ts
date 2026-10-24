@@ -6,7 +6,7 @@
 // verified. The map is a hypothesis: when the Auditor finds ship notices its join cannot reach,
 // it sends them back, and the Cartographer diagnoses that supplier's barcodes (reconcile) and
 // corrects the map for the rest of the run.
-import { inList, say, type AgentContext } from "./context.ts";
+import { inList, lit, say, type AgentContext } from "./context.ts";
 
 export type Role = "barcode" | "sku" | "lot";
 export interface TableInfo { name: string; kind: "jdbc" | "rest" | "view"; source: string; columns: { name: string; type: string; role?: Role }[] }
@@ -41,7 +41,7 @@ export function barcodeJoin(map: SourceMap | undefined, left: string, right: str
   const base = j?.chosen === "normalized" ? keyEq("no-leading-zeros", a, b) : `${a}.upc = ${b}.upc`;
   if (!j?.rules?.length) return base;
   const [asn, item] = left === ASN ? [a, b] : [b, a];
-  return `(${[base, ...j.rules.map((r) => `(${asn}.supplier_id = '${r.supplier}' AND ${keyEq(r.transform, asn, item)})`)].join(" OR ")})`;
+  return `(${[base, ...j.rules.map((r) => `(${asn}.supplier_id = ${lit(r.supplier)} AND ${keyEq(r.transform, asn, item)})`)].join(" OR ")})`;
 }
 
 export async function chart(ctx: AgentContext): Promise<SourceMap> {
@@ -168,7 +168,7 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     // A rule from one case is a guess; check it on everything this supplier has shipped.
     const all = await run(
       `SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s")} THEN 1 ELSE 0 END) AS ok
-       FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = '${supplier.replace(/'/g, "''")}' AND a.upc <> ''`,
+       FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> ''`,
       `test "${transform}" on every ship notice from ${supplier}`);
     const [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
     if (hit !== tot) { notes.push(`${supplier}: "${transform}" fits this case but only ${hit}/${tot} of its ship notices`); continue; }

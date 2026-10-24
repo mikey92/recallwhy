@@ -6,17 +6,17 @@
 - the synthetic SKU was generated from that recall (`data/synthetic/eval/ground_truth.csv`, never read by the agents), or
 - the SKU's UPC is printed in the notice.
 
-Everything else counts as *not covered*. Labels are strict, so a few "false alarms" are really the same product appearing in a second notice: of the 7 for Nemotron 30B, CPSC 26601 is an expansion of the same grill-brush recall.
+Everything else counts as *not covered*. Labels are strict, so a few "false alarms" are really the same product appearing in a second notice: of the 7 for Nemotron 3 Nano 30B in the 21 Oct run, CPSC 26601 is an expansion of the same grill-brush recall; of Ultra's 6 today, the same grill brush (CPSC 26601) counts again, and the Clover Hill cheese snack pack is labelled with H-1205-2026 but is also named in H-1207-2026.
 
 ## Current code (24 Oct 2026)
 
 | Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries | Time |
 |---|---|---|---|---|---|---|
-| none (rules only, `--provider none`) | 103 | 0 | 0 | 337 | — | 20 s |
+| none (rules only, `--provider none`) | 103 | 0 | 0 | 337 | — | 14 s |
 | NVIDIA Nemotron 3.5 Lightning 30B-A3B, through Meterless Nightshift | 141 | 10 | 2 | 63 | 0 of 648 | 1,269 s |
 | **NVIDIA Nemotron 3 Ultra 550B-A55B, through Meterless Nightshift** | **186** | **4** | **6** | 23 | 0 of 537 | 7,649 s |
 
-Text matches only (336 pairs, 90 covered), judge's first answer vs the final decision (`python3 eval/first-vs-final.py meterless-nvidia_nemotron-3-ultra-550b-a55b`):
+Text matches only (336 pairs, 90 covered), judge's first answer vs the final decision (`python3 eval/first-vs-final.py meterless-nvidia_nemotron-3-ultra-550b-a55b`; the first answers are committed in `eval/results/*-first-answers.json`, so this runs from a clean clone):
 
 | | Caught | Wrongly dismissed | False alarms | Sent to human |
 |---|---|---|---|---|
@@ -53,9 +53,9 @@ The 4 remaining wrongly dismissed pairs are generator artefacts more than model 
 | Gemma 4 E4B | 14 | 5 | 14 |
 
 **Reading it:**
-- **The Auditor's checks guard against false matches, not false dismissals.** Those checks are grounded quotes, every product word present in the notice, package size, the ingredient-only rule and model-number conflicts.
+- **(21 Oct) The Auditor's checks then guarded against false matches, not false dismissals; the dismissal check was added on 23 Oct.** Those checks are grounded quotes, every product word present in the notice, package size, the ingredient-only rule and model-number conflicts.
 - A dismissed recall is the dangerous error: recalled stock stays on the shelf. So the judge should lean toward SAME and let the Auditor prune.
 - Nemotron 30B does exactly that. It catches every text match on its first answer, and the Auditor removes 200 of its 207 false alarms. Ambiguous pairs go to a human instead of being guessed.
 - The two small models are conservative and dismiss 14–18 real matches, which no later check can recover.
 
-Results per pair are in `eval/results/*.json`. `python3 eval/first-vs-final.py <tag>` recomputes the second table from the eval trace.
+Results per pair are in `eval/results/*.json`. `python3 eval/first-vs-final.py <tag>` recomputes the first-answer tables. Each result file also lists the supplier rules the Cartographer learned (`cartographerRules`) and the model calls that failed after retries (`modelCalls`).

@@ -24,3 +24,17 @@ export async function runOnce(env: NodeJS.ProcessEnv, opts: RunOptions, trace = 
     await sql.close();
   }
 }
+
+/** A reviewer's decision, stored in H-MEM with high trust; the next run follows it. Shared by the CLI and the API. */
+export function decide(recallId: string, sku: string, verdict: "same" | "not-this", note = "no note"): { recall: string; memoryId: string } {
+  const trace = new Trace({ quiet: true });
+  const id = recallId.includes(":") ? recallId : /^[A-Z]-\d+-\d{4}$/.test(recallId) ? `fda:${recallId}` : `cpsc:${recallId}`;
+  const rec = new CaseMemory(trace).record({ recallId: id, sku, verdict, reason: note, by: "human", runId: trace.runId }, "Human");
+  return { recall: id, memoryId: rec.id };
+}
+
+/** Cases the Auditor escalated, newest last. */
+export function reviewQueue(): unknown[] {
+  const f = "state/review-queue.json";
+  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : [];
+}

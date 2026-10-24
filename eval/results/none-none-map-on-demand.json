@@ -1,6 +1,6 @@
 {
   "model": "none:none",
-  "startedAt": "2026-10-23T23:59:59.878Z",
+  "startedAt": "2026-10-24T03:25:49.287Z",
   "since": "2026-07-01",
   "scanned": 517,
   "cases": 225,
@@ -26,6 +26,74 @@
     "recall": 0
   },
   "revisedCases": 1,
+  "cartographerRules": [
+    {
+      "supplier": "SUP009",
+      "transform": "no-leading-zeros",
+      "rows": 269,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP027",
+      "transform": "no-leading-zeros",
+      "rows": 317,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP015",
+      "transform": "no-leading-zeros",
+      "rows": 482,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP007",
+      "transform": "no-check-digit",
+      "rows": 484,
+      "learnedFrom": "case-fda-H-1355-2026"
+    },
+    {
+      "supplier": "SUP014",
+      "transform": "no-check-digit",
+      "rows": 187,
+      "learnedFrom": "case-fda-H-1136-2026"
+    },
+    {
+      "supplier": "SUP039",
+      "transform": "no-leading-zeros",
+      "rows": 234,
+      "learnedFrom": "case-fda-H-1357-2026"
+    },
+    {
+      "supplier": "SUP035",
+      "transform": "no-check-digit",
+      "rows": 474,
+      "learnedFrom": "case-fda-H-1326-2026"
+    },
+    {
+      "supplier": "SUP024",
+      "transform": "no-leading-zeros",
+      "rows": 403,
+      "learnedFrom": "case-fda-H-1402-2026"
+    },
+    {
+      "supplier": "SUP028",
+      "transform": "no-check-digit",
+      "rows": 250,
+      "learnedFrom": "case-fda-H-1248-2026"
+    },
+    {
+      "supplier": "SUP006",
+      "transform": "no-leading-zeros",
+      "rows": 321,
+      "learnedFrom": "case-fda-H-1346-2026"
+    },
+    {
+      "supplier": "SUP018",
+      "transform": "no-leading-zeros",
+      "rows": 396,
+      "learnedFrom": "case-fda-H-1361-2026"
+    }
+  ],
   "rows": [
     {
       "recall": "fda:H-1166-2026",

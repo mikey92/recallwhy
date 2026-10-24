@@ -22,7 +22,7 @@ export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
     // No Nightshift on this machine (a judge's laptop, a container): run without a model rather
     // than fail every call. Text matches then go to the human queue and briefs use the template.
     if (!apiKey) return { provider: "none", model: "none", note: "Meterless Nightshift is not configured (no METERLESS_RUNTIME_TOKEN): running without a model; text matches go to the human queue." };
-    return { provider, model: env.METERLESS_MODEL || "meterless/auto", baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy" };
+    return { provider, model: env.METERLESS_MODEL || "nvidia/nemotron-3-ultra-550b-a55b", baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy" };
   }
   if (provider === "none") return { provider, model: "none" };
   return { provider, model: env.LLM_MODEL ?? "nemotron-3-nano", ollamaUrl: env.OLLAMA_URL, baseUrl: env.OPENAI_BASE_URL, apiKey: env.OPENAI_API_KEY };

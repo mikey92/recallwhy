@@ -50,7 +50,7 @@ Every message, SQL call, model call, memory read/write and world write goes to `
 - `scripts/setup-zetaris.ts` sets all of this up through the Zetaris REST API (`/api/proxy/sql-editor/sqls/run-query`, with `X-Org-ID` and a fresh `X-Request-ID` per call).
 
 **Meterless agent engines** (mounted from [github.com/Meterless/Meterless](https://github.com/Meterless/Meterless), Apache-2.0, see `src/engines/*/NOTICE`)
-- **H-MEM** (`src/engines/hmem`, wrapper `src/memory.ts`): every adjudication is stored: the agents' in working memory at confidence 0.6, humans' (`npm run decide`) in long-term memory at 0.95. Decisions in a case that was escalated are not stored as the agents' answer; the reviewer's decision is. Before judging, the Investigator reads the exact prior decisions for that recall/SKU pair plus similar past cases. A human decision is followed and cited in the brief. The trust ledger records every read and write.
+- **H-MEM** (`src/engines/hmem`, wrapper `src/memory.ts`): every adjudication is stored: the agents' in working memory at confidence 0.6, humans' (`npm run decide`) in long-term memory at 0.95. Decisions in a case that was escalated, and UNSURE calls, are not stored as the agents' answer; the reviewer's decision is. Before judging, the Investigator reads the exact prior decisions for that recall/SKU pair plus similar past cases. A human decision is followed and cited in the brief. The trust ledger records every write and every read, including the exact prior-decision lookup.
 - **World Model** (`src/engines/world-model`, wrapper `src/world.ts`): recalls, cases and findings are entities and facts. Every write carries provenance: source kind, agent, and the SQL id or model call. Our context builder (`buildContext()` in `src/world.ts`) reads the engine's fact view, and it is the **only** input the Briefer sees, so a brief can only cite what the team actually established.
 
 **Meterless Nightshift (primary AI provider)**: every model call goes through one injected generator (`src/llm.ts`) to Nightshift's OpenAI-compatible Runtime API on the same machine (`http://127.0.0.1:8088/v1`, with `meterless-app` and `meterless-scope` headers; the runtime token is read from Nightshift's own token file or `METERLESS_RUNTIME_TOKEN`). The NVIDIA key lives in Nightshift's provider store, not in this repository. Each `llm` trace event records the requested model, the model Nightshift actually routed to (`served_model`) and its receipt id; the live viewer and the report show `requested ⇒ served` per call. Transient errors (429, 502–504, first-token timeouts) are retried with backoff and logged as `llm.retry`.
@@ -115,8 +115,17 @@ The same agents and the same SQL run against an in-process DuckDB stand-in, over
 
 ```bash
 npm run queue                                           # escalated cases
-npm run decide -- H-1378-2026 NW-100010 not-this --note "ours is MILD, recall is MEDIUM only"
-npm run agents -- --only H-1378-2026                    # Investigator follows the stored decision
+npm run decide -- H-1407-2026 NW-100005 same --note "our 4LB is the 1/4 lb bag the notice lists"
+npm run agents -- --since 2026-07-01 --only H-1407-2026 # Investigator follows the stored decision
+```
+
+The same through the API, in the container with no credentials:
+
+```bash
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1407-2026"]}'   # needs-human
+curl localhost:8000/queue                                                                                                 # the Auditor's objection
+curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1407-2026","sku":"NW-100005","verdict":"same"}'
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1407-2026"]}'   # act-now, following the decision
 ```
 
 ## Failure handling
@@ -175,9 +184,9 @@ A dismissed recall is the dangerous error: recalled stock stays on the shelf. Th
 ## Limitations
 
 - The retailer data is synthetic. Its barcode quirks (a third of suppliers sending GTIN-14, four sending the UPC without its check digit) are planted by `scripts/gen-synthetic.ts`, modelled on real EDI feeds; the Cartographer's code does not know which suppliers they are. Real item masters abbreviate harder, and real lot codes come from receiving scans.
-- A text match rests on a 30B model reading English, and the Auditor's checks are lexical: grounding, item words, lot tokens. Ambiguous cases go to a human instead of being guessed.
+- A text match rests on one model reading English (Nemotron 3 Ultra by default), and the Auditor's checks are lexical: grounding, item words, lot tokens. Ambiguous cases go to a human instead of being guessed.
 - The loyalty-customer count sums weekly distinct counts, so it is an upper bound.
-- CPSC notices rarely print UPCs (4 of 184 in the snapshot), so CPSC matching leans on model numbers and the judge.
+- CPSC notices rarely print UPCs (4 of 184 in the `sample/` snapshot of 22 Oct, 4 of 189 in the live feed on 24 Oct), so CPSC matching leans on model numbers and the judge.
 - The feed windows are fixed in `sql/01_feeds.sql` (2026-07-01 onward). Recalls before that date aren't read.
 - Nightshift and Zetaris run locally on one Mac for this build. Hosted NVIDIA endpoints are rate-limited, so long evaluations can see 429s; those calls are retried and logged.
 

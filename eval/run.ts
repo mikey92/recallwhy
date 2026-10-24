@@ -65,10 +65,13 @@ const m = (xs: typeof rows) => {
     precision: tp + fp ? +(tp / (tp + fp)).toFixed(3) : null, recall: pos ? +(tp / pos).toFixed(3) : null };
 };
 // Model calls that still failed after every retry fell back (judge → UNSURE, lots → regex); report them.
-const calls = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "llm");
+const events = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+const calls = events.filter((e) => e.kind === "llm");
+// Supplier barcode rules the Cartographer learned from cases the Auditor sent back.
+const cartographerRules = events.flatMap((e) => (e.kind === "msg" && e.agent === "Cartographer" && Array.isArray(e.learned) ? e.learned : [])).map((r: { supplier: string; transform: string; rows: number; learnedFrom: string }) => ({ supplier: r.supplier, transform: r.transform, rows: r.rows, learnedFrom: r.learnedFrom }));
 const modelCalls = llm.provider === "none" ? undefined : { total: calls.length, failedAfterRetries: calls.filter((e) => String(e.output ?? "").startsWith("ERROR")).length };
 const out = { model: ctx.model, startedAt, since, scanned, cases: cases.length, seconds: Math.round((Date.now() - t0) / 1000),
-  all: m(rows), textOnly: m(rows.filter((r) => r.basis === "text")), revisedCases: new Set(rows.filter((r) => r.rounds > 1).map((r) => r.recall)).size, modelCalls };
+  all: m(rows), textOnly: m(rows.filter((r) => r.basis === "text")), revisedCases: new Set(rows.filter((r) => r.rounds > 1).map((r) => r.recall)).size, modelCalls, cartographerRules };
 mkdirSync("eval/results", { recursive: true });
 writeFileSync(`eval/results/${tag}.json`, JSON.stringify({ ...out, rows }, null, 2));
 console.log(JSON.stringify(out, null, 2));

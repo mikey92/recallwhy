@@ -78,7 +78,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
     ...(actions.length ? ["## Actions", ...actions.map((a) => `- ${a}`), ""] : []),
     "## Caveats", ...caveats.map((c) => `- ${c}`), "",
     "## Evidence", ...evidence.map((e) => `- [${e.id}] ${e.predicate}: ${JSON.stringify(e.value).slice(0, 160)} — *${e.source}*`), "",
-    `_why-paragraph written by ${whyBy === "model" ? `${ctx.model} and checked by the Auditor` : "template (model draft failed the evidence check)"}; run ${ctx.trace.runId}_`,
+    `_why-paragraph written by ${whyBy === "model" ? `${ctx.model} and checked by the Auditor` : attempts ? `template (${attempts} model draft(s) failed the evidence check)` : !drafted && ctx.model.startsWith("none:") ? "template (no model configured)" : "template (this verdict only restates the decisions)"}; run ${ctx.trace.runId}_`,
   ].join("\n");
   ctx.trace.emit("brief", "Briefer", { caseId: k.id, verdict: f.verdict, whyBy, attempts });
   say(ctx, "Briefer", "Orchestrator", `${k.id}: brief ready (${f.verdict}, why by ${whyBy})`);

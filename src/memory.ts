@@ -30,6 +30,8 @@ export class CaseMemory {
   priorDecisions(recallId: string, sku: string, agent: string): MemoryRecord[] {
     const hits = this.hmem.store.all().filter((m) => m.tags.includes(`recall:${recallId}`) && m.tags.includes(`sku:${sku}`) && !m.supersededBy)
       .sort((a, b) => Number(b.tags.includes("by:human")) - Number(a.tags.includes("by:human")) || b.timestamp - a.timestamp);
+    // The decisive read goes past the retrieval service, so log it in the trust ledger ourselves.
+    for (const h of hits) this.hmem.ledger.log(h.id, "read", agent, { details: { query: `recall:${recallId} sku:${sku}` } });
     this.trace.emit("memory.read", agent, { query: `recall:${recallId} sku:${sku}`, hits: hits.map((h) => ({ id: h.id, text: h.content, confidence: h.confidence })) });
     return hits;
   }

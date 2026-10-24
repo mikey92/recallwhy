@@ -3,13 +3,20 @@
 //   curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d @examples/input/example_1.json
 // POST /run {since, only?, limit?} → JSON: verdict per case, briefs, trace path. One run at a time.
 // GET /runs/<runId>/trace → the run's JSONL trace; GET /runs/<runId>/report → its HTML report.
+// GET /queue → cases escalated to a human; POST /decide {recall, sku, verdict, note?} → store a reviewer's decision.
 import { createServer } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
 import { loadConfig } from "./config.ts";
-import { runOnce } from "./app.ts";
+import { decide, reviewQueue, runOnce } from "./app.ts";
 
 const PORT = Number(process.env.PORT ?? 8000);
 let busy = false;
+
+async function body(req: AsyncIterable<unknown>): Promise<string> {
+  const chunks: Buffer[] = [];
+  for await (const c of req) chunks.push(c as Buffer);
+  return Buffer.concat(chunks).toString("utf8");
+}
 
 createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
@@ -24,13 +31,20 @@ createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": kind === "trace" ? "application/x-ndjson" : "text/html; charset=utf-8" });
     return void res.end(readFileSync(path));
   }
-  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report or GET /health" });
+  if (req.method === "GET" && url.pathname === "/queue") return send(200, reviewQueue());
+  if (req.method === "POST" && url.pathname === "/decide") {
+    let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown };
+    try { d = JSON.parse(await body(req) || "{}"); } catch { return send(400, { error: "body must be JSON" }); }
+    if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this"))
+      return send(400, { error: 'body must be {"recall": "H-1407-2026", "sku": "NW-100005", "verdict": "same" | "not-this", "note"?: "..."}' });
+    return send(200, { stored: true, ...decide(d.recall, d.sku, d.verdict, typeof d.note === "string" ? d.note : undefined), usedOn: "the next POST /run" });
+  }
+  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report, GET /queue, POST /decide or GET /health" });
   if (busy) return send(409, { error: "a run is already in progress; try again when it finishes" });
   let input: { since?: string; only?: string[]; limit?: number };
   try {
-    const chunks: Buffer[] = [];
-    for await (const c of req) chunks.push(c as Buffer);
-    input = chunks.length ? JSON.parse(Buffer.concat(chunks).toString("utf8")) : {};
+    const text = await body(req);
+    input = text ? JSON.parse(text) : {};
   } catch {
     return send(400, { error: "body must be JSON like {\"since\":\"2026-09-15\",\"limit\":5}" });
   }

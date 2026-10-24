@@ -27,6 +27,11 @@ reason, or escalates to a human when the evidence is not good enough.
 - No personal data anywhere. Store names and cities are fictional.
 
 ## Agents (separate roles, separate prompts, talk through the bus; every message is traced)
+0. Cartographer — before any case, maps the sources through Zetaris's catalog statements, tags
+   barcode/SKU/lot columns, profiles identifier formats (also in the live feeds) and tests the
+   cross-source barcode joins. Writes the source map to the World Model. When the Auditor sends
+   back ship-notice rows the map's key cannot reach, it diagnoses that supplier, tests the fix on
+   all of its ship notices and corrects the map (`reconcile` in src/agents/cartographer.ts).
 1. Scout — pulls recalls reported since a date from the Zetaris feed views, normalises them
    (recall id, firm, product text, UPCs, lot codes, model numbers, states), and opens one case
    per recall in the World Model.
@@ -38,9 +43,11 @@ reason, or escalates to a human when the evidence is not good enough.
    loyalty customers to notify (count), shipping states vs the recall's distribution pattern.
    Produces a Finding with every number tied to the SQL that produced it.
 3. Auditor — has authority to BLOCK. Independently re-derives every number in the Finding
-   with its own SQL written differently (e.g. from supplier ship notices instead of ERP
-   inventory), checks every quote is literally present in the recall text, checks lot codes
-   really appear in the recall's code_info. Mismatch → returns a critique to the Investigator
+   with its own SQL, aggregated in the database instead of summed in code; confirms the affected
+   lots through supplier ship notices reached by barcode (sending key mismatches to the
+   Cartographer); checks every quote is literally present in the recall text, lot codes are in the
+   recall's code_info, every product word of our item is in the notice, and that a dismissal's
+   quote does not name our item. Mismatch → returns a critique to the Investigator
    (max 2 revision rounds) → still failing → escalate to human review queue.
 4. Briefer — writes the action brief only from the World Model context builder (it never sees
    raw rows): verdict, why (evidence list with source + SQL id), actions (pull lots from

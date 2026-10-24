@@ -10,7 +10,7 @@ test("Meterless Nightshift is the default provider", () => {
   const cfg = llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t" });
   assert.equal(cfg.provider, "meterless");
   assert.equal(cfg.baseUrl, "http://127.0.0.1:8088/v1");
-  assert.equal(cfg.model, "meterless/auto");
+  assert.equal(cfg.model, "nvidia/nemotron-3-ultra-550b-a55b", "a named Nemotron model, not meterless/auto, which may route elsewhere");
   assert.equal(llmFromEnv({ LLM_PROVIDER: "ollama" }).provider, "ollama");
 });
 
