@@ -22,7 +22,10 @@ const since = arg("since", "2026-07-01")!;
 const ablation = process.argv.includes("--no-cartographer") ? "no-cartographer" : process.argv.includes("--map-on-demand") ? "map-on-demand" : "";
 // --recalls a,b,c: spot check on those recalls only (written under a separate "-subset" tag)
 const only = arg("recalls")?.split(",");
-const tag = `${provider}-${model}${ablation ? `-${ablation}` : ""}${only ? "-subset" : ""}`.replace(/[^a-z0-9.-]+/gi, "_");
+// --map-model <model>: the Cartographer asks this Nightshift model for barcode transforms even when the judge is off,
+// which isolates what model-proposed (and SQL-proven) transforms add to the map.
+const mapModel = arg("map-model");
+const tag = `${provider}-${model}${ablation ? `-${ablation}` : ""}${mapModel ? `-map-${mapModel}` : ""}${only ? "-subset" : ""}`.replace(/[^a-z0-9.-]+/gi, "_");
 
 // Labels: a SKU is covered if it was generated from this recall, or if its UPC is printed in the notice.
 const gt = new Map(readFileSync("data/synthetic/eval/ground_truth.csv", "utf8").trim().split("\n").slice(1).map((l) => { const [sku, rec] = l.split(","); return [sku, rec] as const; }));
@@ -33,7 +36,8 @@ rmSync(`logs/eval/trace-eval-${tag}.jsonl`, { force: true });
 const trace = new Trace({ dir: "logs/eval", quiet: true, runId: `eval-${tag}` });
 const sql = new DuckSampleRunner({ trace });
 const llm: LlmConfig = provider === "meterless" ? llmFromEnv({ ...process.env, LLM_PROVIDER: "meterless", METERLESS_MODEL: model }) : { provider, model, ollamaUrl: process.env.OLLAMA_URL };
-const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}`, queueFile: `${state}/review-queue.json` };
+const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace, `${state}/hmem`), world: new World(trace, `${state}/world`), trace, model: `${provider}:${model}`, queueFile: `${state}/review-queue.json`,
+  ...(mapModel ? { mapGen: makeGenerator(llmFromEnv({ ...process.env, LLM_PROVIDER: "meterless", METERLESS_MODEL: mapModel }), trace), mapModel: `meterless:${mapModel}` } : {}) };
 
 const t0 = Date.now();
 const startedAt = new Date().toISOString();

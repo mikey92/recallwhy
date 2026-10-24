@@ -13,16 +13,18 @@ const OUT = path.join(ROOT, "data", "synthetic");
 
 /**
  * How a supplier writes the barcode on its ship notices. Like many real EDI feeds, every third
- * supplier sends GTIN-14 (the 12-digit UPC left-padded with "00") instead of UPC-12, and every
- * seventh of the rest sends the 11-digit UPC without its check digit, as legacy systems do.
- * A plain UPC = UPC join misses both; the Cartographer has to discover them.
+ * supplier sends GTIN-14 (the 12-digit UPC left-padded with "00") instead of UPC-12, every
+ * seventh of the rest sends the 11-digit UPC without its check digit, as legacy systems do, and
+ * a few others (number ≡ 1 mod 9) send only the 10-digit core (no number-system digit, no check digit).
+ * A plain UPC = UPC join misses all three; the Cartographer has to discover them.
  * Deterministic (no PRNG draw), so every other generated value is unchanged.
  */
 export function asnBarcode(supplierId: string, upc: string): string {
   const n = Number(supplierId.replace(/\D/g, ""));
   if (!upc) return upc;
   if (n % 3 === 0) return `00${upc}`;
-  return n % 7 === 0 ? upc.slice(0, 11) : upc;
+  if (n % 7 === 0) return upc.slice(0, 11);
+  return n % 9 === 1 ? upc.slice(1, 11) : upc;
 }
 
 const STATES = ["CA", "OR", "WA", "TX", "IL", "MN", "WI", "NY", "NJ", "PA", "FL", "GA"] as const;

@@ -14,6 +14,9 @@ export interface AgentContext {
   cartographer?: boolean;
   /** Where escalated cases go (default state/review-queue.json); the evaluation keeps its own. */
   queueFile?: string;
+  /** The model the Cartographer asks for barcode transforms, if not the agents' shared one (evaluation only). */
+  mapGen?: Generator;
+  mapModel?: string;
 }
 
 export type AgentName = "Orchestrator" | "Cartographer" | "Scout" | "Investigator" | "Auditor" | "Briefer";

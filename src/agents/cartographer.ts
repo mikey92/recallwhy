@@ -11,9 +11,13 @@ import { inList, lit, say, type AgentContext } from "./context.ts";
 export type Role = "barcode" | "sku" | "lot";
 export interface TableInfo { name: string; kind: "jdbc" | "rest" | "view"; source: string; columns: { name: string; type: string; role?: Role }[] }
 export interface BarcodeProfile { table: string; column: string; lengths: Record<string, number>; sqlId: string }
-export type Transform = "no-leading-zeros" | "no-check-digit";
+export type Transform = "no-leading-zeros" | "no-check-digit" | "proposed";
+/** One step of a model-proposed barcode transform; anything else is refused (no free-form SQL). */
+export type Op = string;
+const OP = /^(digits_only|strip_leading_zeros|(drop_first|drop_last|take_first|take_last):(\d{1,2}))$/;
+export interface ProposedOps { supplier: Op[]; ours: Op[] }
 /** A supplier whose barcodes need their own transform, learned from a case the Auditor sent back. */
-export interface SupplierRule { supplier: string; transform: Transform; rows: number; learnedFrom: string; sqlId: string }
+export interface SupplierRule { supplier: string; transform: Transform; rows: number; learnedFrom: string; sqlId: string; ops?: ProposedOps; proposedBy?: string }
 export interface JoinCheck { left: string; right: string; column: string; leftRows: number; asWritten: number; normalized: number; chosen: "as-written" | "normalized" | "none"; sqlIds: string[]; rules?: SupplierRule[] }
 /** How a live feed writes the identifiers our matching depends on. */
 export interface FeedProfile { view: string; notices: number; barcodeField?: number; barcodeInText?: number; barcodeInTextSplit?: number; models?: number; dateExample?: string; dateFormat?: string; sqlId: string }
@@ -29,7 +33,24 @@ const roleOf = (col: string) => ROLE.find(([, re]) => re.test(col))?.[0];
 const ASN = "supplier_portal.ship_notices", ITEMS = "erp.skus";
 
 /** Barcode equality under a transform; `asn` is the ship-notice alias, `item` the item-master one. */
-function keyEq(t: Transform | "as-written", asn: string, item: string): string {
+/** SQL for a list of safe ops applied to a barcode column. */
+export function applyOps(col: string, ops: Op[]): string {
+  return ops.reduce((x, op) => {
+    const m = op.match(OP);
+    if (!m) throw new Error(`refused op ${op}`);
+    const n = Number(m[3] ?? 0);
+    if (m[1] === "digits_only") return `regexp_replace(${x}, '[^0-9]', '')`;
+    if (m[1] === "strip_leading_zeros") return `regexp_replace(${x}, '^0+', '')`;
+    if (n < 1 || n > 13) throw new Error(`refused op ${op}`);
+    if (m[2] === "drop_first") return `substr(${x}, ${n + 1})`;
+    if (m[2] === "drop_last") return `substr(${x}, 1, length(${x}) - ${n})`;
+    if (m[2] === "take_first") return `substr(${x}, 1, ${n})`;
+    return `substr(${x}, length(${x}) - ${n - 1})`;
+  }, col);
+}
+
+function keyEq(t: Transform | "as-written", asn: string, item: string, ops?: ProposedOps): string {
+  if (t === "proposed" && ops) return `${applyOps(`${asn}.upc`, ops.supplier)} = ${applyOps(`${item}.upc`, ops.ours)}`;
   if (t === "no-leading-zeros") return `regexp_replace(${asn}.upc, '^0+', '') = regexp_replace(${item}.upc, '^0+', '')`;
   if (t === "no-check-digit") return `${asn}.upc = substr(${item}.upc, 1, 11)`;
   return `${asn}.upc = ${item}.upc`;
@@ -41,7 +62,7 @@ export function barcodeJoin(map: SourceMap | undefined, left: string, right: str
   const base = j?.chosen === "normalized" ? keyEq("no-leading-zeros", a, b) : `${a}.upc = ${b}.upc`;
   if (!j?.rules?.length) return base;
   const [asn, item] = left === ASN ? [a, b] : [b, a];
-  return `(${[base, ...j.rules.map((r) => `(${asn}.supplier_id = ${lit(r.supplier)} AND ${keyEq(r.transform, asn, item)})`)].join(" OR ")})`;
+  return `(${[base, ...j.rules.map((r) => `(${asn}.supplier_id = ${lit(r.supplier)} AND ${keyEq(r.transform, asn, item, r.ops)})`)].join(" OR ")})`;
 }
 
 export async function chart(ctx: AgentContext): Promise<SourceMap> {
@@ -167,17 +188,24 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     const ok = t.map((_, i) => Number(row[`k${i}`] ?? 0));
     const covered = ctx.map?.joins.find((j) => j.left === ASN || j.right === ASN);
     if (ok[0] === n || (covered?.chosen === "normalized" && ok[1] === n) || covered?.rules?.some((r) => r.supplier === supplier)) continue;
-    const transform = (["no-leading-zeros", "no-check-digit"] as const).find((_, i) => ok[i + 1] === n);
-    if (!transform) { notes.push(`${supplier}: ${n} rows with ${row.asn_len}-digit barcodes match our ${row.item_len}-digit UPCs under no known transform`); continue; }
-    // A rule from one case is a guess; check it on everything this supplier has shipped.
+    let transform: Transform | undefined = (["no-leading-zeros", "no-check-digit"] as const).find((_, i) => ok[i + 1] === n);
+    let proposal: { ops: ProposedOps; why: string; by: string } | undefined;
+    if (!transform) {
+      // Outside what the code knows: the model proposes a transform from real pairs, SQL decides.
+      proposal = await propose(ctx, supplier, `${row.asn_len}-digit`, `${row.item_len}-digit`).catch((e: Error) => { notes.push(`${supplier}: ${n} rows with ${row.asn_len}-digit barcodes match our ${row.item_len}-digit UPCs under no known transform, and no usable proposal (${e.message.slice(0, 100)})`); return undefined; });
+      if (!proposal) continue;
+      transform = "proposed";
+    }
+    const label = transform === "proposed" ? `proposed by ${proposal!.by}: supplier ${proposal!.ops.supplier.join(" → ") || "as written"}, ours ${proposal!.ops.ours.join(" → ") || "as written"}` : transform;
+    // A rule from one case, or from a model, is a guess; check it on everything this supplier has shipped.
     const all = await run(
-      `SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s")} THEN 1 ELSE 0 END) AS ok
+      `SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s", proposal?.ops)} THEN 1 ELSE 0 END) AS ok
        FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> ''`,
       `test "${transform}" on every ship notice from ${supplier}`);
     const [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
-    if (hit !== tot) { notes.push(`${supplier}: "${transform}" fits this case but only ${hit}/${tot} of its ship notices`); continue; }
-    learned.push({ supplier, transform, rows: tot, learnedFrom: caseId, sqlId: all.sqlId });
-    notes.push(`${supplier} sends ${row.asn_len}-digit barcodes against our ${row.item_len}-digit UPCs: "${transform}" holds for all ${tot} of its ship notices (${all.sqlId})`);
+    if (hit !== tot) { notes.push(`${supplier}: "${label}" holds for only ${hit}/${tot} of its ship notices; not adopted`); continue; }
+    learned.push({ supplier, transform, rows: tot, learnedFrom: caseId, sqlId: all.sqlId, ...(proposal ? { ops: proposal.ops, proposedBy: proposal.by } : {}) });
+    notes.push(`${supplier} sends ${row.asn_len}-digit barcodes against our ${row.item_len}-digit UPCs: "${label}" holds for all ${tot} of its ship notices (${all.sqlId})${proposal ? ` — ${proposal.why}` : ""}`);
   }
   if (learned.length) {
     ctx.map ??= { tables: [], skipped: [], barcodes: [], joins: [] };
@@ -185,7 +213,7 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     if (!j) ctx.map.joins.push(j = { left: ASN, right: ITEMS, column: "upc", leftRows: 0, asWritten: 0, normalized: 0, chosen: "as-written", sqlIds: [] });
     (j.rules ??= []).push(...learned);
     const ent = await ctx.world.entity("join_key", ctx.sql.engine, `${j.left}~${j.right}:upc`, `${j.left} x ${j.right} on barcode`, {}, { kind: ctx.sql.engine, by: "Cartographer", ref: diag.sqlId });
-    for (const r of learned) await ctx.world.fact(ent, `supplier_rule:${r.supplier}`, r.transform, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
+    for (const r of learned) await ctx.world.fact(ent, `supplier_rule:${r.supplier}`, r.ops ? { transform: r.transform, ...r.ops, proposedBy: r.proposedBy } : r.transform, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
   }
   say(ctx, "Cartographer", "Auditor", `${caseId}: ${notes.join("; ") || "every row already joins with the current key"}.${learned.length ? " Map corrected; re-run your check." : ""}`,
     { diagnosis: diag.sqlId, learned, before: current });
@@ -229,4 +257,32 @@ async function profileFeeds(ctx: AgentContext, map: SourceMap): Promise<FeedProf
   if (fda) say(ctx, "Cartographer", "Scout", `FDA feed: ${fda.notices} notices, no barcode field; ${fda.barcodeInText} print a 12–14 digit barcode in the product text and ${(fda.barcodeInTextSplit ?? 0) - (fda.barcodeInText ?? 0)} more only once spaces and dashes are removed ("0 87906-01018 7"), so match UPCs on digits only. Dates are ${fda.dateFormat} (${fda.dateExample}).`, { feed: fda });
   if (cpsc) say(ctx, "Cartographer", "Investigator", `CPSC feed: ${cpsc.notices} notices, ${cpsc.barcodeField} with a UPC field and ${cpsc.models} with a model field, so CPSC matches rest on model numbers written in the notice text and on the text itself, not on barcodes. Dates are ${cpsc.dateFormat} (${cpsc.dateExample}).`, { feed: cpsc });
   return out;
+}
+
+/**
+ * Ask the model for a barcode transform when the known ones fail: show it real pairs from this
+ * supplier and accept only the safe ops above. The caller proves the proposal with SQL on every
+ * ship notice from the supplier before anything changes.
+ */
+async function propose(ctx: AgentContext, supplier: string, theirs: string, ours: string): Promise<{ ops: ProposedOps; why: string; by: string }> {
+  const pairs = await ctx.sql.run(
+    `SELECT a.upc AS supplier_barcode, s.upc AS our_upc FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku
+     WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> '' AND s.upc <> '' LIMIT 6`,
+    { agent: "Cartographer", purpose: `sample barcode pairs from ${supplier} for a transform proposal` });
+  const out = await (ctx.mapGen ?? ctx.gen)([
+    `Two systems write the same product's barcode differently. Supplier ${supplier} sends ${theirs} codes; our item master has ${ours} UPCs. Real pairs for the same SKU:`,
+    ...pairs.rows.map((r) => `  supplier ${r.supplier_barcode}   ours ${r.our_upc}`),
+    "", "Give the steps that make both sides equal, using only these operations:",
+    "digits_only, strip_leading_zeros, drop_first:N, drop_last:N, take_first:N, take_last:N",
+    'Reply with JSON only: {"supplier": [steps for the supplier code], "ours": [steps for our UPC], "why": "one short sentence"}',
+  ].join("\n"), { agent: "Cartographer", purpose: `propose a barcode transform for ${supplier}`, maxTokens: 200 });
+  const m = out.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error("the model gave no JSON");
+  const j = JSON.parse(m[0]) as { supplier?: unknown; ours?: unknown; why?: unknown };
+  const steps = (v: unknown) => (Array.isArray(v) ? v.map(String).map((x) => x.trim()) : []);
+  const ops = { supplier: steps(j.supplier), ours: steps(j.ours) };
+  for (const op of [...ops.supplier, ...ops.ours]) if (!OP.test(op)) throw new Error(`refused step "${op.slice(0, 40)}"`);
+  if (ops.supplier.length + ops.ours.length === 0 || ops.supplier.length > 4 || ops.ours.length > 4) throw new Error("no usable steps");
+  applyOps("x", ops.supplier); applyOps("x", ops.ours); // range checks
+  return { ops, why: typeof j.why === "string" ? j.why.slice(0, 160) : "", by: ctx.mapModel ?? ctx.model };
 }
