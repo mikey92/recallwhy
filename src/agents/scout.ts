@@ -34,11 +34,11 @@ export async function scout(ctx: AgentContext, opts: { since: string; only?: str
 
   // One federated query across the live FDA feed (REST) and the ERP (JDBC): any SKU whose UPC
   // occurs anywhere in the digits of a notice. Catches UPCs written in ways the parser misses.
-  const sweep = !fda.sqlId ? fda : await ctx.sql.run(
+  const sweep = !fda.sqlId ? fda : await feed("FDA UPC sweep", ctx.sql.run(
     `SELECT f.recall_number, s.sku FROM recallfeeds.fda_food f JOIN erp.skus s
        ON s.upc <> '' AND regexp_replace(concat(f.product_description, ' ', f.code_info, ' ', coalesce(f.more_code_info, '')), '[^0-9]', '') LIKE concat('%', s.upc, '%')
      WHERE f.report_date >= ${lit(sinceCompact)}`,
-    { agent: "Scout", purpose: "UPC sweep: live FDA feed x ERP item master" });
+    { agent: "Scout", purpose: "UPC sweep: live FDA feed x ERP item master" }));
   const sweepHits = new Map<string, Set<string>>();
   for (const r of sweep.rows) { const k = `fda:${r.recall_number}`; (sweepHits.get(k) ?? sweepHits.set(k, new Set()).get(k)!).add(String(r.sku)); }
 

@@ -87,15 +87,17 @@ test("a live feed that is down does not stop the run: the Scout goes on with the
   await duck.ready;
   try {
     // Like openFDA answering 500 through Zetaris: every query that touches the FDA feed fails.
+    // The first FDA read succeeds and every later one fails, as when the feed drops mid-run.
+    let fdaReads = 0;
     const sql = { engine: duck.engine, close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) =>
-      q.includes("recallfeeds.fda_food") ? Promise.reject(new Error("Zetaris query failed 400: REST API call failed: HTTP 500 for api.fda.gov")) : duck.run(q, meta) };
+      q.includes("recallfeeds.fda_food") && (meta.agent !== "Scout" || fdaReads++ > 0) ? Promise.reject(new Error("Zetaris query failed 400: REST API call failed: HTTP 500 for api.fda.gov")) : duck.run(q, meta) };
     const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
     const map = await chart(ctx);
     assert.ok(map.joins.length > 0, "the map stands without the feed profile");
     const { cases } = await scout(ctx, { since: "2026-07-01" });
-    assert.ok(cases.length > 0 && cases.every((k) => k.recall.feed === "cpsc"));
+    assert.ok(cases.length > 0, "the run goes on");
     const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text);
-    assert.ok(msgs.some((t) => /FDA feed unavailable/.test(t)));
+    assert.ok(msgs.some((t) => /FDA UPC sweep feed unavailable/.test(t)));
     assert.ok(msgs.some((t) => /could not profile the live feeds/.test(t)));
   } finally {
     await duck.close();

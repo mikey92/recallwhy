@@ -23,8 +23,10 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
       const q = r.feed === "fda_food"
         ? `SELECT COUNT(*) AS n FROM recallfeeds.fda_food WHERE recall_number = ${lit(r.number)} AND regexp_replace(concat(product_description, ' ', code_info, ' ', coalesce(more_code_info, '')), '[^0-9]', '') LIKE ${lit("%" + cand.sku.upc + "%")}`
         : `SELECT COUNT(*) AS n FROM recallfeeds.cpsc_recalls WHERE recall_number = ${lit(r.number)} AND regexp_replace(concat(upcs, ' ', description), '[^0-9]', '') LIKE ${lit("%" + cand.sku.upc + "%")}`;
-      const res = await ctx.sql.run(q, { agent: "Auditor", purpose: `re-check UPC ${cand.sku.upc} in live notice ${r.id}` });
-      if (Number(res.rows[0]?.n ?? 0) > 0) checks.push(`${d.sku}: UPC found in live notice (${res.sqlId})`);
+      // The live feed is re-fetched on every query and can be down; an unverified match goes to a person.
+      const res = await ctx.sql.run(q, { agent: "Auditor", purpose: `re-check UPC ${cand.sku.upc} in live notice ${r.id}` }).catch((e: Error) => e);
+      if (res instanceof Error) critiques.push({ code: "upc-not-in-notice", sku: d.sku, detail: `could not re-check UPC ${cand.sku.upc} in the live notice ${r.id} (${res.message.split("\n")[0].slice(0, 120)})` });
+      else if (Number(res.rows[0]?.n ?? 0) > 0) checks.push(`${d.sku}: UPC found in live notice (${res.sqlId})`);
       else critiques.push({ code: "upc-not-in-notice", sku: d.sku, detail: `UPC ${cand.sku.upc} not found in notice ${r.id} (${res.sqlId})` });
     }
     if (d.verdict === "same" && d.basis === "model") {
