@@ -78,14 +78,26 @@ blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--line);color
 .ev{padding:3px 0;border-bottom:1px dashed var(--line)}.crit{color:#b91c1c}.sql{color:var(--mute)}.llm{color:#15803d}.mem{color:#7c3aed}
 code{font-size:12px}ul{margin:4px 0;padding-left:20px}
 @media (prefers-color-scheme:dark){.crit{color:#f87171}.mem{color:#c084fc}.llm{color:#4ade80}.cite{color:#93c5fd;background:#2563eb44}}
+/* Motion: the header fades in, the source map and cases rise in one after another (stagger), counts count up. Ease-out, short; off with reduced motion. */
+@keyframes fade{from{opacity:0}}@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
+.map,.case{animation:rise .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(min(var(--i,0),8) * 70ms + 120ms)}
+@media (prefers-reduced-motion:reduce){header,.map,.case{animation:none}}
+@media print{header,.map,.case{animation:none}}
 @media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}}
 </style></head><body><header><h1>RecallWhy</h1>
 <div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(res.since)} → ${cases.length} cases</div>
-<div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} ${v}</a>`).join("")}</div></header><main>
+<div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
 ${sourceMap(evs)}
-${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""} style="border-left-color:${COLOR[c.verdict]}"><div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
+${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}><div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
 <div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
-</main></body></html>`;
+</main>
+<script>/* count-up: the final number is in the HTML; this only animates it from 0 */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) for (const el of document.querySelectorAll("[data-n]")) {
+  const to = Number(el.dataset.n), t0 = performance.now(), ms = 700;
+  const step = (t) => { const k = Math.min(1, (t - t0) / ms); el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}</script></body></html>`;
   writeFileSync(`${outDir}/report.html`, html);
   return `${outDir}/report.html`;
 }

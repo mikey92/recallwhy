@@ -14,7 +14,7 @@ Every week U.S. regulators publish dozens of recall notices (517 CPSC and FDA no
 - The **Auditor** can block it: it re-checks the live notice in Zetaris, requires quotes, lot codes, product words and package sizes to be in the notice, rejects a dismissal whose own quote names our product, re-derives every number with its own SQL, and confirms lots through the supplier's ship notices by barcode. After two failed revisions a case goes to a human.
 - The **Briefer** writes the action brief only from the World Model context, where every fact carries its source query.
 
-Human decisions go into Meterless H-MEM with high trust, and the next run follows them. The retailer is synthetic; its barcode quirks (GTIN-14 padding, a dropped check digit) are planted by the generator, modelled on real EDI feeds.
+Human decisions go into Meterless H-MEM with high trust, and the next run follows them. The retailer is synthetic; its barcode quirks (GTIN-14 padding, a dropped check digit, a 10-digit core) are planted by the generator, modelled on real EDI feeds.
 
 **Repository:** https://github.com/mikey92/recallwhy
 
@@ -38,7 +38,7 @@ Setup is code (`npm run setup:zetaris`). If Zetaris does not answer, a run falls
 
 **Cursor (with Space XAI).** The Cursor agent did the scaffolding, the synthetic data generator and Postgres loader, the Zetaris REST runner, the DuckDB sample-mode runner and their tests (commits marked "Cursor agent"). Each change was reviewed and corrected before commit.
 
-**What was unique.** The source map is not trusted either: the agent that verifies the answers is also the one that finds where the map is wrong, and the Cartographer fixes it with evidence from the whole supplier, not one case. Without the Cartographer, rules-only matching catches 12 of 194 covered pairs; with it, 103.
+**What was unique.** The source map is not trusted either: the agent that verifies the answers is also the one that finds where the map is wrong, and the Cartographer fixes it with evidence from the whole supplier, not one case. When the supplier's format matches no rule in the code, the model proposes a transform from sampled barcode pairs, in a fixed set of string ops (no free SQL), and SQL adopts it only if it holds on every ship notice of that supplier. With the judge off, the Cartographer catches 22 of 194 covered pairs with its known rules and 103 with model proposals; without it, 11.
 
 ## Pre-existing components
 - Matching ideas (brand gate, product-kind overlap, model-number conflict, quotes grounded in the notice) come from my Recall Sloth project (github.com/mikey92/recall-sloth, committed 21 Oct 2026). RecallWhy's matcher (`src/match.ts`) is new code.

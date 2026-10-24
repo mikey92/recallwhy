@@ -36,11 +36,15 @@ button.link{background:transparent;color:var(--focus);padding:0 8px;font-weight:
 button.not{background:transparent;color:var(--ink);border:1px solid var(--line)}
 button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .done{font-size:15px;color:var(--ok);margin:6px 0 0}
+/* Motion: cases rise in one after another on first load; a new decision fades in. Ease-out; off with reduced motion (rule above). */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}@keyframes fade{from{opacity:0}}
+.intro .case{animation:rise .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(min(var(--i,0),8) * 70ms)}
+.done.new{animation:fade .4s ease-out both}
 </style>
 </head>
 <body>
 <header><h1>Review queue</h1><p id="sum" role="status" aria-live="polite"></p><a href="/">Live view</a></header>
-<main id="list"></main>
+<main id="list" class="intro"></main>
 <script>
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const label = { "same": "Same product", "not-this": "Not this product", "unsure": "Undecided" };
@@ -71,7 +75,7 @@ async function load() {
   const waiting = queue.flatMap((c) => c.skus.filter((s) => !done.has(c.recall + " " + s.sku))).length;
   n = 0;
   document.getElementById("list").innerHTML = queue.length
-    ? queue.slice().reverse().map((c) => `<section class="case"><h2>${esc(c.firm || c.recall)}</h2>
+    ? queue.slice().reverse().map((c, i) => `<section class="case" style="--i:${i}"><h2>${esc(c.firm || c.recall)}</h2>
         <p class="meta">${esc(c.recall)}${c.date ? " · recalled " + esc(c.date) : ""}${c.runId ? ` · <a class="report" href="/out/${esc(c.runId)}/report.html" target="_blank">Report and agent trace</a>` : ""}</p>
         ${c.notice ? `<p class="notice">${esc(c.notice)}</p>` : ""}
         ${c.skus.map((s) => skuBlock(c, s, done)).join("")}</section>`).join("")
@@ -90,7 +94,9 @@ document.getElementById("list").addEventListener("click", async (e) => {
   const r = await fetch("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ recall: row.dataset.recall, sku: row.dataset.sku, verdict: b.dataset.verdict, note: row.querySelector("input").value }) });
   if (!r.ok) { b.disabled = false; const p = row.closest(".sku").querySelector(".obj[hidden]"); p.textContent = await r.text(); p.hidden = false; return; }
+  document.getElementById("list").classList.remove("intro");
   await load();
+  document.querySelector(`.row[data-recall="${CSS.escape(row.dataset.recall)}"][data-sku="${CSS.escape(row.dataset.sku)}"]`)?.closest(".done")?.classList.add("new");
   document.getElementById("sum").textContent = `Recorded “${what}” for ${row.dataset.sku}. ` + document.getElementById("sum").textContent;
 });
 load();
