@@ -8,7 +8,7 @@ Retailers get this wrong today. In December 2025 the FDA sent warning letters to
 
 **What RecallWhy changes:** over 440 recall/SKU pairs from 517 notices, the agents settle 417 (95%) without a person, 408 of them correctly, and send 23 to a reviewer with the reason; 187 of 194 recalled items are caught (rules alone: 22). See [Evaluation](#evaluation).
 
-**See it without running anything:** the agents working live (Cartographer lane: Zetaris catalog, feed profiling, then the Auditor sends back rows the map cannot reach and the map is corrected), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one rendered](https://raw.githack.com/mikey92/recallwhy/main/examples/output/example_3_after_human_decision/report.html)).
+**See it without running anything:** the agents working live (Cartographer lane: Zetaris catalog, feed profiling, then the Auditor sends back rows the map cannot reach and the map is corrected), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one rendered](https://htmlpreview.github.io/?https://github.com/mikey92/recallwhy/blob/main/examples/output/example_3_after_human_decision/report.html)).
 
 ![Live viewer: the Cartographer maps the sources through Zetaris, then corrects the map when the Auditor sends rows back](docs/img/live-agents.gif)
 
