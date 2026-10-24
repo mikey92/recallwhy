@@ -29,7 +29,7 @@ export function whatTheAgentsDid(slice: Ev[]): Highlight[] {
       const digits = shape && shape[1] === l.supplier ? ` (${shape[2]}-digit barcodes vs our ${shape[3]}-digit UPCs)` : "";
       if (l.proposedBy || l.transform === "proposed") {
         const by = l.proposedBy ?? slice.find((e) => e.kind === "llm" && e.agent === "Cartographer" && /propose a barcode transform/.test(e.purpose ?? ""))?.served_model;
-        out.push({ kind: "map", text: `Model-proposed transform for ${l.supplier ?? "a supplier"}${digits}${by ? `, by ${by}` : ""} — ${proof}` });
+        out.push({ kind: "map", text: `Model-proposed transform for ${l.supplier ?? "a supplier"}${digits}${by ? `, by ${by.replace(/^[^:/]+:/, "")}` : ""} — ${proof}` });
       } else {
         out.push({ kind: "map", text: `Map corrected mid-run: ${l.supplier ?? "a supplier"}${l.transform ? ` ${l.transform}` : ""}${digits} — ${proof}` });
       }

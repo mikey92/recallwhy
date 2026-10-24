@@ -34,7 +34,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <p>A regional retailer's <b>product-safety / QA manager</b> reads every CPSC and FDA notice and must answer:</p>
 <ul><li>Do we sell this — or something that only looks like it?</li><li>Which lots? Which stores still hold them?</li><li>How many customers bought it since the recall began?</li><li>Who supplied it?</li></ul>
 <div class="card" style="margin-top:34px;font-size:24px;border-left:6px solid #c0392b"><b>Dec 2025:</b> FDA warning letters to Kroger, Albertsons, Target and Walmart — recalled infant formula still on shelves in 175+ locations across 36 states, up to three weeks. Staff cited "confusion regarding which specific lots were affected."</div></div>
-<div><div class="card"><div class="big">184 + 333</div><p class="mute" style="margin-top:14px">CPSC recalls and FDA food enforcement reports, 1 Jul – 21 Oct 2026, read live by RecallWhy</p></div>
+<div><div class="card"><div class="big">184 + 333</div><p class="mute" style="margin-top:14px">CPSC recalls and FDA food enforcement reports, 1 Jul – 21 Oct 2026 (snapshot of 22 Oct in <code>sample/</code>; RecallWhy reads the same feeds live)</p></div>
 <p style="margin-top:30px">The answers live in four systems that were never meant to meet — two <b>recall feeds</b>, the <b>ERP</b> and the <b>supplier portal</b> — each writing a product its own way: UPC-12 in the ERP, GTIN-14 from a third of suppliers, digits buried in notice text. A wrong "not ours" leaves a contaminated lot on the shelf; a wrong "ours" pulls good stock.</p></div></div>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
@@ -89,7 +89,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="grid g2" style="gap:36px;margin-top:10px"><div><img class="shot" src="report.png" style="height:760px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Each case opens with what the agents did (here: a transform Nemotron proposed, proven by SQL on 299/299), then the cited brief and the trace.</p></div>
 <div><img class="shot" src="live.png" style="height:380px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Live viewer: the agents' events as they happen, from the trace file.</p><img class="shot" src="zetaris.png" style="margin-top:18px;height:330px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Zetaris: REST feeds and JDBC sources registered by <code>setup:zetaris</code>.</p></div></div></section>
 
-<section class="s"><div class="k">8 · Results</div><h2>187 of 194 recalled items caught. The Auditor cuts missed recalls 10 → 3.</h2>
+<section class="s"><div class="k">8 · Results</div><h2>187 of 194 recalled items caught. On text matches the Auditor cuts missed recalls 10 → 3.</h2>
 <table class="tight" style="margin-bottom:14px"><tr><th>Setup (440 recall/SKU pairs)</th><th>Caught (of 194)</th><th>Wrongly dismissed</th><th>False alarms (of 246)</th><th>To human</th></tr>
 <tr><td>No Cartographer — rules only</td><td>11</td><td>0</td><td>0</td><td>429</td></tr>
 <tr><td>Cartographer, known rules only</td><td>22</td><td>0</td><td>0</td><td>418</td></tr>

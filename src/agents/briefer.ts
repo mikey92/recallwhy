@@ -29,14 +29,19 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   // "Not ours" and "needs human" briefs only restate the decisions, so they use the template,
   // and so does every brief when no model is configured.
   const drafted = !ctx.model.startsWith("none:") && (f.verdict === "act-now" || f.verdict === "notify" || f.verdict === "no-exposure");
+  // A match a reviewer decided is not a confirmed match; the paragraph must say who decided it.
+  const byHuman = f.decisions.filter((d) => d.decidedBy === "human-memory" && d.verdict === "same").map((d) => d.sku);
   for (; attempts < 3 && drafted; ) {
     attempts++;
     const out = await ctx.gen(
       [`Write 2-4 sentences for a retail safety manager explaining WHY the verdict below is correct.`,
         `Verdict: ${HEAD[f.verdict]}`, `Use ONLY these facts. After every claim put the evidence id in brackets, like [E3]. Do not state any number that is not in the facts; write numbers as digits. Keep the recall notice's statements (firm, product, reason, codes) apart from our own data (stores, units, customers) — never say the notice states something about our stores. No headings, no lists.`,
+        byHuman.length ? `The match for ${byHuman.join(", ")} was decided by a human reviewer, not confirmed by the data: say that a reviewer decided it, and do not call it confirmed or verified.` : "",
         "", "FACTS:", text, feedback ? `\nYour previous draft was rejected: ${feedback}. Fix exactly that.` : ""].join("\n"),
       { agent: "Briefer", purpose: `why-paragraph ${k.id} (attempt ${attempts})`, maxTokens: 260 }).catch(() => "");
     const problems = out ? auditBrief(out, ids, text) : ["empty answer"];
+    if (out && byHuman.length && /\b(confirm(s|ed)?|verif(y|ies|ied)|corresponds exactly)\b[^.]*\b(match|product|SKU)\b|\b(match|product|SKU)\b[^.]*\b(confirm(s|ed)?|verified)\b/i.test(out) && !/reviewer/i.test(out))
+      problems.push(`the match for ${byHuman.join(", ")} was a reviewer's decision; say so instead of calling it confirmed`);
     if (!problems.length) {
       // Lexical checks passed; the Auditor also asks the model whether each sentence is
       // supported by the facts it cites (a separate call, not the Briefer's own prompt).
