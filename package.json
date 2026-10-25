@@ -15,7 +15,8 @@
     "view": "tsx src/serve.ts",
     "api": "tsx src/api.ts",
     "check:claims": "tsx scripts/check-claims.ts",
-    "demo": "SAMPLE_MODE=true LLM_PROVIDER=none tsx src/cli.ts run --since 2026-09-15 --limit 5"
+    "demo": "SAMPLE_MODE=true LLM_PROVIDER=none tsx src/cli.ts run --since 2026-09-15 --limit 5",
+    "check:repro": "tsx scripts/check-eval-repro.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.4.1-r.1",

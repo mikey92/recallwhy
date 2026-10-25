@@ -246,9 +246,11 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
 export const RECONCILED = "reconciled.ship_notice_item_keys";
 
 /** Publish ship notices matched to our items under the corrected map as a Zetaris view, then read each learned supplier back. */
-async function publish(ctx: AgentContext, map: SourceMap | undefined, learned: SupplierRule[]) {
+export async function publish(ctx: AgentContext, map: SourceMap | undefined, learned: SupplierRule[]) {
   const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
-  await run("CREATE SCHEMASTORE CONTAINER reconciled", "container for views the agents write back").catch((e: Error) => { if (!/exist/i.test(e.message)) throw e; });
+  // The `reconciled` container is created by `npm run setup:zetaris`; create it here only if it is missing.
+  const exists = await run("SHOW TABLES IN reconciled", "views already written back").then(() => true, () => false);
+  if (!exists) await run("CREATE SCHEMASTORE CONTAINER reconciled", "container for views the agents write back").catch((e: Error) => { if (!/exist/i.test(e.message)) throw e; });
   await run(`DROP VIEW IF EXISTS ${RECONCILED}`, `replace ${RECONCILED}`);
   await run(`CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled AS
      SELECT a.asn_id, a.supplier_id, a.sku AS notice_sku, a.lot_code, a.upc AS notice_upc, s.sku AS item_sku, s.upc AS item_upc

@@ -4,6 +4,8 @@
 CREATE LIGHTNING DATABASE OPENFDA_REST DESCRIBE BY "openFDA food enforcement REST source";
 CREATE LIGHTNING DATABASE CPSC_REST DESCRIBE BY "CPSC SaferProducts recalls REST source";
 CREATE SCHEMASTORE CONTAINER recallfeeds;
+-- The Cartographer writes the corrected barcode map back here (reconciled.ship_notice_item_keys).
+CREATE SCHEMASTORE CONTAINER reconciled;
 CREATE LIGHTNING REST TABLE food_enforcement FROM OPENFDA_REST REQUEST(
     endpoint "https://api.fda.gov/food/enforcement.json?search=report_date:%5B20260701+TO+20261231%5D&limit=1000",
     method "get",

@@ -93,6 +93,6 @@
     "H-MEM",
     "World Model"
   ],
-  "tests": "npm test (63 tests; Meterless engine tests in test/engines.test.ts)",
+  "tests": "npm test (64 tests; Meterless engine tests in test/engines.test.ts)",
   "track_statement": "Track 1, Solving Fragmented Intelligence: agents that discover and reconcile two live federal recall feeds, an ERP and a supplier portal through Zetaris, and prove each reconciliation rule with SQL before using it."
 }

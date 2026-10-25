@@ -17,6 +17,8 @@ jobs:
       - run: npm test
       # Every number in README, EVAL, metadata and the deck, recomputed from eval/results and the example traces.
       - run: npm run check:claims
+      # The evaluations that need no model, re-run and compared pair by pair with the committed results.
+      - run: npm run check:repro
       # The judge path: sample mode, no credentials, no model.
       - run: npx tsx src/cli.ts run --since 2026-09-15 --limit 5
         env:

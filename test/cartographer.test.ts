@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { barcodeJoin, chart, reconcile, RECONCILED } from "../src/agents/cartographer.ts";
+import { barcodeJoin, chart, publish, reconcile, RECONCILED } from "../src/agents/cartographer.ts";
 import { scout } from "../src/agents/scout.ts";
 import type { AgentContext } from "../src/agents/context.ts";
 import { DuckSampleRunner } from "../src/sql/duck.ts";
@@ -191,6 +191,35 @@ test("on Zetaris, a proven rule is written back as a schemastore view and read b
     assert.ok(ddl.some((q) => /CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled/.test(q)));
     const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text as string);
     assert.ok(msgs.some((t) => new RegExp(`written back to Zetaris as ${RECONCILED.replace(".", "\\.")} and read back: SUP007 ${learned[0].rows}/${learned[0].rows}`).test(t)));
+  } finally {
+    await duck.close();
+  }
+});
+
+test("writing the corrected map back is idempotent: a second publish replaces the view and reads back the same rows", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-idem-"));
+  const trace = new Trace({ dir, quiet: true, runId: "idem" });
+  const duck = new DuckSampleRunner({ trace });
+  await duck.ready;
+  try {
+    const views = new Map<string, string>(); let creates = 0;
+    const sql = { engine: "zetaris", close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) => {
+      if (/^\s*SHOW TABLES IN reconciled/i.test(q)) return Promise.resolve({ rows: [...views.keys()].map((v) => ({ name: v })), sqlId: "q-show", ms: 1 });
+      if (/^\s*DROP VIEW IF EXISTS/i.test(q)) { views.delete(RECONCILED); return Promise.resolve({ rows: [], sqlId: "q-drop", ms: 1 }); }
+      const m = q.match(/^\s*CREATE SCHEMASTORE VIEW[\s\S]*?\bAS\s+(SELECT[\s\S]+)$/i);
+      if (m) { assert.ok(!views.has(RECONCILED), "the old view is dropped before it is recreated"); views.set(RECONCILED, m[1]); creates++; return Promise.resolve({ rows: [], sqlId: "q-create", ms: 1 }); }
+      if (/^\s*CREATE SCHEMASTORE CONTAINER/i.test(q)) return Promise.resolve({ rows: [], sqlId: "q-c", ms: 1 });
+      if (q.includes(RECONCILED)) return duck.run(q.replace(RECONCILED, `(${views.get(RECONCILED)}) v`), meta);
+      return duck.run(q, meta);
+    } };
+    const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
+    const map = await chart({ ...ctx, sql: duck } as unknown as AgentContext);
+    const rule = { supplier: "SUP007", transform: "no-check-digit" as const, rows: 484, learnedFrom: "case-test", sqlId: "q-test" };
+    (map.joins.find((j) => j.left === "supplier_portal.ship_notices")!.rules ??= []).push(rule);
+    const first = await publish(ctx, map, [rule]), second = await publish(ctx, map, [rule]);
+    assert.equal(creates, 2);
+    assert.deepEqual(first.map((p) => [p.supplier, p.read]), [["SUP007", 484]]);
+    assert.deepEqual(second.map((p) => [p.supplier, p.read]), first.map((p) => [p.supplier, p.read]));
   } finally {
     await duck.close();
   }
