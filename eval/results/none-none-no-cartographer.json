@@ -1,10 +1,10 @@
 {
   "model": "none:none",
-  "startedAt": "2026-10-24T04:39:35.237Z",
+  "startedAt": "2026-10-25T13:32:58.730Z",
   "since": "2026-07-01",
-  "scanned": 517,
+  "scanned": 515,
   "cases": 225,
-  "seconds": 14,
+  "seconds": 50,
   "all": {
     "pairs": 440,
     "positives": 194,
@@ -2234,7 +2234,7 @@
       "basis": "upc",
       "label": "same",
       "final": "unsure",
-      "rounds": 2
+      "rounds": 3
     },
     {
       "recall": "fda:H-1158-2026",

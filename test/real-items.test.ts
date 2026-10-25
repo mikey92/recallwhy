@@ -118,9 +118,9 @@ test("barcodePath settles a printed barcode by rule without a model call, leaves
     assert.equal(calls, 0, "the barcode path asks no model");
     const m = barcodeMetrics(b);
     assert.equal(m.positives, 4);
-    assert.equal(m.settledByUpcRule, 2, "the first Nuez notice and the noodles print a valid UPC-A");
-    assert.equal(m.settledAndAuditorDigitsAgree, 2);
-    assert.equal(m.leftToText, 2, "a 13-digit print that is not a UPC-A with a leading zero, and a real EAN-13, are not barcode candidates (feeds.findUpcs)");
+    assert.equal(m.settledByUpcRule, 3, "the first Nuez notice and the noodles print a valid UPC-A, the Lidl notice a valid EAN-13");
+    assert.equal(m.settledAndAuditorDigitsAgree, 3);
+    assert.equal(m.leftToText, 1, "a 13-digit print that is neither an EAN-13 nor a UPC-A with a leading zero is not a barcode candidate (feeds.findUpcs)");
     assert.equal(m.negativesSettledSame, 0);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

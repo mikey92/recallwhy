@@ -2,7 +2,8 @@
 // quotes: it re-checks evidence against the live notice text and re-derives the
 // exposure numbers with its own SQL, written differently.
 import { lotAppears } from "../feeds.ts";
-import { designatorConflict, grounded, modelsInText, tokens } from "../match.ts";
+import { printedForms } from "../../scripts/upc.ts";
+import { designatorConflict, grounded, modelsInText, tokens, WEAK } from "../match.ts";
 import { inList, lit, say, type AgentContext } from "./context.ts";
 import { barcodeJoin, reconcile } from "./cartographer.ts";
 import type { Critique, Finding } from "./investigator.ts";
@@ -20,9 +21,11 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
     if (d.decidedBy === "human-memory") { checks.push(`${d.sku}: human decision ${d.memoryId} respected`); continue; }
     if (d.verdict === "same" && d.basis === "upc") {
       // Ask the live feed itself (through Zetaris), not the Investigator's parse.
+      // Notices print UPCs whole, without the check digit, or without the leading zero; any of those counts.
+      const like = (col: string) => "(" + printedForms(cand.sku.upc).map((f) => `regexp_replace(${col}, '[^0-9]', '') LIKE ${lit("%" + f + "%")}`).join(" OR ") + ")";
       const q = r.feed === "fda_food"
-        ? `SELECT COUNT(*) AS n FROM recallfeeds.fda_food WHERE recall_number = ${lit(r.number)} AND regexp_replace(concat(product_description, ' ', code_info, ' ', coalesce(more_code_info, '')), '[^0-9]', '') LIKE ${lit("%" + cand.sku.upc + "%")}`
-        : `SELECT COUNT(*) AS n FROM recallfeeds.cpsc_recalls WHERE recall_number = ${lit(r.number)} AND regexp_replace(concat(upcs, ' ', description), '[^0-9]', '') LIKE ${lit("%" + cand.sku.upc + "%")}`;
+        ? `SELECT COUNT(*) AS n FROM recallfeeds.fda_food WHERE recall_number = ${lit(r.number)} AND ${like("concat(product_description, ' ', code_info, ' ', coalesce(more_code_info, ''))")}`
+        : `SELECT COUNT(*) AS n FROM recallfeeds.cpsc_recalls WHERE recall_number = ${lit(r.number)} AND ${like("concat(upcs, ' ', description)")}`;
       // The live feed is re-fetched on every query and can be down; an unverified match goes to a person.
       const res = await ctx.sql.run(q, { agent: "Auditor", purpose: `re-check UPC ${cand.sku.upc} in live notice ${r.id}` }).catch((e: Error) => e);
       if (res instanceof Error) critiques.push({ code: "upc-not-in-notice", sku: d.sku, detail: `could not re-check UPC ${cand.sku.upc} in the live notice ${r.id} (${res.message.split("\n")[0].slice(0, 120)})` });
@@ -59,6 +62,10 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
       // The opposite error, and the dangerous one: a dismissal whose own quote names our product.
       if (d.verdict === "not-this" && d.quote && dismissalNamesItem(cand.sku.title, cand.sku.brand, d.quote))
         critiques.push({ code: "dismissal-names-our-item", sku: d.sku, detail: `dismissed, but the quoted recalled product "${d.quote.slice(0, 120)}" contains every product word of our item "${cand.sku.title}"` });
+      // Same brand, and the recalled product the judge quotes is the same kind as ours (another size,
+      // count or variety of the line): telling those apart takes the package, so a person decides.
+      else if (d.verdict === "not-this" && d.quote && dismissalSameLine(cand.sku.title, cand.sku.brand, d.quote))
+        critiques.push({ code: "dismissal-same-line", sku: d.sku, detail: `dismissed, but the quoted recalled product "${d.quote.slice(0, 120)}" shares at least half the product words of our item "${cand.sku.title}"; a reviewer checks the package` });
       const conflict = d.verdict === "same" ? designatorConflict(cand, r) : undefined;
       if (conflict) critiques.push({ code: "designator-conflict", sku: d.sku, detail: conflict });
     }
@@ -148,6 +155,15 @@ export function dismissalNamesItem(title: string, vendor: string, quote: string)
   const words = tokens(title).filter((w) => !skip.has(w) && !/\d/.test(w) && w.length > 2);
   const q = new Set(tokens(quote));
   return words.length >= 2 && words.every((w) => q.has(w));
+}
+
+/** True when the quote names at least half of our item's product words (vendor words, numbers, short and descriptive words aside). */
+export function dismissalSameLine(title: string, vendor: string, quote: string): boolean {
+  const skip = new Set(tokens(vendor));
+  const words = [...new Set(tokens(title).filter((w) => !skip.has(w) && !/\d/.test(w) && w.length > 2 && !WEAK.has(w)))];
+  const q = new Set(tokens(quote));
+  const hit = words.filter((w) => q.has(w)).length;
+  return hit > 0 && hit * 2 >= words.length;
 }
 
 export function sizes(text: string): string[] {

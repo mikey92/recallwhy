@@ -23,7 +23,7 @@ export interface Finding {
   lotSources: Record<string, "regex" | "model">; numbers?: Numbers; stores: StoreExposure[];
   verdict: "act-now" | "notify" | "no-exposure" | "not-ours" | "needs-human";
 }
-export interface Critique { code: "ungrounded-quote" | "lot-not-in-notice" | "number-mismatch" | "upc-not-in-notice" | "model-not-in-notice" | "designator-conflict" | "item-word-missing" | "only-an-ingredient" | "size-not-in-notice" | "supplier-barcode-mismatch" | "dismissal-names-our-item"; sku?: string; lot?: string; detail: string }
+export interface Critique { code: "ungrounded-quote" | "lot-not-in-notice" | "number-mismatch" | "upc-not-in-notice" | "model-not-in-notice" | "designator-conflict" | "item-word-missing" | "only-an-ingredient" | "size-not-in-notice" | "supplier-barcode-mismatch" | "dismissal-names-our-item" | "dismissal-same-line"; sku?: string; lot?: string; detail: string }
 
 const JUDGE_SYSTEM = "You check a retailer's item-master line against a U.S. federal recall notice. You answer on ONE line and you copy words from the notice exactly.";
 
@@ -181,7 +181,7 @@ export async function revise(ctx: AgentContext, k: Case, f: Finding, critiques: 
       const i = next.decisions.findIndex((d) => d.sku === c.sku);
       next.decisions[i] = await judge(ctx, k, cand, c.detail);
     }
-    if ((c.code === "upc-not-in-notice" || c.code === "model-not-in-notice" || c.code === "designator-conflict") && c.sku) {
+    if ((c.code === "upc-not-in-notice" || c.code === "model-not-in-notice" || c.code === "designator-conflict" || c.code === "dismissal-same-line") && c.sku) {
       const i = next.decisions.findIndex((d) => d.sku === c.sku);
       next.decisions[i] = { ...next.decisions[i], verdict: "unsure", why: `Auditor: ${c.detail}` };
     }

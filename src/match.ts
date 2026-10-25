@@ -36,7 +36,7 @@ export function modelsInText(r: Recall): string[] {
   return [...out].filter((m) => /\d/.test(m));
 }
 
-const WEAK = new Set("fresh spicy medium mild hot sweet organic original classic natural large small mini whole frozen premium style homestyle gourmet assorted mixed plain light dark red green white black blue yellow".split(" "));
+export const WEAK = new Set("fresh spicy medium mild hot sweet organic original classic natural large small mini whole frozen premium style homestyle gourmet assorted mixed plain light dark red green white black blue yellow".split(" "));
 
 const norm = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, "");
 

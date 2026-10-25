@@ -1,19 +1,19 @@
 {
   "model": "none:none",
-  "startedAt": "2026-10-24T04:39:20.323Z",
+  "startedAt": "2026-10-25T13:33:49.362Z",
   "since": "2026-07-01",
-  "scanned": 517,
+  "scanned": 515,
   "cases": 225,
-  "seconds": 14,
+  "seconds": 51,
   "all": {
     "pairs": 440,
     "positives": 194,
-    "caught": 22,
+    "caught": 23,
     "falseAlarms": 0,
     "wronglyDismissed": 0,
-    "toHuman": 418,
+    "toHuman": 417,
     "precision": 1,
-    "recall": 0.113
+    "recall": 0.119
   },
   "textOnly": {
     "pairs": 336,
@@ -25,14 +25,8 @@
     "precision": null,
     "recall": 0
   },
-  "revisedCases": 18,
+  "revisedCases": 17,
   "cartographerRules": [
-    {
-      "supplier": "SUP027",
-      "transform": "no-leading-zeros",
-      "rows": 317,
-      "learnedFrom": "case-fda-H-1166-2026"
-    },
     {
       "supplier": "SUP015",
       "transform": "no-leading-zeros",
@@ -43,6 +37,12 @@
       "supplier": "SUP009",
       "transform": "no-leading-zeros",
       "rows": 269,
+      "learnedFrom": "case-fda-H-1166-2026"
+    },
+    {
+      "supplier": "SUP027",
+      "transform": "no-leading-zeros",
+      "rows": 317,
       "learnedFrom": "case-fda-H-1166-2026"
     },
     {
@@ -2300,8 +2300,8 @@
       "sku": "NW-100002",
       "basis": "upc",
       "label": "same",
-      "final": "unsure",
-      "rounds": 2
+      "final": "same",
+      "rounds": 1
     },
     {
       "recall": "fda:H-1158-2026",

@@ -22,6 +22,7 @@ import type { Case } from "../src/agents/scout.ts";
 import { decide, revise, type Finding, type MatchVerdict } from "../src/agents/investigator.ts";
 import { audit } from "../src/agents/auditor.ts";
 import type { RealCatalog, RealItem, RealNegative } from "../scripts/build-real-catalog.ts";
+import { printedForms } from "../scripts/upc.ts";
 
 const MAX_REVISIONS = 2; // same as src/orchestrator.ts
 
@@ -135,7 +136,9 @@ export async function barcodePath(ctx: AgentContext, pairs: Pair[]): Promise<Bar
   for (const p of pairs) {
     const sku = skuFor(p.item, true);
     const basis: Candidate["basis"] = sku.upc && p.recall.upcs.includes(sku.upc) ? "upc" : "text";
-    const digitsInNotice = printsKey(digitsIn(`${p.recall.text} ${p.recall.codeInfo}`), sku.upc);
+    // The Auditor's re-check looks for the same printed forms (src/agents/auditor.ts).
+    const noticeDigits = digitsIn(`${p.recall.text} ${p.recall.codeInfo}`);
+    const digitsInNotice = !!sku.upc && printedForms(sku.upc).some((f) => noticeDigits.includes(f));
     if (basis === "text") { out.push({ kind: p.kind, id: p.item.id, upc: sku.upc, recall: p.recall.id, label: p.label, basis, verdict: "unsure", decidedBy: "none", digitsInNotice }); continue; }
     const c: Candidate = { sku, basis, evidence: sku.upc, brandWords: [], kindWords: [] };
     const k: Case = { id: `barcode-${p.kind}-${p.item.id}-${p.recall.number}`, recall: p.recall, recallEntity: "", candidates: [c] };

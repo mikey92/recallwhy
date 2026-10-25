@@ -2,7 +2,7 @@
 // Parsing here is deterministic; the Investigator may ask the model to read
 // messy code_info text, and the Auditor checks every model-read lot against
 // the raw text again.
-import { isValidUpc, gtin12CheckDigit } from "../scripts/upc.ts";
+import { isValidUpc, isValidEan13, gtin12CheckDigit } from "../scripts/upc.ts";
 
 export type Feed = "cpsc" | "fda_food";
 
@@ -17,7 +17,7 @@ export interface Recall {
   text: string;          // everything the notice says about the product, verbatim
   reason: string;
   codeInfo: string;      // FDA code_info + more_code_info, CPSC model list
-  upcs: string[];        // valid 12-digit UPCs found in the notice
+  upcs: string[];        // barcodes found in the notice: 12-digit UPCs, and 13-digit EANs that are not UPCs
   models: string[];      // model numbers (CPSC)
   states: string[] | "nationwide" | "unknown";
   url?: string;
@@ -62,7 +62,13 @@ export function findUpcs(text: string): string[] {
     const digits = m[0].replace(/[ \-]/g, "");
     if (digits.length === 12 && isValidUpc(digits)) out.add(digits);
     else if (digits.length === 13 && digits.startsWith("0") && isValidUpc(digits.slice(1))) out.add(digits.slice(1));
-    else if (digits.length === 11) out.add(digits + gtin12CheckDigit(digits));
+    else if (digits.length === 13 && isValidEan13(digits)) out.add(digits); // EAN-13 from outside the US/Canada (Lidl, imports)
+    else if (digits.length === 14 && digits.startsWith("00") && isValidUpc(digits.slice(2))) out.add(digits.slice(2)); // GTIN-14 of a unit UPC
+    else if (digits.length === 11) {
+      // Either the UPC without its check digit, or the full UPC without its leading zero; try both.
+      out.add(digits + gtin12CheckDigit(digits));
+      if (isValidUpc("0" + digits)) out.add("0" + digits);
+    }
   }
   return [...out];
 }

@@ -18,6 +18,22 @@ test("findUpcs normalises spaced UPCs and rejects bad check digits", () => {
   assert.deepEqual(findUpcs("code 123456789013"), []);
 });
 
+test("findUpcs reads EAN-13, two-zero GTIN-14 and an 11-digit UPC missing its leading zero", () => {
+  // As printed in FDA H-1275-2026 (Lidl) and H-1260-2026 (an import): EAN-13 that is not a UPC.
+  assert.deepEqual(findUpcs("330 g (weight), UPC: 4056489125846."), ["4056489125846"]);
+  assert.deepEqual(findUpcs("UPC: 4056489125847"), []); // bad check digit
+  assert.deepEqual(findUpcs("GTIN 00087906010180"), ["087906010180"]);
+  // As printed in FDA H-1114-2026: "83791520148" is UPC 083791520148 without its leading zero,
+  // and also reads as an 11-digit UPC without its check digit; both forms are kept.
+  assert.deepEqual(findUpcs("|| 83791520148, 26030070101").slice(0, 2), ["837915201488", "083791520148"]);
+});
+
+test("printedForms covers the ways a notice prints a UPC", async () => {
+  const { printedForms } = await import("../scripts/upc.ts");
+  assert.deepEqual(printedForms("073171003200"), ["073171003200", "07317100320", "73171003200"]);
+  assert.deepEqual(printedForms("4056489125846"), ["4056489125846"]);
+});
+
 test("lotsFromCodeInfo keeps lot codes and drops dates and UPCs", () => {
   const a = lotsFromCodeInfo("Lot# 222, 223, 226, 230");
   assert.ok(a.includes("222") && a.includes("230"));
