@@ -12,9 +12,9 @@ Retailers get this wrong today. In December 2025 the FDA sent warning letters to
 
 **See it without running anything:** the five agents working live (the Auditor sends back ship-notice rows the barcode map cannot reach, and the Cartographer proves a supplier rule and corrects the map), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/): each with its action packets and weekly digest (open `report.html` in a browser, or [view one on the live site](https://mikey92.github.io/recallwhy/examples/example_1/report.html), or [replay its trace](https://mikey92.github.io/recallwhy/replay.html?run=example_1)).
 
-![Live viewer: the Cartographer maps the sources through Zetaris, then corrects the map when the Auditor sends rows back](docs/img/live-agents.gif)
+![Replay of a live run: the five agents' events as they happened — the Cartographer maps the sources through Zetaris, the Scout sweeps the live feed, Nemotron judges, the Auditor objects](docs/img/live-agents.gif)
 
-![A case from a live run: the banner says what the agents did — a barcode transform proposed by Nemotron 3 Ultra and proven by Zetaris SQL on 299/299 ship notices, a human decision followed, the Auditor's checks — above the cited brief and the trace](docs/img/report-case.png)
+![A case from a live run: the banner says what the agents did — SUP028's dropped check digit proven by Zetaris SQL on 391/391 ship notices, written back to Zetaris and read back, Zetaris's data-quality rule passing every row, the Auditor's checks — above the cited brief, the action packet and the trace](docs/img/report-case.png)
 
 A retailer's safety team gets dozens of federal recall notices a week. For each one they need to know: *do we sell this, which lots, which stores still have it, how many customers bought it — and why do we believe that?* Today that means hand-checking the recall feed against the ERP and the supplier portal.
 
