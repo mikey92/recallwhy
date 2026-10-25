@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RecallWhy run 2026-10-25T22-11-22-6cbaa9</title><style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1f;--mute:#6b7280;--line:#e5e5e0}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1e1e1e;--ink:#eee;--mute:#9aa0a6;--line:#333}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,sans-serif}
+header{padding:28px 32px 8px}h1{margin:0;font-size:26px}.sub{color:var(--mute)}
+.warn{margin:12px 0 0;padding:8px 12px;border-radius:8px;background:#fef3c7;color:#92400e;font-size:14px}@media (prefers-color-scheme:dark){.warn{background:#78350f55;color:#fcd34d}}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 4px}.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}.tile b{display:block;font-size:28px;line-height:1.1}.tile span{color:var(--mute);font-size:13px}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.chip{padding:4px 10px;border-radius:99px;color:#fff;font-weight:600;font-size:13px}
+main{padding:8px 32px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.brief,.map,.trace{min-width:0;overflow-wrap:anywhere}a.chip{text-decoration:none}
+.case{background:var(--card);border:1px solid var(--line);border-left:6px solid;border-radius:10px;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+.brief{padding:6px 22px 14px}.brief h2{font-size:18px;margin:14px 0 4px}.brief h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:16px 0 4px}
+blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--line);color:var(--mute)}
+.cite{font-size:12px;background:#2563eb22;color:#1d4ed8;border-radius:4px;padding:0 4px}
+.trace{border-left:1px solid var(--line);padding:12px 14px;font-size:12.5px;max-height:620px;overflow:auto}
+.map{background:var(--card);border:1px solid var(--line);border-left:6px solid #0e7490;border-radius:10px;padding:12px 22px}.map h2{font-size:18px;margin:6px 0}.map li{margin:4px 0}
+.ev{padding:3px 0;border-bottom:1px dashed var(--line)}.crit{color:#b91c1c}.sql{color:var(--mute)}.llm{color:#15803d}.mem{color:#7c3aed}
+code{font-size:12px}ul{margin:4px 0;padding-left:20px}
+.storemap{border-left-color:#b91c1c}.pulls{width:100%;border-collapse:collapse;font-size:13px}.pulls th,.pulls td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:top}.pulls .n{text-align:right;font-variant-numeric:tabular-nums}.out{color:#b45309;font-size:12px}
+.usmap{width:100%;height:auto;max-height:440px;margin:6px 0}.usmap .st{fill:var(--line);stroke:var(--card);stroke-width:1}.usmap .st-named{fill:#fca5a5;stroke:var(--card);stroke-width:1}
+.usmap circle{stroke:#fff;stroke-width:1.5;fill-opacity:.85}.usmap .d-in{fill:#b91c1c}.usmap .d-out{fill:#d97706}
+.k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.k-in{background:#b91c1c}.k-out{background:#d97706}.pick{display:block;margin:8px 0 0;font-size:13px;color:var(--mute)}
+@media (prefers-color-scheme:dark){.usmap .st-named{fill:#7f1d1d}}
+/* "What the agents did": chips across the top of a case card, one per highlight read from that case's trace. */
+.did{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 22px;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
+.did-h{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;margin-right:4px}
+.hl{padding:3px 9px;border-radius:7px;border:1px solid transparent;overflow-wrap:anywhere;line-height:1.35}
+.hl-map{background:#0e749018;color:#0e7490;border-color:#0e749033}.hl-human{background:#7c3aed18;color:#6d28d9;border-color:#7c3aed33}
+.hl-audit{background:#c2410c14;color:#9a3412;border-color:#c2410c33}.hl-stats{background:transparent;color:var(--mute);border-color:var(--line)}
+@media (prefers-color-scheme:dark){.crit{color:#f87171}.mem{color:#c084fc}.llm{color:#4ade80}.cite{color:#93c5fd;background:#2563eb44}
+.hl-map{color:#67e8f9;background:#0e749033}.hl-human{color:#d8b4fe;background:#7c3aed33}.hl-audit{color:#fdba74;background:#c2410c2e}}
+/* Motion: the header fades in, the source map and cases rise in one after another (stagger), counts count up. Ease-out, short; off with reduced motion. */
+@keyframes fade{from{opacity:0}}@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
+.map,.case{animation:rise .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(min(var(--i,0),8) * 70ms + 120ms)}
+@media (prefers-reduced-motion:reduce){header,.map,.case{animation:none}}
+@media print{header,.map,.case{animation:none}}
+@media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}.did{padding:8px 14px}.brief{padding-left:14px;padding-right:14px}}
+</style></head><body><header><h1>RecallWhy</h1>
+<div class="sub">Run 2026-10-25T22-11-22-6cbaa9 · engine <b>zetaris</b> · model <b>meterless:nvidia/nemotron-3-ultra-550b-a55b</b> · 11 recalls since 2026-10-15 → 0 cases</div>
+
+<div class="tiles"><div class="tile"><b data-n="0">0</b><span>units to pull from shelves</span></div><div class="tile"><b data-n="0">0</b><span>store pulls</span></div><div class="tile"><b data-n="0">0</b><span>customers to notify (at most)</span></div><div class="tile"><b data-n="0">0</b><span>cases waiting for a reviewer</span></div></div>
+<div class="sub"><a href="digest.md">Weekly digest</a></div>
+<div class="chips"></div></header><main>
+<section class="map"><h2>Source map (Cartographer, 21 catalog and profiling queries)</h2><ul><li>→ Auditor: supplier_portal.ship_notices x erp.skus: 6810/14244 barcoded rows join as written, 11809/14244 after stripping leading zeros (4999 rows are GTIN-14/EAN-13 padded). Use the normalized key. 2435 barcoded rows join neither way; left open until a case needs them — send me any you hit.</li><li>→ Scout: FDA feed: 333 notices, no barcode field; 92 print a 12–14 digit barcode in the product text and 50 more only once spaces and dashes are removed (&quot;0 87906-01018 7&quot;), so match UPCs on digits only. Dates are yyyymmdd (20260701).</li><li>→ Investigator: CPSC feed: 189 notices, 4 with a UPC field and 0 with a model field, so CPSC matches rest on model numbers written in the notice text and on the text itself, not on barcodes. Dates are yyyy-mm-dd (2026-07-02).</li><li>→ Orchestrator: mapped 10 tables in 5 sources (2 skipped). erp.skus has 27 rows with no barcode; supplier_portal.ship_notices has 461 rows with no barcode — those rows are reachable by SKU only.</li></ul><ul><li><code>erp.skus.upc</code> barcode lengths: <b>{&quot;0&quot;:27,&quot;12&quot;:866,&quot;13&quot;:7}</b> <span class="sql">(q-b36f8cb98a)</span></li><li><code>supplier_portal.ship_notices.upc</code> barcode lengths: <b>{&quot;0&quot;:461,&quot;10&quot;:1295,&quot;11&quot;:1437,&quot;12&quot;:6710,&quot;13&quot;:100,&quot;14&quot;:4702}</b> <span class="sql">(q-963fd89424)</span></li><li><code>supplier_portal.ship_notices~erp.skus:upc</code> rows joined as written: <b>6810</b> <span class="sql">(q-68436f62dd)</span></li><li><code>supplier_portal.ship_notices~erp.skus:upc</code> rows joined without leading zeros: <b>11809</b> <span class="sql">(q-5894077879)</span></li><li><code>supplier_portal.ship_notices~erp.skus:upc</code> chosen join: <b>normalized</b></li><li><code>recallfeeds.fda_food</code> notices: <b>333</b> <span class="sql">(q-bbb10af40d)</span></li><li><code>recallfeeds.fda_food</code> barcodeInText: <b>92</b> <span class="sql">(q-bbb10af40d)</span></li><li><code>recallfeeds.fda_food</code> barcodeInTextSplit: <b>142</b> <span class="sql">(q-bbb10af40d)</span></li><li><code>recallfeeds.fda_food</code> dateExample: <b>20260701</b> <span class="sql">(q-bbb10af40d)</span></li><li><code>recallfeeds.fda_food</code> dateFormat: <b>yyyymmdd</b> <span class="sql">(q-bbb10af40d)</span></li><li><code>recallfeeds.cpsc_recalls</code> notices: <b>189</b> <span class="sql">(q-d85271c9b5)</span></li><li><code>recallfeeds.cpsc_recalls</code> barcodeField: <b>4</b> <span class="sql">(q-d85271c9b5)</span></li><li><code>recallfeeds.cpsc_recalls</code> models: <b>0</b> <span class="sql">(q-d85271c9b5)</span></li><li><code>recallfeeds.cpsc_recalls</code> dateExample: <b>2026-07-02</b> <span class="sql">(q-d85271c9b5)</span></li><li><code>recallfeeds.cpsc_recalls</code> dateFormat: <b>yyyy-mm-dd</b> <span class="sql">(q-d85271c9b5)</span></li></ul></section>
+
+
+</main>
+<script>/* count-up: the final number is in the HTML; this only animates it from 0 */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) for (const el of document.querySelectorAll("[data-n]")) {
+  const to = Number(el.dataset.n), t0 = performance.now(), ms = 700;
+  const step = (t) => { const k = Math.min(1, (t - t0) / ms); el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}</script></body></html>

@@ -1,0 +1,10 @@
+{
+  "runId": "2026-10-25T22-11-22-6cbaa9",
+  "scanned": 11,
+  "cases": [],
+  "outDir": "out/2026-10-25T22-11-22-6cbaa9",
+  "trace": "logs/trace-2026-10-25T22-11-22-6cbaa9.jsonl",
+  "engine": "zetaris",
+  "model": "meterless:nvidia/nemotron-3-ultra-550b-a55b",
+  "briefs": {}
+}

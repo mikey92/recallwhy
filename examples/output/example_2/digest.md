@@ -1,10 +1,10 @@
-# This week's recalls — 2026-10-25T18-32-19-c59bae
+# This week's recalls — 2026-10-25T22-07-47-63bf82
 
 1 recall notice(s) read; 1 touch our catalog: **1 act now**, 0 notify, 0 need a person, 0 no exposure, 0 not ours.
 On our shelves in recalled lots: **424 unit(s)**; customers to notify: at most 131.
 
 ## What needs you first
-- Taylor Fresh Foods Inc: pull 424 units Salsa Verde Mild from 9 stores (case-fda-H-1362-2026)
+- Taylor Fresh Foods Inc: pull 424 units Salsa Verde Mild from 9 stores [case-fda-H-1362-2026]
 
 ## All cases
 | Case | Firm | Verdict | On hand | Stores | Sold since recall | Customers |

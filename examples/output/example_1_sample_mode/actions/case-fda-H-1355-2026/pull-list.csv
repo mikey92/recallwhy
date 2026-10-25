@@ -1,6 +1,6 @@
 store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
-S006,Northwind #006 Summit Creek,Summit Creek,WA,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE213A,36
-S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE210A,14
-S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE212A,55
-S010,Northwind #010 Lakewood Bend,Lakewood Bend,IL,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE210A,50
-S017,Northwind #017 Cedar Falls,Cedar Falls,NJ,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE213A,60
+S006,Northwind #006 Everett,Everett,WA,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE213A,36
+S008,Northwind #008 Jacksonville,Jacksonville,TX,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE210A,14
+S008,Northwind #008 Jacksonville,Jacksonville,TX,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE212A,55
+S010,Northwind #010 Batavia,Batavia,IL,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE210A,50
+S017,Northwind #017 Trenton,Trenton,NJ,NW-100087,688267575778,Pico de gallo salsa 7 oz,TFNE213A,60

@@ -1,10 +1,10 @@
-# This week's recalls — 2026-10-25T18-48-38-8eb7da
+# This week's recalls — 2026-10-25T22-22-38-0830eb
 
 1 recall notice(s) read; 1 touch our catalog: **1 act now**, 0 notify, 0 need a person, 0 no exposure, 0 not ours.
 On our shelves in recalled lots: **231 unit(s)**; customers to notify: at most 95.
 
 ## What needs you first
-- Spring & Mulberry Inc.: review Spring & Mulberry Lavender Rose Date-Sweetened Chocolate (2.1 oz) — needs human decision [case-fda-H-1099-2026]
+- Spring & Mulberry Inc.: pull 231 units of Lavender Rose Date-Sweetened Chocolate (2.1 oz) from 4 stores [case-fda-H-1099-2026]
 
 ## All cases
 | Case | Firm | Verdict | On hand | Stores | Sold since recall | Customers |

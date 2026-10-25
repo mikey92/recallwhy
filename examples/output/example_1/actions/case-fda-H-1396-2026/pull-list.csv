@@ -1,7 +1,7 @@
 store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
-S003,Northwind #003 Pinecrest Vale,Pinecrest Vale,OR,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6080C,4
-S012,Northwind #012 Crystal Falls,Crystal Falls,MN,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6079C,50
-S012,Northwind #012 Crystal Falls,Crystal Falls,MN,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6080C,14
-S014,Northwind #014 Bayfront Knoll,Bayfront Knoll,WI,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6079C,19
-S023,Northwind #023 Peachtree Ridge,Peachtree Ridge,GA,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6079C,6
-S023,Northwind #023 Peachtree Ridge,Peachtree Ridge,GA,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6080C,37
+S003,Northwind #003 Saint Helens,Saint Helens,OR,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6080C,4
+S012,Northwind #012 Foley,Foley,MN,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6079C,50
+S012,Northwind #012 Foley,Foley,MN,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6080C,14
+S014,Northwind #014 Iola,Iola,WI,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6079C,19
+S023,Northwind #023 Buford,Buford,GA,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6079C,6
+S023,Northwind #023 Buford,Buford,GA,NW-100069,194346442706,Lemon Alfredo Fettuccine,L6080C,37
