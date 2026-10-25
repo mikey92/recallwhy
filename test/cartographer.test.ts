@@ -128,3 +128,22 @@ test("for a barcode format it has no rule for, the model proposes a transform an
     await sql.close();
   }
 });
+
+test("a live feed that answers with almost nothing is flagged as degraded, not read as a quiet week", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-degraded-"));
+  const trace = new Trace({ dir, quiet: true, runId: "degraded" });
+  const duck = new DuckSampleRunner({ trace });
+  await duck.ready;
+  try {
+    // Like the CPSC REST table returning one error row with no date during an upstream outage.
+    const sql = { engine: duck.engine, close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) =>
+      /FROM recallfeeds\.cpsc_recalls/.test(q) && meta.agent === "Cartographer" ? Promise.resolve({ rows: [{ n: 1, with_upc: 0, with_models: 0, date_example: "" }], sqlId: "q-test", ms: 1 }) : duck.run(q, meta) };
+    const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
+    await chart(ctx);
+    const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text as string);
+    assert.ok(msgs.some((t) => /WARNING: live feed recallfeeds\.cpsc_recalls looks degraded/.test(t)));
+    assert.ok(!msgs.some((t) => /WARNING: live feed recallfeeds\.fda_food/.test(t)), "a healthy feed is not flagged");
+  } finally {
+    await duck.close();
+  }
+});

@@ -2,7 +2,7 @@
 
 **Demo video (3:52):** https://iframe.mediadelivery.net/embed/778121/db345221-4d9b-496b-9740-06cc59f82837 · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
-**Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence**
+**Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence.** RecallWhy helps a retailer's product-safety manager answer, for every new federal recall, *is it on our shelves, which lots, which stores, who bought it*, by discovering and reconciling four sources that disagree (two live federal feeds, the ERP and the supplier portal) through Zetaris. When the sources disagree, both sides are recorded as World Model facts with the query behind them, and the agents either prove a rule that reconciles them or send the case to a person.
 
 Retailers get this wrong today. In December 2025 the FDA sent warning letters to Kroger, Albertsons, Target and Walmart: recalled ByHeart infant formula was still on shelves in over 175 locations across 36 states, in one case for more than three weeks. Store associates cited not knowing about the recall, "confusion regarding which specific lots were affected", and not removing all the affected product ([FDA](https://content.govdelivery.com/accounts/USFDA/bulletins/4000713), [Food Safety News](https://www.foodsafetynews.com/2025/12/fda-warns-retailers-who-failed-to-pull-recalled-byheart-formula/)).
 
@@ -59,7 +59,7 @@ Every message, SQL call, model call, memory read/write and world write goes to `
 - The Auditor verifies the Investigator by **querying Zetaris again with differently written SQL**.
 - `scripts/setup-zetaris.ts` sets all of this up through the Zetaris REST API (`/api/proxy/sql-editor/sqls/run-query`, with `X-Org-ID` and a fresh `X-Request-ID` per call).
 
-**Meterless agent engines** (mounted from [github.com/Meterless/Meterless](https://github.com/Meterless/Meterless), Apache-2.0, see `src/engines/*/NOTICE`)
+**Meterless agent engines** (mounted from [github.com/Meterless/Meterless](https://github.com/Meterless/Meterless), Apache-2.0, see `src/engines/*/NOTICE`). Engine tests: `npm test` runs `test/engines.test.ts` (H-MEM: a human decision survives a restart and changes the next session's decision; human decisions outrank agent decisions; World Model: one id per entity, facts persist with provenance, the Briefer's context cites them).
 - **H-MEM** (`src/engines/hmem`, wrapper `src/memory.ts`): every adjudication is stored: the agents' in working memory at confidence 0.6, humans' (`npm run decide`) in long-term memory at 0.95. Decisions in a case that was escalated, and UNSURE calls, are not stored as the agents' answer; the reviewer's decision is. Before judging, the Investigator reads the exact prior decisions for that recall/SKU pair plus similar past cases. A human decision is followed and cited in the brief. The trust ledger records every write and every read, including the exact prior-decision lookup.
 - **World Model** (`src/engines/world-model`, wrapper `src/world.ts`): recalls, cases and findings are entities and facts. Every write carries provenance: source kind, agent, and the SQL id or model call. Our context builder (`buildContext()` in `src/world.ts`) reads the engine's fact view, and it is the **only** input the Briefer sees, so a brief can only cite what the team actually established.
 
@@ -85,7 +85,7 @@ cp .env.example .env          # fill in Zetaris and Postgres settings
 docker compose up -d && npm run load     # synthetic ERP + supplier portal
 npm run setup:zetaris                    # register feeds + datasources in Zetaris
 # Nightshift running, NVIDIA key added under Setup ▸ Providers (LLM_PROVIDER=meterless is the default)
-npm run agents -- --since 2026-09-15     # → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
+npm run agents -- --since 2026-09-15 --limit 5   # about 3 minutes; → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
 npm run view                             # http://127.0.0.1:8899 — watch the five agents live, open reports;
                                          # /review — decide escalated cases (stored in H-MEM, followed next run)
 ```

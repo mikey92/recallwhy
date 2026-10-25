@@ -87,5 +87,12 @@
     "sample_snapshots": "sample/ holds feed snapshots captured on the date in sample/CAPTURED_AT for SAMPLE_MODE."
   },
   "pre_existing_work": "Matching ideas (brand gate, product-kind overlap, model-number conflicts, grounded quotes) were adapted from the author's Recall Sloth project (github.com/mikey92/recall-sloth, committed 21 Oct 2026). Code in this repository was written during the build window. Third-party code: src/engines/hmem and src/engines/world-model are the Meterless reference implementations (Apache-2.0), mounted with the changes listed in each CHANGES.md.",
-  "sample_mode": "SAMPLE_MODE=true (or no Zetaris credentials) runs the same agents and SQL against an in-process DuckDB stand-in over the sample snapshots and synthetic CSVs; output is labelled SAMPLE and Zetaris is not used."
+  "sample_mode": "SAMPLE_MODE=true (or no Zetaris credentials) runs the same agents and SQL against an in-process DuckDB stand-in over the sample snapshots and synthetic CSVs; output is labelled SAMPLE and Zetaris is not used.",
+  "meterless_engines": [
+    "Nightshift (primary AI provider)",
+    "H-MEM",
+    "World Model"
+  ],
+  "tests": "npm test (61 tests; Meterless engine tests in test/engines.test.ts)",
+  "track_statement": "Track 1, Solving Fragmented Intelligence: agents that discover and reconcile two live federal recall feeds, an ERP and a supplier portal through Zetaris, and prove each reconciliation rule with SQL before using it."
 }

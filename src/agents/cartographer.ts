@@ -249,6 +249,10 @@ async function profileFeeds(ctx: AgentContext, map: SourceMap): Promise<FeedProf
     const x = r.rows[0] ?? {};
     out.push({ view: "recallfeeds.cpsc_recalls", notices: Number(x.n ?? 0), barcodeField: Number(x.with_upc ?? 0), models: Number(x.with_models ?? 0), dateExample: String(x.date_example ?? ""), dateFormat: dateFormat(String(x.date_example ?? "")), sqlId: r.sqlId });
   }
+  // A live feed that answers with almost nothing (an upstream API hiccup comes back as one row with no date)
+  // must not pass as a quiet week: say so, so the Scout's empty result is read as a degraded source.
+  for (const f of out) if (f.notices < 20 || f.dateFormat === "unknown")
+    say(ctx, "Cartographer", "Orchestrator", `WARNING: live feed ${f.view} looks degraded this run — ${f.notices} notice(s)${f.dateFormat === "unknown" ? ", no readable dates" : ""}. Results for that feed are incomplete; re-run when it answers normally.`, { feed: f, degraded: true });
   for (const f of out) {
     const ent = await ctx.world.entity("feed", ctx.sql.engine, f.view, f.view, {}, { kind: ctx.sql.engine, by: "Cartographer", ref: f.sqlId });
     for (const [k, v] of Object.entries(f)) if (k !== "view" && k !== "sqlId" && v !== undefined) await ctx.world.fact(ent, k, v, { kind: ctx.sql.engine, by: "Cartographer", ref: f.sqlId });

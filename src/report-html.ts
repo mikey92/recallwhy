@@ -143,12 +143,29 @@ export function renderReport(outDir: string, tracePath?: string): string {
     return hs.length ? `<div class="did"><span class="did-h">What the agents did</span>${hs.map((h) => `<span class="hl hl-${h.kind}">${esc(h.text)}</span>`).join("")}</div>` : "";
   };
   const counts = cases.reduce((a: Record<string, number>, c: { verdict: string }) => ((a[c.verdict] = (a[c.verdict] ?? 0) + 1), a), {});
+  // One-screen summary for the safety manager, summed from the facts the agents wrote (last value per case).
+  const summary = () => {
+    const last = new Map<string, unknown>();
+    for (const e of evs as (Ev & { about?: string; predicate?: string; value?: unknown })[]) if (e.kind === "world.write" && e.about?.startsWith("case:") && e.predicate?.startsWith("our_")) last.set(`${e.about.replace(/^case:[^:]+:/, "")}|${e.predicate}`, e.value);
+    const acting = cases.filter((c: { verdict: string }) => c.verdict === "act-now" || c.verdict === "notify");
+    const sum = (pred: string) => acting.reduce((n: number, c: { id: string }) => n + (Number(last.get(`${c.id}|${pred}`)) || 0), 0);
+    const tiles = [
+      [sum("our_units_on_hand_in_affected_lots"), "units to pull from shelves"],
+      [sum("our_stores_holding_affected_lots"), "store pulls"],
+      [sum("our_loyalty_customers_who_bought_affected_lots"), "customers to notify (at most)"],
+      [cases.filter((c: { verdict: string }) => c.verdict === "needs-human").length, "cases waiting for a reviewer"],
+    ] as const;
+    return `<div class="tiles">${tiles.map(([n, l]) => `<div class="tile"><b data-n="${n}">${n}</b><span>${l}</span></div>`).join("")}</div>`;
+  };
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RecallWhy run ${esc(res.runId)}</title><style>
 :root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1f;--mute:#6b7280;--line:#e5e5e0}
 @media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1e1e1e;--ink:#eee;--mute:#9aa0a6;--line:#333}}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,sans-serif}
 header{padding:28px 32px 8px}h1{margin:0;font-size:26px}.sub{color:var(--mute)}
+.warn{margin:12px 0 0;padding:8px 12px;border-radius:8px;background:#fef3c7;color:#92400e;font-size:14px}@media (prefers-color-scheme:dark){.warn{background:#78350f55;color:#fcd34d}}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 4px}.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}.tile b{display:block;font-size:28px;line-height:1.1}.tile span{color:var(--mute);font-size:13px}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.chip{padding:4px 10px;border-radius:99px;color:#fff;font-weight:600;font-size:13px}
 main{padding:8px 32px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .brief,.map,.trace{min-width:0;overflow-wrap:anywhere}a.chip{text-decoration:none}
@@ -177,6 +194,8 @@ header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
 @media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}.did{padding:8px 14px}.brief{padding-left:14px;padding-right:14px}}
 </style></head><body><header><h1>RecallWhy</h1>
 <div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(since)} → ${cases.length} cases</div>
+${evs.filter((e) => e.kind === "msg" && /^WARNING: live feed/.test(e.text ?? "")).map((e) => `<div class="warn">${esc(e.text ?? "")}</div>`).join("")}
+${summary()}
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
 ${sourceMap(evs)}
 ${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
