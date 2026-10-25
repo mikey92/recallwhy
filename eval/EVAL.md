@@ -16,7 +16,6 @@ Everything else counts as *not covered*. 146 pairs are covered (97 food, 49 non-
 |---|---|---|---|---|---|---|
 | none (rules only, `--provider none`) | 89 | 0 | 0 | 233 | — | 14 s |
 | none for the judge, Ultra for the Cartographer only (`--provider none --map-model …`) | 99 | 0 | 0 | 223 | — | 1 min |
-{L_EVAL_ROW}
 | **NVIDIA Nemotron 3 Ultra 550B-A55B, through Meterless Nightshift** | **134** | **1** | **1** | 30 | 0 of 392 | 6,153 s |
 
 Text matches only (223 pairs, 47 covered), judge's first answer vs the final decision (`python3 eval/first-vs-final.py meterless-nvidia_nemotron-3-ultra-550b-a55b`; the first answers are committed in `eval/results/*-first-answers.json`, so this runs from a clean clone):
@@ -25,7 +24,6 @@ Text matches only (223 pairs, 47 covered), judge's first answer vs the final dec
 |---|---|---|---|---|
 | Ultra, judge's first answer | 43 | 4 | 2 | 0 |
 | Ultra, after the Auditor loop | 45 | 1 | 1 | 20 |
-{L_EVAL_TEXT}
 The remaining miss is a generated CPSC title that names no product (`CORDLESS VACUUM CLEANERS WITH LITHIUM-ION` against a notice listing model numbers). The false alarm is a real George J. Howe sunflower-seed SKU (the salted 11 oz recalled by H-1118-2026) matched to H-1119-2026, the same firm's unsalted 6/11 oz seeds. Of the 30 pairs sent to a person, 10 are barcode matches inside a case the Auditor escalated for another SKU (an escalated case goes to the reviewer whole), 19 are same-brand items whose dismissal the Auditor objected to because the judge's own quote names our item's words (Spring & Mulberry's plain "Date-sweetened chocolate" against each flavour's notice, "Salsa Fresca Medium" against "Tomato Salsa Fresca"), and 1 is a CPSC grill brush.
 
 **What changed to get here.** On 25 Oct the item master's food lines became real products. The first Ultra run on it (same code but a broader dismissal rule: send a dismissal to a person when the quote names *half* of our product words) caught the same 134 but sent 112 pairs to a person: 100 of them correct dismissals of another flavour of the same brand ("Mango Pico De Gallo" against "Hot Pico De Gallo"). The rule now needs *every* product word of ours in the quote (vendor words, units and descriptors aside), which keeps size and count differences with a person and lets other flavours stay dismissed: 112 → 30 to a person, with the same catches.

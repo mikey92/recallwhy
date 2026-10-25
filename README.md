@@ -171,7 +171,6 @@ curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since"
 | Judge model | Covered caught (of 146) | Wrongly dismissed | False alarms (of 176) | Sent to human | Model calls failed after retries |
 |---|---|---|---|---|---|
 | none (rules only) | 89 | 0 | 0 | 233 | — |
-| {L_ROW_NAME} | {L_ROW} |
 | **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** (default) | **134** | **1** | **1** | 30 | 0 of 392 |
 
 With Ultra the agents settle **292 of 322 pairs (91%) without a person, 290 of them correctly**, and send 30 to a reviewer with the reason. Every food recall whose barcode we carry is caught by the UPC rule, re-checked against the live notice by the Auditor; the judge's work is the 223 text pairs: CPSC items without barcodes, and same-brand products that are not the recalled one.
@@ -182,7 +181,6 @@ With Ultra the agents settle **292 of 322 pairs (91%) without a person, 290 of t
 |---|---|---|---|---|
 | Ultra, judge's first answer | 43 | 4 | 2 | 0 |
 | Ultra, after the Auditor loop | 45 | **1** | **1** | 20 |
-{L_TEXT_ROWS}
 A dismissed recall is the dangerous error: recalled stock stays on the shelf. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back to the judge, and one whose quoted recalled product differs from ours only in size, count or description (`dismissal-same-line`: "Pico" against "Pico De Gallo Mild", 18 eggs against a notice for 12) goes to a person; another flavour of the same brand stays dismissed. Details and caveats: [`eval/EVAL.md`](eval/EVAL.md).
 
 **Cartographer ablation** (the judge is off, so no model reads a notice; same 322 pairs):
