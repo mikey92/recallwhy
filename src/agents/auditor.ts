@@ -65,7 +65,7 @@ export async function audit(ctx: AgentContext, k: Case, f: Finding): Promise<Aud
       // Same brand, and the recalled product the judge quotes is the same kind as ours (another size,
       // count or variety of the line): telling those apart takes the package, so a person decides.
       else if (d.verdict === "not-this" && d.quote && dismissalSameLine(cand.sku.title, cand.sku.brand, d.quote))
-        critiques.push({ code: "dismissal-same-line", sku: d.sku, detail: `dismissed, but the quoted recalled product "${d.quote.slice(0, 120)}" shares at least half the product words of our item "${cand.sku.title}"; a reviewer checks the package` });
+        critiques.push({ code: "dismissal-same-line", sku: d.sku, detail: `dismissed, but the quoted recalled product "${d.quote.slice(0, 120)}" names every product word of our item "${cand.sku.title}" and differs only in size, count or description; a reviewer checks the package` });
       const conflict = d.verdict === "same" ? designatorConflict(cand, r) : undefined;
       if (conflict) critiques.push({ code: "designator-conflict", sku: d.sku, detail: conflict });
     }
@@ -157,13 +157,21 @@ export function dismissalNamesItem(title: string, vendor: string, quote: string)
   return words.length >= 2 && words.every((w) => q.has(w));
 }
 
-/** True when the quote names at least half of our item's product words (vendor words, numbers, short and descriptive words aside). */
+/** Words that say how much, not what: a dismissal over these alone is a size or count question. */
+const UNIT_WORDS = new Set("pcs pc pieces piece count ct pack pk packs bag bags box case cs each ea oz lb lbs fl ml gram grams kg dozen".split(" "));
+
+/**
+ * True when the recalled product the judge quotes names every product word of our item, leaving out only
+ * vendor words, numbers, units and descriptive words (large, organic, medium…). Then the difference the judge
+ * saw is a size, count or descriptor of the same line, which the package settles, not the notice; a person
+ * decides. A different flavour or variety ("Mango Pico de Gallo" vs "Hot Pico de Gallo") names a word of ours
+ * the quote lacks, so it stays dismissed.
+ */
 export function dismissalSameLine(title: string, vendor: string, quote: string): boolean {
   const skip = new Set(tokens(vendor));
-  const words = [...new Set(tokens(title).filter((w) => !skip.has(w) && !/\d/.test(w) && w.length > 2 && !WEAK.has(w)))];
+  const words = [...new Set(tokens(title).filter((w) => !skip.has(w) && !/\d/.test(w) && w.length > 2 && !UNIT_WORDS.has(w) && !WEAK.has(w)))];
   const q = new Set(tokens(quote));
-  const hit = words.filter((w) => q.has(w)).length;
-  return hit > 0 && hit * 2 >= words.length;
+  return words.length > 0 && words.every((w) => q.has(w));
 }
 
 export function sizes(text: string): string[] {
