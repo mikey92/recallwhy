@@ -1,7 +1,7 @@
 // Recomputes the numbers that README.md, eval/EVAL.md, metadata.json and the deck state from the
 // committed evaluation results and example traces, and fails if any document says something else.
 // npm run check:claims
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 
 const read = (p: string) => readFileSync(p, "utf8");
 const json = (p: string) => JSON.parse(read(p));
@@ -37,6 +37,7 @@ const calls = (r: Result) => `0 of ${r.modelCalls!.total}`;
 const proposed = (proposals.cartographerRules ?? []).filter((x) => x.transform === "proposed").map((x) => x.rows).sort((a, b) => a - b);
 const holds = (file: string, n: number) => read(file).includes(`holds for all ${n} of its ship notices`);
 
+const tests = readdirSync("test").filter((f) => f.endsWith(".test.ts")).reduce((n, f) => n + (read(`test/${f}`).match(/^\s*(test|it)\(/gm) ?? []).length, 0);
 const README = read("README.md"), EVAL = read("eval/EVAL.md"), META = read("metadata.json"), DECK = read("deck/deck.html"), SITE = read("site/index.html");
 const claims: [string, boolean][] = [
   [`README: ${settled} settled without a person, ${correct} correctly`, README.includes(`settle ${settled} (`) && README.includes(`${correct} of them correctly`)],
@@ -52,6 +53,7 @@ const claims: [string, boolean][] = [
   [`metadata: ${u.caught}/${u.positives}, dismissals ${ut.first[1]} → ${ut.final[1]}`, META.includes(`catches ${u.caught}/${u.positives}`) && META.includes(`dismissals ${ut.first[1]} → ${ut.final[1]}`)],
   [`deck: ${u.caught} of ${u.positives}, ${ut.first[1]} → ${ut.final[1]}, ${settled}/${correct}`, DECK.includes(`${u.caught} of ${u.positives} recalled items caught`) && DECK.includes(`${ut.first[1]} → ${ut.final[1]}`) && DECK.includes(`${settled} of 440 pairs`) && DECK.includes(`${correct} correctly`)],
   [`site: ${u.caught} / ${u.positives}, ${ut.first[1]} → ${ut.final[1]}, ${rules.all.caught} → ${proposals.all.caught}`, SITE.includes(`${u.caught} / ${u.positives}`) && SITE.includes(`${ut.first[1]} → ${ut.final[1]}`) && SITE.includes(`${rules.all.caught} → ${proposals.all.caught}`)],
+  [`${tests} tests in metadata and the deck`, META.includes(`(${tests} tests;`) && DECK.includes(`${tests} tests incl.`)],
   [`example_1 trace: SUP007 rule proven on 484 ship notices`, holds("examples/output/example_1/trace.jsonl", 484)],
   [`example_3_after_human_decision trace: SUP010 transform proven on 299 ship notices`, holds("examples/output/example_3_after_human_decision/trace.jsonl", 299)],
 ];

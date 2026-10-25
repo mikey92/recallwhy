@@ -1,4 +1,4 @@
-# RecallWhy run 2026-10-24T18-17-42-f7ac72
+# RecallWhy run 2026-10-25T01-12-11-7fefb3
 
 Engine: **zetaris** · Model: **meterless:nvidia/nemotron-3-ultra-550b-a55b** · Recalls since 2026-07-01: **2** scanned, **2** touch our catalog
 
@@ -11,4 +11,4 @@ Engine: **zetaris** · Model: **meterless:nvidia/nemotron-3-ultra-550b-a55b** ·
 | [case-fda-H-1355-2026](briefs/case-fda-H-1355-2026.md) | fda:H-1355-2026 | act-now | 1 | model |
 | [case-fda-H-1378-2026](briefs/case-fda-H-1378-2026.md) | fda:H-1378-2026 | act-now | 1 | model |
 
-Trace: `logs/trace-2026-10-24T18-17-42-f7ac72.jsonl`
+Trace: `logs/trace-2026-10-25T01-12-11-7fefb3.jsonl`
