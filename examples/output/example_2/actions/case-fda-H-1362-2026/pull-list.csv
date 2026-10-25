@@ -1,0 +1,13 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S001,Northwind #001 Amber Ridge,Amber Ridge,CA,NW-100114,030223075639,Salsa Verde Mild,TFTX209U11,55
+S003,Northwind #003 Pinecrest Vale,Pinecrest Vale,OR,NW-100114,030223075639,Salsa Verde Mild,TFIC211,30
+S004,Northwind #004 Riverbend Mills,Riverbend Mills,OR,NW-100114,030223075639,Salsa Verde Mild,TFIC211,33
+S005,Northwind #005 Fog Harbor,Fog Harbor,WA,NW-100114,030223075639,Salsa Verde Mild,TFIC209,7
+S006,Northwind #006 Summit Creek,Summit Creek,WA,NW-100114,030223075639,Salsa Verde Mild,TFTX211,60
+S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX,NW-100114,030223075639,Salsa Verde Mild,TFIC209,54
+S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX,NW-100114,030223075639,Salsa Verde Mild,TFIC211,17
+S009,Northwind #009 Prairie View,Prairie View,IL,NW-100114,030223075639,Salsa Verde Mild,TFIC209,45
+S009,Northwind #009 Prairie View,Prairie View,IL,NW-100114,030223075639,Salsa Verde Mild,TFTX213U11,38
+S022,Northwind #022 Coral Springs Bay,Coral Springs Bay,FL,NW-100114,030223075639,Salsa Verde Mild,TFIC209,9
+S023,Northwind #023 Peachtree Ridge,Peachtree Ridge,GA,NW-100114,030223075639,Salsa Verde Mild,TFIC209,56
+S023,Northwind #023 Peachtree Ridge,Peachtree Ridge,GA,NW-100114,030223075639,Salsa Verde Mild,TFTX209U11,20

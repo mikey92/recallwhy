@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-1355-2026",
+  "recall": "fda:H-1355-2026",
+  "firm": "Taylor Fresh Foods Inc",
+  "product": "Pico De Gallo. Ingredients: Tomato, Onion, Jalapeno Pepper, Cilantro, Garlic, Salt, Black Pepper. Net Wt: 7 oz. Keep…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-25T18-50-03-b03fea/actions/case-fda-H-1355-2026",
+  "status": "draft",
+  "stores": 4,
+  "pullUnits": 215,
+  "auditedUnits": 215,
+  "shipNotices": 3,
+  "customers": 75,
+  "sql": {
+    "pullList": "q-a8defcd8ee",
+    "shipNotices": "q-dc8d7ed422"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

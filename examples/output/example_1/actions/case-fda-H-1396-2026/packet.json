@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-1396-2026",
+  "recall": "fda:H-1396-2026",
+  "firm": "GIAS FOOD INC.",
+  "product": "Lemon Alfredo Fettuccine packed in a yellow plastic sealed bag with pink and black lettering; label reads in part as…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-25T18-27-13-ce0f44/actions/case-fda-H-1396-2026",
+  "status": "draft",
+  "stores": 4,
+  "pullUnits": 130,
+  "auditedUnits": 130,
+  "shipNotices": 2,
+  "customers": 47,
+  "sql": {
+    "pullList": "q-a7980efbe6",
+    "shipNotices": "q-4fce987f7e"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

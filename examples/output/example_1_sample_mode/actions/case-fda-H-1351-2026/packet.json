@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-1351-2026",
+  "recall": "fda:H-1351-2026",
+  "firm": "Taylor Fresh Foods Inc",
+  "product": "Spicy Guacamole. Ingredients: Guacamole, Pico De Gallo. Spec Sheet: Guacamole (Avocado, Pico De Gallo, Serrano Peper…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-25T18-50-03-b03fea/actions/case-fda-H-1351-2026",
+  "status": "draft",
+  "stores": 6,
+  "pullUnits": 122,
+  "auditedUnits": 122,
+  "shipNotices": 5,
+  "customers": 96,
+  "sql": {
+    "pullList": "q-1b8ca03fd8",
+    "shipNotices": "q-58ca18ed59"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

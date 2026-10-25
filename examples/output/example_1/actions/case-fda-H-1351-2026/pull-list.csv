@@ -1,0 +1,7 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S005,Northwind #005 Fog Harbor,Fog Harbor,WA,NW-100094,030223073574,Spicy guacamole,TFTX215U11,15
+S007,Northwind #007 Mesquite Flats,Mesquite Flats,TX,NW-100094,030223073574,Spicy guacamole,TFTX211,39
+S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX,NW-100094,030223073574,Spicy guacamole,TFTX211,19
+S010,Northwind #010 Lakewood Bend,Lakewood Bend,IL,NW-100094,030223073574,Spicy guacamole,TFTX216U11,6
+S017,Northwind #017 Cedar Falls,Cedar Falls,NJ,NW-100094,030223073574,Spicy guacamole,TFTN2171,36
+S022,Northwind #022 Coral Springs Bay,Coral Springs Bay,FL,NW-100094,030223073574,Spicy guacamole,TFTX213,7

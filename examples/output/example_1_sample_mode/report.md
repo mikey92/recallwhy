@@ -1,18 +1,18 @@
-# RecallWhy run 2026-10-24T04-45-49-6b8fa6
+# RecallWhy run 2026-10-25T18-50-03-b03fea
 
-Engine: **duckdb-sample** (SAMPLE MODE — local stand-in, Zetaris not used) · Model: **none:none** · Recalls since 2026-09-15: **148** scanned, **5** touch our catalog
+Engine: **duckdb-sample** (SAMPLE MODE — local stand-in, Zetaris not used) · Model: **none:none** · Recalls since 2026-09-15: **146** scanned, **5** touch our catalog
 
 | Verdict | Count |
 |---|---|
-| needs-human | 3 |
-| act-now | 2 |
+| needs-human | 1 |
+| act-now | 4 |
 
-| Case | Recall | Verdict | Audit rounds | Why written by |
-|---|---|---|---|---|
-| [case-fda-H-1396-2026](briefs/case-fda-H-1396-2026.md) | fda:H-1396-2026 | act-now | 1 | template |
-| [case-fda-H-1355-2026](briefs/case-fda-H-1355-2026.md) | fda:H-1355-2026 | act-now | 1 | template |
-| [case-fda-H-1364-2026](briefs/case-fda-H-1364-2026.md) | fda:H-1364-2026 | needs-human | 1 | template |
-| [case-fda-H-1379-2026](briefs/case-fda-H-1379-2026.md) | fda:H-1379-2026 | needs-human | 1 | template |
-| [case-fda-H-1407-2026](briefs/case-fda-H-1407-2026.md) | fda:H-1407-2026 | needs-human | 1 | template |
+| Case | Recall | Verdict | Audit rounds | Why written by | Action packet |
+|---|---|---|---|---|---|
+| [case-fda-H-1396-2026](briefs/case-fda-H-1396-2026.md) | fda:H-1396-2026 | act-now | 1 | template | [pull 130 in 4 store(s)](actions/case-fda-H-1396-2026/) |
+| [case-fda-H-1355-2026](briefs/case-fda-H-1355-2026.md) | fda:H-1355-2026 | act-now | 1 | template | [pull 215 in 4 store(s)](actions/case-fda-H-1355-2026/) |
+| [case-fda-H-1354-2026](briefs/case-fda-H-1354-2026.md) | fda:H-1354-2026 | act-now | 1 | template | [pull 406 in 9 store(s)](actions/case-fda-H-1354-2026/) |
+| [case-fda-H-1351-2026](briefs/case-fda-H-1351-2026.md) | fda:H-1351-2026 | act-now | 1 | template | [pull 122 in 6 store(s)](actions/case-fda-H-1351-2026/) |
+| [case-fda-H-1364-2026](briefs/case-fda-H-1364-2026.md) | fda:H-1364-2026 | needs-human | 1 | template |  |
 
-Trace: `logs/trace-2026-10-24T04-45-49-6b8fa6.jsonl`
+Weekly digest: [digest.md](digest.md) · Trace: `logs/trace-2026-10-25T18-50-03-b03fea.jsonl`

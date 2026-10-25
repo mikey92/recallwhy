@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-1354-2026",
+  "recall": "fda:H-1354-2026",
+  "firm": "Taylor Fresh Foods Inc",
+  "product": "Pineapple Mango Salsa Mild. Ingredients: Mango, Pineapple, Pasteurized Lime Juice, Pasteurized Lemon Juice, Jalapeno…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-25T18-50-03-b03fea/actions/case-fda-H-1354-2026",
+  "status": "draft",
+  "stores": 9,
+  "pullUnits": 406,
+  "auditedUnits": 406,
+  "shipNotices": 5,
+  "customers": 142,
+  "sql": {
+    "pullList": "q-3afd1b09ac",
+    "shipNotices": "q-ea6f859d17"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

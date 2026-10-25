@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-1099-2026",
+  "recall": "fda:H-1099-2026",
+  "firm": "Spring & Mulberry Inc.",
+  "product": "Spring & Mulberry Lavender Rose Date-Sweetened Chocolate, Net Wt. 2.1 oz. (60g), individually packaged in a light blue…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-25T18-48-38-8eb7da/actions/case-fda-H-1099-2026",
+  "status": "draft",
+  "stores": 4,
+  "pullUnits": 231,
+  "auditedUnits": 231,
+  "shipNotices": 5,
+  "customers": 95,
+  "sql": {
+    "pullList": "q-4a4b1fa399",
+    "shipNotices": "q-db766684e4"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

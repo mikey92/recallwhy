@@ -1,0 +1,14 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S002,Northwind #002 Cedar Hollow,Cedar Hollow,CA,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX211,60
+S004,Northwind #004 Riverbend Mills,Riverbend Mills,OR,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX216,23
+S005,Northwind #005 Fog Harbor,Fog Harbor,WA,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX211,60
+S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX209U11,3
+S011,Northwind #011 Northpine,Northpine,MN,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX211,34
+S011,Northwind #011 Northpine,Northpine,MN,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX216,31
+S014,Northwind #014 Bayfront Knoll,Bayfront Knoll,WI,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFIC211,48
+S014,Northwind #014 Bayfront Knoll,Bayfront Knoll,WI,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX213U11,39
+S021,Northwind #021 Palm Dunes,Palm Dunes,FL,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFIC211,35
+S021,Northwind #021 Palm Dunes,Palm Dunes,FL,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX216,20
+S022,Northwind #022 Coral Springs Bay,Coral Springs Bay,FL,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX211,12
+S022,Northwind #022 Coral Springs Bay,Coral Springs Bay,FL,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX213U11,23
+S024,Northwind #024 Magnolia Bend,Magnolia Bend,GA,NW-100089,030223075653,Pineapple Mango Salsa Mild 10 oz,TFTX216,18

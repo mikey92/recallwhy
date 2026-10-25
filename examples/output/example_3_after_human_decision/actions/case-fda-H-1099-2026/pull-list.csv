@@ -1,0 +1,8 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S007,Northwind #007 Mesquite Flats,Mesquite Flats,TX,NW-100125,850055470019,Chocolate,025204,7
+S007,Northwind #007 Mesquite Flats,Mesquite Flats,TX,NW-100125,850055470019,Chocolate,026040,32
+S010,Northwind #010 Lakewood Bend,Lakewood Bend,IL,NW-100125,850055470019,Chocolate,025205,1
+S017,Northwind #017 Cedar Falls,Cedar Falls,NJ,NW-100125,850055470019,Chocolate,025204,58
+S017,Northwind #017 Cedar Falls,Cedar Falls,NJ,NW-100125,850055470019,Chocolate,025216,47
+S018,Northwind #018 Meadowbrook,Meadowbrook,NJ,NW-100125,850055470019,Chocolate,025212,29
+S018,Northwind #018 Meadowbrook,Meadowbrook,NJ,NW-100125,850055470019,Chocolate,026040,57
