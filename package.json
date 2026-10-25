@@ -13,7 +13,8 @@
     "eval": "tsx eval/run.ts",
     "setup:zetaris": "tsx scripts/setup-zetaris.ts",
     "view": "tsx src/serve.ts",
-    "api": "tsx src/api.ts"
+    "api": "tsx src/api.ts",
+    "check:claims": "tsx scripts/check-claims.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.4.1-r.1",

@@ -1,5 +1,7 @@
 # RecallWhy
 
+[![CI](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml/badge.svg)](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml) **Live site, no install:** https://mikey92.github.io/recallwhy/ (replay a live run, open the reports)
+
 **Demo video (3:56):** https://iframe.mediadelivery.net/embed/778121/3db46392-8147-44fb-996d-36fc99441367 · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
 **Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence.** RecallWhy helps a retailer's product-safety manager answer, for every new federal recall, *is it on our shelves, which lots, which stores, who bought it*, by discovering and reconciling four sources that disagree (two live federal feeds, the ERP and the supplier portal) through Zetaris. When the sources disagree, both sides are recorded as World Model facts with the query behind them, and the agents either prove a rule that reconciles them or send the case to a person.
@@ -8,7 +10,7 @@ Retailers get this wrong today. In December 2025 the FDA sent warning letters to
 
 **What RecallWhy changes:** over 440 recall/SKU pairs from 517 notices, the agents settle 417 (95%) without a person, 408 of them correctly, and send 23 to a reviewer with the reason; 187 of 194 recalled items are caught (rules alone: 22). See [Evaluation](#evaluation).
 
-**See it without running anything:** the five agents working live (the Auditor sends back ship-notice rows the barcode map cannot reach, and the Cartographer proves a supplier rule and corrects the map), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one rendered](https://htmlpreview.github.io/?https://github.com/mikey92/recallwhy/blob/main/examples/output/example_3_after_human_decision/report.html)).
+**See it without running anything:** the five agents working live (the Auditor sends back ship-notice rows the barcode map cannot reach, and the Cartographer proves a supplier rule and corrects the map), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one on the live site](https://mikey92.github.io/recallwhy/examples/example_3_after_human_decision/report.html), or [replay its trace](https://mikey92.github.io/recallwhy/replay.html?run=example_3_after_human_decision)).
 
 ![Live viewer: the Cartographer maps the sources through Zetaris, then corrects the map when the Auditor sends rows back](docs/img/live-agents.gif)
 
@@ -59,7 +61,7 @@ Every message, SQL call, model call, memory read/write and world write goes to `
 - The Auditor verifies the Investigator by **querying Zetaris again with differently written SQL**.
 - `scripts/setup-zetaris.ts` sets all of this up through the Zetaris REST API (`/api/proxy/sql-editor/sqls/run-query`, with `X-Org-ID` and a fresh `X-Request-ID` per call).
 
-**Meterless agent engines** (mounted from [github.com/Meterless/Meterless](https://github.com/Meterless/Meterless), Apache-2.0, see `src/engines/*/NOTICE`). Engine tests: `npm test` runs `test/engines.test.ts` (H-MEM: a human decision survives a restart and changes the next session's decision; human decisions outrank agent decisions; World Model: one id per entity, facts persist with provenance, the Briefer's context cites them).
+**Meterless agent engines** (mounted from [github.com/Meterless/Meterless](https://github.com/Meterless/Meterless), Apache-2.0, see `src/engines/*/NOTICE`). Engine tests: `npm test` (run by CI on every push, with `npm run check:claims`, which recomputes every number in this README, EVAL, metadata, the deck and the site from `eval/results/` and the example traces) runs `test/engines.test.ts` (H-MEM: a human decision survives a restart and changes the next session's decision; human decisions outrank agent decisions; World Model: one id per entity, facts persist with provenance, the Briefer's context cites them).
 - **H-MEM** (`src/engines/hmem`, wrapper `src/memory.ts`): every adjudication is stored: the agents' in working memory at confidence 0.6, humans' (`npm run decide`) in long-term memory at 0.95. Decisions in a case that was escalated, and UNSURE calls, are not stored as the agents' answer; the reviewer's decision is. Before judging, the Investigator reads the exact prior decisions for that recall/SKU pair plus similar past cases. A human decision is followed and cited in the brief. The trust ledger records every write and every read, including the exact prior-decision lookup.
 - **World Model** (`src/engines/world-model`, wrapper `src/world.ts`): recalls, cases and findings are entities and facts. Every write carries provenance: source kind, agent, and the SQL id or model call. Our context builder (`buildContext()` in `src/world.ts`) reads the engine's fact view, and it is the **only** input the Briefer sees, so a brief can only cite what the team actually established.
 

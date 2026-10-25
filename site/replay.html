@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RecallWhy replay</title>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--ink:#e8e8ea;--mute:#8b90a0;--line:#262a34}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
+h1{font-size:19px;margin:0}select,button{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:4px 10px;min-height:36px;font:inherit;cursor:pointer}
+a{color:#60a5fa}.stat{color:var(--mute)}.stat b{color:var(--ink)}#rep{margin-left:auto}
+main{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:12px 20px}
+.lane{background:var(--card);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;height:calc(100vh - 150px)}
+.lane h2{margin:0;padding:10px 12px;font-size:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.lane .feed{overflow:auto;padding:6px 10px;flex:1}
+.ev{padding:5px 0;border-bottom:1px dashed var(--line);font-size:13.5px;animation:in .5s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){.ev{animation:none}}
+@keyframes in{from{opacity:0;transform:translateX(-8px);background:#facc1533}to{background:transparent}}
+.k{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+.sql .k{color:#38bdf8}.llm .k{color:#4ade80}.crit{color:#fca5a5}.crit .k{color:#f87171}.mem .k{color:#c084fc}.world .k{color:#fbbf24}.msg b{color:#fff}
+.Cartographer h2{color:#fb923c}.Scout h2{color:#22d3ee}.Investigator h2{color:#facc15}.Auditor h2{color:#e879f9}.Briefer h2{color:#4ade80}
+footer{padding:0 20px 10px;color:var(--mute);font-size:12px}
+@media (max-width:640px){main{grid-template-columns:minmax(0,1fr)}.lane{height:auto;max-height:60vh}}
+@media (max-width:1100px) and (min-width:641px){main{grid-template-columns:1fr 1fr}.lane{height:50vh}}
+</style></head><body>
+<header><h1><a href="./" style="color:inherit;text-decoration:none">RecallWhy</a></h1>
+<select id="run" aria-label="Run"><option value="example_1">example_1 · 5 recalls</option><option value="example_2">example_2 · 2 recalls</option><option value="example_3">example_3 · 3 recalls</option><option value="example_3_after_human_decision">example_3 after a human decision</option><option value="example_1_sample_mode">example_1 · sample mode, no model</option></select>
+<select id="speed" aria-label="Speed"><option value="4">4×</option><option value="10" selected>10×</option><option value="40">40×</option></select>
+<button id="again">Replay</button><span class="stat" id="stat"></span><a id="rep" href="#">report →</a></header>
+<main>
+<section class="lane Cartographer"><h2>Cartographer<span class="k" id="n-Cartographer">0</span></h2><div class="feed" id="f-Cartographer"></div></section>
+<section class="lane Scout"><h2>Scout<span class="k" id="n-Scout">0</span></h2><div class="feed" id="f-Scout"></div></section>
+<section class="lane Investigator"><h2>Investigator<span class="k" id="n-Investigator">0</span></h2><div class="feed" id="f-Investigator"></div></section>
+<section class="lane Auditor"><h2>Auditor<span class="k" id="n-Auditor">0</span></h2><div class="feed" id="f-Auditor"></div></section>
+<section class="lane Briefer"><h2>Briefer<span class="k" id="n-Briefer">0</span></h2><div class="feed" id="f-Briefer"></div></section>
+</main>
+<footer>Replays the committed trace.jsonl of a real run (live Zetaris and NVIDIA Nemotron through Meterless Nightshift, except the sample-mode run) at the speed chosen. Every line is an event the code emitted; nothing here is generated in the browser.</footer>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+const LANES = ["Cartographer", "Scout", "Investigator", "Auditor", "Briefer"];
+let timer = null, counts = {}, stats = {};
+function render(e) {
+  const lane = LANES.includes(e.agent) ? e.agent : e.kind === "escalate" ? "Auditor" : null; if (!lane) return;
+  let cls = "", body = "";
+  if (e.kind === "msg") { cls = "msg"; body = "→ <b>" + esc(e.to) + "</b> " + esc(e.text); if (/^opening /.test(e.text)) stats.cases++; }
+  else if (e.kind === "sql") { cls = "sql"; stats.sql++; body = "[" + esc(e.engine) + "] " + esc(e.purpose) + " · " + e.rows + " rows · " + e.ms + " ms <span class='k'>" + esc(e.sqlId) + "</span>"; }
+  else if (e.kind === "llm") { cls = "llm"; stats.llm++; body = (e.served_model ? "<b>" + esc(e.served_model) + "</b> " : esc(e.model || "") + " ") + esc(e.purpose) + " → <i>" + esc(String(e.output).slice(0, 160)) + "</i>"; }
+  else if (e.kind === "llm.retry") { cls = "crit"; body = esc(e.purpose) + " — attempt " + e.attempt + " failed, waiting " + Math.round(e.waitMs / 1000) + " s"; }
+  else if (e.kind === "critique") { cls = "crit"; stats.crit++; body = esc(e.code) + ": " + esc(e.detail); }
+  else if (e.kind.startsWith("memory")) { cls = "mem"; body = e.kind === "memory.write" ? esc(e.text) : "query " + esc(e.query) + " → " + (e.hits || []).length + " hit(s)"; }
+  else if (e.kind.startsWith("world")) { cls = "world"; body = e.kind === "world.context" ? "context: " + e.evidenceCount + " evidence items" : esc(e.predicate) + " = " + esc(JSON.stringify(e.value)).slice(0, 90); }
+  else if (e.kind === "escalate") { cls = "crit"; body = "escalated " + esc(e.caseId) + " to human review"; }
+  else body = esc(e.text ?? e.summary ?? "");
+  const d = document.createElement("div"); d.className = "ev " + cls; d.innerHTML = "<span class='k'>" + e.kind + "</span> " + body;
+  const f = $("#f-" + lane); f.appendChild(d); f.scrollTop = f.scrollHeight;
+  counts[lane] = (counts[lane] || 0) + 1; $("#n-" + lane).textContent = counts[lane];
+  $("#stat").innerHTML = "cases <b>" + stats.cases + "</b> · SQL <b>" + stats.sql + "</b> · model calls <b>" + stats.llm + "</b> · Auditor objections <b>" + stats.crit + "</b>";
+}
+async function play() {
+  clearTimeout(timer); counts = {}; stats = { sql: 0, llm: 0, crit: 0, cases: 0 };
+  for (const a of LANES) { $("#f-" + a).innerHTML = ""; $("#n-" + a).textContent = 0; }
+  const run = $("#run").value, speed = Number($("#speed").value);
+  history.replaceState(null, "", "?run=" + run);
+  $("#rep").href = "examples/" + run + "/report.html";
+  const evs = (await (await fetch("examples/" + run + "/trace.jsonl")).text()).trim().split("\n").map((l) => JSON.parse(l));
+  let i = 0;
+  const step = () => {
+    if (i >= evs.length) { $("#stat").innerHTML += " · <b>done</b>"; return; }
+    render(evs[i]);
+    const gap = i + 1 < evs.length ? Date.parse(evs[i + 1].t) - Date.parse(evs[i].t) : 0;
+    i++; timer = setTimeout(step, Math.min(1500, Math.max(15, gap / speed)));
+  };
+  step();
+}
+const q = new URLSearchParams(location.search).get("run"); if (q) $("#run").value = q;
+$("#run").onchange = play; $("#speed").onchange = play; $("#again").onclick = play;
+play();
+</script></body></html>

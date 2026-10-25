@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      # Every number in README, EVAL, metadata and the deck, recomputed from eval/results and the example traces.
+      - run: npm run check:claims
+      # The judge path: sample mode, no credentials, no model.
+      - run: npx tsx src/cli.ts run --since 2026-09-15 --limit 5
+        env:
+          SAMPLE_MODE: "true"
+          LLM_PROVIDER: none
+      - run: docker build -t recallwhy .
