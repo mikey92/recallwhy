@@ -1,7 +1,7 @@
 {
   "model": "meterless:nvidia/nemotron-3-ultra-550b-a55b",
-  "startedAt": "2026-10-25T04:49:06.363Z",
-  "seconds": 4592,
+  "startedAt": "2026-10-25T13:35:21.737Z",
+  "seconds": 4757,
   "catalog": {
     "printedKeys": 365,
     "fdcPositives": 30,
@@ -19,9 +19,9 @@
   },
   "barcodePath": {
     "positives": 97,
-    "settledByUpcRule": 93,
-    "settledAndAuditorDigitsAgree": 88,
-    "leftToText": 4,
+    "settledByUpcRule": 97,
+    "settledAndAuditorDigitsAgree": 97,
+    "leftToText": 0,
     "negatives": 152,
     "negativesSettledSame": 0
   },
@@ -29,49 +29,50 @@
     "pairs": 249,
     "positives": 97,
     "negatives": 152,
-    "caught": 61,
-    "wronglyDismissed": 36,
-    "falseAlarms": 1,
+    "caught": 69,
+    "wronglyDismissed": 28,
+    "falseAlarms": 3,
     "falseAlarmsOtherNotice": 0,
-    "falseAlarmsSameBrand": 1,
-    "correctlyDismissed": 151,
-    "toHuman": 0,
+    "falseAlarmsSameBrand": 3,
+    "correctlyDismissed": 148,
+    "toHuman": 1,
     "positivesToHuman": 0
   },
   "afterAuditor": {
     "pairs": 249,
     "positives": 97,
     "negatives": 152,
-    "caught": 53,
-    "wronglyDismissed": 29,
+    "caught": 55,
+    "wronglyDismissed": 11,
     "falseAlarms": 2,
-    "falseAlarmsOtherNotice": 2,
-    "falseAlarmsSameBrand": 0,
-    "correctlyDismissed": 145,
-    "toHuman": 20,
-    "positivesToHuman": 15
+    "falseAlarmsOtherNotice": 1,
+    "falseAlarmsSameBrand": 1,
+    "correctlyDismissed": 117,
+    "toHuman": 64,
+    "positivesToHuman": 31
   },
   "afterAuditorBySource": {
     "fdc": {
       "caught": 14,
       "positives": 31,
-      "wronglyDismissed": 10
+      "wronglyDismissed": 6
     },
     "off": {
-      "caught": 39,
+      "caught": 41,
       "positives": 66,
-      "wronglyDismissed": 19
+      "wronglyDismissed": 5
     }
   },
   "ruledWithoutJudge": 0,
-  "revisedPairs": 29,
+  "revisedPairs": 69,
   "modelCalls": {
     "total": 298,
     "failedAfterRetries": 0
   },
   "critiqueCounts": {
-    "dismissal-names-our-item": 31,
-    "item-word-missing": 35,
+    "item-word-missing": 44,
+    "dismissal-names-our-item": 22,
+    "dismissal-same-line": 43,
     "size-not-in-notice": 3
   },
   "rows": [
@@ -84,12 +85,14 @@
       "recall": "fda:H-1244-2026",
       "firm": "Grand Central Bakery - Oregon Inc. dba Grand Central Bakery, Inc.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
       "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Potato Market Loaf 20oz. [barcode removed], product is sold at grocery stores with paper packaging. Label declares Potato Grand Central Rustic Breads A hearty sourdough loaf made with house-roasted potatoes."
+      "rounds": 2,
+      "critiques": [
+        "item-word-missing"
+      ],
+      "quote": "Potato Market Loaf 20oz."
     },
     {
       "kind": "other-notice",
@@ -354,11 +357,9 @@
       "label": "same",
       "first": "same",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 3,
+      "final": "not-this",
+      "rounds": 2,
       "critiques": [
-        "item-word-missing",
-        "item-word-missing",
         "item-word-missing"
       ],
       "quote": "MARKETSIDE SHREDDED LETT 12/16 oz"
@@ -388,14 +389,14 @@
       "recall": "fda:H-1280-2026",
       "firm": "Taylor Farms de Mexico S. de R.L. de C.V.",
       "label": "same",
-      "first": "same",
+      "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
+      "final": "unsure",
       "rounds": 2,
       "critiques": [
-        "item-word-missing"
+        "dismissal-same-line"
       ],
-      "quote": "MARKETSIDE SHREDDED LETT 12/8 oz"
+      "quote": "MARKETSIDE ICEBERG SALAD 10/24 oz; MARKETSIDE ICEBERG SALAD 12/12 oz; MARKETSIDE SHREDDED LETT 12/16 oz; MARKETSIDE SHREDDED LETT 12/8 oz"
     },
     {
       "kind": "other-notice",
@@ -524,11 +525,13 @@
       "recall": "fda:H-1266-2026",
       "firm": "Dreyer's Grand  Ice Cream Inc.",
       "label": "same",
-      "first": "same",
+      "first": "not-this",
       "firstBy": "judge",
       "final": "same",
-      "rounds": 1,
-      "critiques": [],
+      "rounds": 2,
+      "critiques": [
+        "dismissal-names-our-item"
+      ],
       "quote": "Outshine Fruit Bars Grape, 6-Count 2.5 ounce"
     },
     {
@@ -558,9 +561,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "MorningStar Farms Buffalo Chik'n Nuggets, 100% Plant Protein Vegan Nuggets"
     },
     {
@@ -654,9 +659,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "6/11oz No Salt Sunflower Seeds"
     },
     {
@@ -725,7 +732,7 @@
       "final": "same",
       "rounds": 1,
       "critiques": [],
-      "quote": "2oz Dirty Brand Salt and Vinegar Potato Chips"
+      "quote": "1.5oz, 2oz Dirty Brand Salt and Vinegar Potato Chips"
     },
     {
       "kind": "other-notice",
@@ -818,9 +825,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Pumpkin Tree Peter Rabbit Organics Banana & Strawberry fruit puree"
     },
     {
@@ -834,9 +843,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Flexible food pouch (3-layer foil, spouted, #CP6088), manufactured for packaging Pumpkin Tree Peter Rabbit Organics Banana & Strawberry, 4 oz food puree"
     },
     {
@@ -850,9 +861,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Outshine Fruit Bars Strawberry, 6-Count 2.5 ounce"
     },
     {
@@ -1071,13 +1084,11 @@
       "first": "not-this",
       "firstBy": "judge",
       "final": "unsure",
-      "rounds": 3,
+      "rounds": 2,
       "critiques": [
-        "dismissal-names-our-item",
-        "dismissal-names-our-item",
-        "dismissal-names-our-item"
+        "dismissal-same-line"
       ],
-      "quote": "Brookshire's farm fresh, Large 12 Eggs, Net Wt 24 oz (1lb 8oz) 681g"
+      "quote": "Kroger, Large 12 Eggs, Net Wt 24 oz (1lb 8oz) 681g"
     },
     {
       "kind": "other-notice",
@@ -1454,9 +1465,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Brookshire's farm fresh, Large 12 Eggs, Net Wt 24 oz (1lb 8oz) 681g"
     },
     {
@@ -1550,10 +1563,11 @@
       "label": "same",
       "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 2,
+      "final": "unsure",
+      "rounds": 3,
       "critiques": [
-        "item-word-missing"
+        "item-word-missing",
+        "dismissal-same-line"
       ],
       "quote": "Pico De Gallo"
     },
@@ -1604,9 +1618,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Whole Foods Mango Pineapple Salsa sold as a condiment in Caribbean Mango Pineapple Turkey Burger"
     },
     {
@@ -1618,11 +1634,15 @@
       "recall": "fda:H-1133-2026",
       "firm": "Boichik Bagels, Inc.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 3,
+      "critiques": [
+        "item-word-missing",
+        "item-word-missing",
+        "item-word-missing"
+      ],
       "quote": "boichik bagles Pumpernickel Mix Bagels"
     },
     {
@@ -1655,7 +1675,7 @@
       "final": "not-this",
       "rounds": 1,
       "critiques": [],
-      "quote": "MARKON LETTUCE SALAD MIX 4/5# MARKON LETTUCE SALAD WITH SEP BAG 4/5# Iceberg, Carrots, Red Cabbage products."
+      "quote": "MARKON LETTUCE SALAD MIX 4/5# MARKON LETTUCE SALAD WITH SEP BAG 4/5# Iceberg, Carrots, Red Cabbage"
     },
     {
       "kind": "positive",
@@ -1716,9 +1736,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Prince ITALIAN BREAD; Sesame; ITALIAN & FRENCH BREAD, LARGE"
     },
     {
@@ -1732,10 +1754,12 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT, NET WT. 2 lbs., 4 lbs., 5 lbs., 10 lbs"
     },
     {
       "kind": "other-notice",
@@ -1764,9 +1788,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT, NET WT. 2 lbs., 4 lbs., 5 lbs., 10 lbs"
     },
     {
@@ -1796,9 +1822,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT, NET WT. 2 lbs., 4 lbs., 5 lbs., 10 lbs"
     },
     {
@@ -1848,9 +1876,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "OLA-OLA POUNDED GROUNDNUTS (INTWILO)"
     },
     {
@@ -1926,13 +1956,11 @@
       "recall": "fda:H-1328-2026",
       "firm": "Marina Del Rey Foods inc.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
       "final": "same",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-names-our-item"
-      ],
+      "rounds": 1,
+      "critiques": [],
       "quote": "Frankie's Organic Plant-Based Puffs Vegan Cheddar"
     },
     {
@@ -1946,9 +1974,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "functional formularies NOURISH ORGANIC WHOLE FOODS MEAL REPLACEMENT PEPTIDE FORMULA BERRY MEDLEY COMPLETE PLANT BASED NUTRITION NET WT. 12 OZ (341g)"
     },
     {
@@ -2090,9 +2120,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Spring & Mulberry Lavender Rose Date-Sweetened Chocolate"
     },
     {
@@ -2106,9 +2138,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "DQ Chocolate Reduced Fat Ice Cream Mix"
     },
     {
@@ -2138,9 +2172,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Whole Foods Medium Pico de Gallo Guacamole Dip"
     },
     {
@@ -2152,12 +2188,12 @@
       "recall": "fda:H-1397-2026",
       "firm": "Admiral Beverage Corporation",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
+      "final": "same",
       "rounds": 1,
       "critiques": [],
-      "quote": "7up Tropical beverage, shelf stable, 12oz can in a 12pk wrap, labeled as 7 up Tropical Beverage containing cans that are labeled as 7Up Tropical Zero Sugar which contain full sugar soda"
+      "quote": "7up Tropical beverage, shelf stable, 12oz can in a 12pk wrap"
     },
     {
       "kind": "other-notice",
@@ -2252,11 +2288,14 @@
       "recall": "fda:H-1149-2026",
       "firm": "Fresh & Ready Foods LLC",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 3,
+      "critiques": [
+        "item-word-missing",
+        "dismissal-same-line"
+      ],
       "quote": "Fresh to You Burger Chicken Fillet"
     },
     {
@@ -2270,10 +2309,12 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Kroger, Medium, 12 Eggs, Net Wt 21 oz (1lb 5oz) 596g"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "Grade A White In-shell Chicken eggs"
     },
     {
       "kind": "positive",
@@ -2300,13 +2341,11 @@
       "recall": "fda:H-1096-2026",
       "firm": "Spring & Mulberry Inc.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
       "final": "same",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-names-our-item"
-      ],
+      "rounds": 1,
+      "critiques": [],
       "quote": "Spring & Mulberry Mint Leaf Date-Sweetened Chocolate"
     },
     {
@@ -2488,9 +2527,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Joy Mango-Pina-Orange Lassi 16 oz., 64 oz."
     },
     {
@@ -2502,11 +2543,15 @@
       "recall": "fda:H-1274-2026",
       "firm": "Lidl US TRADING",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 3,
+      "critiques": [
+        "item-word-missing",
+        "item-word-missing",
+        "item-word-missing"
+      ],
       "quote": "ERIDANOUS GREEK STYLE Shortbread Cookies with Chocolate Truffle Coating & Apricot Filling"
     },
     {
@@ -2534,13 +2579,11 @@
       "recall": "fda:H-1330-2026",
       "firm": "EXOTIQUE FOODS CANADA",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
       "final": "same",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-names-our-item"
-      ],
+      "rounds": 1,
+      "critiques": [],
       "quote": "Momchipz Gluten Free Veggie Chips Broccoli Florets & Cauliflower"
     },
     {
@@ -2554,9 +2597,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Todd's Seeds Salad Sprouting Mixture - Broccoli, Mustard, Alfalfa and Cabbage"
     },
     {
@@ -2568,11 +2613,15 @@
       "recall": "fda:H-1093-2026",
       "firm": "Joy Gourmet Foods LLC.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 3,
+      "critiques": [
+        "item-word-missing",
+        "item-word-missing",
+        "item-word-missing"
+      ],
       "quote": "Joy Orange Lassi 16 oz."
     },
     {
@@ -2650,9 +2699,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "functional formularies LIQUID HOPE ORGANIC WHOLE FOODS MEAL REPLACEMENT PEPTIDE FORMULA BERRY MEDLEY"
     },
     {
@@ -2732,9 +2783,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Taco Dip"
     },
     {
@@ -2746,15 +2799,11 @@
       "recall": "fda:H-1102-2026",
       "firm": "Spring & Mulberry Inc.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 3,
-      "critiques": [
-        "dismissal-names-our-item",
-        "dismissal-names-our-item",
-        "dismissal-names-our-item"
-      ],
+      "final": "same",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Spring & Mulberry Pecan Date Date-Sweetened Chocolate"
     },
     {
@@ -2848,9 +2897,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Whole Foods Trio Dip, Contains Pico de Gallo, Guacamole, Salsa"
     },
     {
@@ -2896,10 +2947,12 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Everything Sprouts Crunchy Protein Sprout Mix, containing Alfalfa Fenugreek, Cabbage, Mung, Adzuki, Lentils, Green Pea, Net Wt. 5.0 oz (142 g)"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "Everything Sprouts Crunchy Protein Sprout Mix, containing Alfalfa Fenugreek, Cabbage, Mung, Adzuki, Lentils, Green Pea"
     },
     {
       "kind": "positive",
@@ -2928,10 +2981,12 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Everything Sprouts Crunchy Protein Sprout Mix, containing Alfalfa Fenugreek, Cabbage, Mung, Adzuki, Lentils, Green Pea, Net Wt. 5.0 oz (142 g)"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "Everything Sprouts Crunchy Protein Sprout Mix, containing Alfalfa Fenugreek, Cabbage, Mung, Adzuki, Lentils, Green Pea"
     },
     {
       "kind": "positive",
@@ -3008,10 +3063,12 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Simple Truth, Natural Cage Free Grain Fed, Medium, 12 Eggs, Net Wt 21 oz (1lb 5oz) 596g"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "Simple Truth, Natural Cage Free Grain Fed, Medium, 12 Eggs, Net Wt 21 oz (1lb 5oz) 596g; Simple Truth, Natural Cage Free Grain Fed, Large, 12 Eggs, Net Wt 24 oz (1lb 8oz) 681g; Simple Truth, Natural Cage Free Grain Fed, Large, 18 Eggs, Net "
     },
     {
       "kind": "other-notice",
@@ -3040,9 +3097,11 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Pico De Gallo Mild"
     },
     {
@@ -3056,9 +3115,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Whole Foods Medium Pico de Gallo Guacamole Dip"
     },
     {
@@ -3086,14 +3147,12 @@
       "recall": "fda:H-1180-2026",
       "firm": "Green Jeeva LLC",
       "label": "not-this",
-      "first": "not-this",
+      "first": "unsure",
       "firstBy": "judge",
-      "final": "same",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-names-our-item"
-      ],
-      "quote": "Organic Moringa Powder; 15kg/bag (bulk); Product code: GJ96"
+      "final": "unsure",
+      "rounds": 1,
+      "critiques": [],
+      "quote": "vendor unknown; cannot confirm same firm"
     },
     {
       "kind": "positive",
@@ -3207,7 +3266,7 @@
       "final": "not-this",
       "rounds": 1,
       "critiques": [],
-      "quote": "Product is Potato Sourdough Bread and sold under three following names: Potato Market Loaf 20oz. [barcode removed], product is sold at grocery stores with paper packaging. Label declares Potato Grand Central Rustic Breads A hearty sourdough"
+      "quote": "Product is Potato Sourdough Bread and sold under three following names: Potato Market Loaf 20oz., Potato Table Loaf 20oz., Mini Potato Loaf 12oz."
     },
     {
       "kind": "same-brand",
@@ -3255,7 +3314,7 @@
       "final": "not-this",
       "rounds": 1,
       "critiques": [],
-      "quote": "Outshine Fruit Bar Watermelon, 6-Count 2.5 ounce"
+      "quote": "Outshine Fruit Bar Watermelon"
     },
     {
       "kind": "same-brand",
@@ -3364,9 +3423,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Outshine Fruit Bars Strawberry, Pineapple, Grape, Tangerine. 24-Count 2.5 ounce"
     },
     {
@@ -3524,10 +3585,12 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Amy's ORGANIC SOUPS LENTIL LIGHT IN SODIUM NET WT. 14.5 OZ. (411 g)"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "Amy's ORGANIC SOUPS LENTIL LIGHT IN SODIUM"
     },
     {
       "kind": "same-brand",
@@ -3540,10 +3603,12 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
-      "quote": "Amy's ORGANIC SOUPS LENTIL LIGHT IN SODIUM NET WT. 14.5 OZ. (411 g)"
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
+      "quote": "Amy's ORGANIC SOUPS LENTIL LIGHT IN SODIUM"
     },
     {
       "kind": "same-brand",
@@ -3588,9 +3653,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Outshine Fruit Bars Tangerine, 6-Count 2.5 ounce"
     },
     {
@@ -3604,9 +3671,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Outshine Fruit Bars Tangerine, 6-Count 2.5 ounce"
     },
     {
@@ -3620,9 +3689,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Outshine Fruit Bars Grape, 6-Count 2.5 ounce"
     },
     {
@@ -3634,9 +3705,9 @@
       "recall": "fda:H-1266-2026",
       "firm": "Dreyer's Grand  Ice Cream Inc.",
       "label": "not-this",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
+      "final": "same",
       "rounds": 1,
       "critiques": [],
       "quote": "Outshine Fruit Bars Grape, 6-Count 2.5 ounce"
@@ -3687,7 +3758,7 @@
       "final": "not-this",
       "rounds": 1,
       "critiques": [],
-      "quote": "Powdered Sugar"
+      "quote": "Good & Gather, Net Wt 2 lb. (32oz) 907g. Item Number 817774"
     },
     {
       "kind": "same-brand",
@@ -3940,9 +4011,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Pumpkin Tree Peter Rabbit Organics Banana & Strawberry fruit puree"
     },
     {
@@ -3956,9 +4029,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Flexible food pouch (3-layer foil, spouted, #CP6088), manufactured for packaging Pumpkin Tree Peter Rabbit Organics Banana & Strawberry, 4 oz food puree"
     },
     {
@@ -3972,9 +4047,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Outshine Fruit Bars Strawberry"
     },
     {
@@ -4054,11 +4131,14 @@
       "recall": "fda:H-1130-2026",
       "firm": "MARS SNACKING",
       "label": "not-this",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 3,
+      "critiques": [
+        "item-word-missing",
+        "dismissal-same-line"
+      ],
       "quote": "MorningStar Farms Hot & Spicy Sausage Patties, 100% Plant Protein Vegan Sausage Patties"
     },
     {
@@ -4088,9 +4168,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "So Delicious Dairy Free Salted Caramel Cluster Cashewmilk, Non-Dairy Frozen Dessert"
     },
     {
@@ -4136,9 +4218,11 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "not-this",
-      "rounds": 1,
-      "critiques": [],
+      "final": "unsure",
+      "rounds": 2,
+      "critiques": [
+        "dismissal-same-line"
+      ],
       "quote": "Grade A White In-shell Chicken eggs"
     },
     {
@@ -4520,7 +4604,7 @@
       "basis": "upc",
       "verdict": "same",
       "decidedBy": "rule",
-      "digitsInNotice": false
+      "digitsInNotice": true
     },
     {
       "kind": "other-notice",
@@ -4542,7 +4626,7 @@
       "basis": "upc",
       "verdict": "same",
       "decidedBy": "rule",
-      "digitsInNotice": false
+      "digitsInNotice": true
     },
     {
       "kind": "other-notice",
@@ -4583,9 +4667,9 @@
       "upc": "083791520148",
       "recall": "fda:H-1114-2026",
       "label": "same",
-      "basis": "text",
-      "verdict": "unsure",
-      "decidedBy": "none",
+      "basis": "upc",
+      "verdict": "same",
+      "decidedBy": "rule",
       "digitsInNotice": true
     },
     {
@@ -5683,9 +5767,9 @@
       "upc": "4056489125846",
       "recall": "fda:H-1275-2026",
       "label": "same",
-      "basis": "text",
-      "verdict": "unsure",
-      "decidedBy": "none",
+      "basis": "upc",
+      "verdict": "same",
+      "decidedBy": "rule",
       "digitsInNotice": true
     },
     {
@@ -5771,9 +5855,9 @@
       "upc": "4056489125839",
       "recall": "fda:H-1274-2026",
       "label": "same",
-      "basis": "text",
-      "verdict": "unsure",
-      "decidedBy": "none",
+      "basis": "upc",
+      "verdict": "same",
+      "decidedBy": "rule",
       "digitsInNotice": true
     },
     {
@@ -5818,7 +5902,7 @@
       "basis": "upc",
       "verdict": "same",
       "decidedBy": "rule",
-      "digitsInNotice": false
+      "digitsInNotice": true
     },
     {
       "kind": "other-notice",
@@ -5881,9 +5965,9 @@
       "upc": "6908791000084",
       "recall": "fda:H-1260-2026",
       "label": "same",
-      "basis": "text",
-      "verdict": "unsure",
-      "decidedBy": "none",
+      "basis": "upc",
+      "verdict": "same",
+      "decidedBy": "rule",
       "digitsInNotice": true
     },
     {
@@ -5917,7 +6001,7 @@
       "basis": "upc",
       "verdict": "same",
       "decidedBy": "rule",
-      "digitsInNotice": false
+      "digitsInNotice": true
     },
     {
       "kind": "other-notice",
@@ -6005,7 +6089,7 @@
       "basis": "upc",
       "verdict": "same",
       "decidedBy": "rule",
-      "digitsInNotice": false
+      "digitsInNotice": true
     },
     {
       "kind": "other-notice",
