@@ -1,7 +1,13 @@
-# data/real — a real product catalog for the text-match check
+# data/real — real products
 
-`catalog.json` is built by `scripts/build-real-catalog.ts` and used by `eval/real-items.ts`
-(see `eval/REAL.md`). Nothing here is retailer data; the synthetic retailer stays in `data/synthetic/`.
+These are the food lines of the retailer's item master (`scripts/gen-synthetic.ts` reads them; the
+retailer's stores, stock, sales and ship notices stay synthetic in `data/synthetic/`), and the pairs
+of the real-product check (`eval/real-items.ts`, see `eval/REAL.md`).
+
+- `catalog.json` (`scripts/build-real-catalog.ts`): recalled products and their same-brand siblings, below.
+- `shelf.json` (`scripts/build-real-shelf.ts`): the rest of the food aisles, a seeded sample of 260
+  FoodData Central Branded Foods products (April 2026 release) that no FDA notice in `sample/` prints
+  and whose brand owner is not a recalling firm in the snapshot, at most three per brand owner.
 
 - **items** (positives): products whose barcode an FDA food-enforcement notice in
   `sample/fda_food_enforcement.json` prints. Each comes from one of two public catalogs, matched
