@@ -56,6 +56,7 @@ const claims: [string, boolean][] = [
   [`${tests} tests in metadata and the deck`, META.includes(`(${tests} tests;`) && DECK.includes(`${tests} tests incl.`)],
   [`example_1 trace: SUP007 rule proven on 484 ship notices`, holds("examples/output/example_1/trace.jsonl", 484)],
   [`example_3_after_human_decision trace: SUP010 transform proven on 299 ship notices`, holds("examples/output/example_3_after_human_decision/trace.jsonl", 299)],
+  [`example traces: Zetaris lineage and data-quality rule with 0 invalid rows`, ["example_1", "example_3_after_human_decision"].every((n) => { const t = read(`examples/output/${n}/trace.jsonl`); return t.includes("Zetaris lineage of reconciled.ship_notice_item_keys: SUPPLIER_PORTAL.ship_notices + ERP.skus") && /Zetaris data-quality rule barcode_names_the_notice_sku on \S+: (\d+)\/\1 rows valid, 0 invalid/.test(t); })],
   [`example traces: corrected map written back to Zetaris and read back (SUP007 484/484, SUP010 299/299)`, read("examples/output/example_1/trace.jsonl").includes("written back to Zetaris as reconciled.ship_notice_item_keys and read back: SUP007 484/484") && read("examples/output/example_3_after_human_decision/trace.jsonl").includes("written back to Zetaris as reconciled.ship_notice_item_keys and read back: SUP010 299/299")],
 ];
 
