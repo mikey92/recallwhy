@@ -32,7 +32,7 @@ The remaining miss is a generated CPSC title that names no product (`CORDLESS VA
 
 ## Real public products (25 Oct 2026)
 
-[`REAL.md`](REAL.md) asks the text question on the same 95 real products with their barcodes hidden (97 positives, 152 real hard negatives; `npx tsx eval/real-items.ts`). Barcode path: {R_BC}/97 settled by the UPC rule without a model, {R_AG} re-checked, 0/152 negatives matched. Barcode hidden, Ultra judge plus Auditor: {R_C}/97 caught, {R_D} dismissed, {R_F}/152 false alarms, {R_H} to a person.
+[`REAL.md`](REAL.md) asks the text question on the same 95 real products with their barcodes hidden (97 positives, 152 real hard negatives; `npx tsx eval/real-items.ts`). Barcode path: 97/97 settled by the UPC rule without a model, 97 re-checked, 0/152 negatives matched. Barcode hidden, Ultra judge plus Auditor: 55/97 caught, 23 dismissed, 2/152 false alarms, 31 to a person.
 
 ## Earlier item master (24 Oct: food titles generated from the notice text; not comparable with the tables above)
 

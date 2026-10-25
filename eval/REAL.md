@@ -40,9 +40,9 @@ the product's barcode path gets on the same items.
 
 Run: `npx tsx scripts/build-real-catalog.ts --fdc <FDC csv folder>`, then `npx tsx eval/real-items.ts`.
 
-## Result (`eval/results/real-items-nvidia_nemotron-3-ultra-550b-a55b.json`, 2026-10-25, second run)
+## Result (`eval/results/real-items-nvidia_nemotron-3-ultra-550b-a55b.json`, 2026-10-25, third run)
 
-249 pairs (97 positive, 92 other-notice, 60 same-brand), 298 model calls, 0 failed after retries, 79 min.
+249 pairs (97 positive, 92 other-notice, 60 same-brand), 294 model calls, 0 failed after retries, 79 min.
 
 **Barcode path** (how the product actually finds these items): **97 of 97** positives are settled by
 the UPC rule without a model, and the Auditor's re-check finds the barcode in the notice for all 97.
@@ -52,46 +52,37 @@ No negative is matched by barcode (**0 of 152**).
 
 | | caught | wrongly dismissed | false alarms | sent to human |
 |---|---|---|---|---|
-| judge, first answer | 69 / 97 | 28 | 3 / 152 | 1 |
-| after the Auditor (final) | 55 / 97 | **11** | 2 / 152 | 64 (31 positives) |
+| judge, first answer | 69 / 97 | 28 | 2 / 152 | 1 |
+| after the Auditor (final) | 55 / 97 | **23** | 2 / 152 | 31 (19 positives) |
 
-Final, counting only pairs the agents decided: recall 83% (55/66), precision 96% (55/57). By source:
-FDC titles 14/31 caught (6 dismissed), OFF titles 41/66 (5 dismissed). The Auditor revised 69 pairs;
-its checks fired as `item-word-missing` 44, `dismissal-same-line` 43, `dismissal-names-our-item` 22,
-`size-not-in-notice` 3.
+Final, counting only pairs the agents decided: recall 71% (55/78), precision 96% (55/57). By source:
+FDC titles 14/31 caught (12 dismissed), OFF titles 41/66 (11 dismissed). The Auditor revised 37 pairs;
+its checks fired as `item-word-missing` 40, `dismissal-names-our-item` 21, `dismissal-same-line` 11,
+`size-not-in-notice` 3. The Auditor never turns a dismissal into a match: it moves doubtful pairs to a
+person, so 14 of the judge's 69 first-answer catches and 5 of its 28 misses end with a reviewer.
 
-**What changed since the first run, and why this is not an independent test.** The first run
-(same pairs, same model) settled 93/97 by barcode, re-checked 88, and on the text path caught 53,
-dismissed 29 and sent 20 to a person. Reading its misses led to two changes, so the second run's
-numbers are measured on the pairs that motivated them:
-- Barcodes: `feeds.findUpcs` now reads EAN-13 (Lidl, imports), GTIN-14 with two leading zeros, and
-  an 11-digit print that is a UPC missing its leading zero (it keeps both readings); the Auditor's
-  live-notice re-check accepts a UPC printed without its check digit or its leading zero
-  (`printedForms` in `scripts/upc.ts`).
-- Dismissals: most misses were the same brand's line in another size, count or variety (18 eggs
-  vs a notice for 12, a pounded-yam flour vs the recalled instant mix). The Auditor now sends a
-  dismissal to a person when the recalled product the judge quotes names at least half of our
-  item's product words (`dismissal-same-line`). It never turns a dismissal into a match; it trades
-  dismissals for reviewer work: 29 → 11 missed, 20 → 64 to a person (31 of them real positives).
+**How the dismissal check got here, and why this is not an independent test.** Three runs on the
+same pairs and model:
+
+| run | barcode path settled / re-checked | text: caught | missed | to a person |
+|---|---|---|---|---|
+| first | 93 / 88 | 53 | 29 | 20 |
+| second (broad `dismissal-same-line`) | 97 / 97 | 55 | 11 | 64 |
+| third (narrowed, this result) | 97 / 97 | 55 | 23 | 31 |
+
+- Barcodes (after the first run): `feeds.findUpcs` now reads EAN-13 (Lidl, imports), GTIN-14 with
+  two leading zeros, and an 11-digit print that is a UPC missing its leading zero (it keeps both
+  readings); the Auditor's live-notice re-check accepts a UPC printed without its check digit or its
+  leading zero (`printedForms` in `scripts/upc.ts`).
+- Dismissals: most first-run misses were the same brand's line in another size, count or variety
+  (18 eggs vs a notice for 12, a pounded-yam flour vs the recalled instant mix). The second run sent
+  a dismissal to a person when the quoted recalled product named at least half of our item's
+  product words; on the synthetic evaluation that also caught other flavours of a recalled line and
+  sent 112 pairs to a person. The rule now fires only when the quote names *every* product word of
+  our item (sizes, counts, units and the vendor aside): fewer reviews (64 → 31), more misses (11 → 23).
+  We kept the narrow rule because the same code runs on the synthetic set, where the broad one
+  buried the reviewer; the numbers above were measured on the pairs that motivated both changes.
 
 What the text path still misses: FDC descriptions that are long ingredient-style labels, FDC records
 whose description is an older name for the barcode, and OFF names that are empty or wrong. On real
 titles, a barcode is what makes the match; the text judge is a safety net.
-
-## Limits (read before quoting any number above)
-
-- **Small n.** 97 positives from 95 products, many from a few recalls (13 egg items from two
-  recalls, 8 Spring & Mulberry chocolates, 7 Outshine bars, 6 Marketside salads). One recall's
-  wording moves the rate by several points. One run each, temperature 0; not repeated.
-- **Catalog coverage is a filter.** 95 of 365 printed barcodes are in either catalog, skewed to
-  supermarket brands and away from foodservice and import products.
-- **Titles are noisy labels in both directions.** FDC descriptions are GDSN/label strings (long,
-  comma-joined, sometimes an older product name for the barcode); OFF names are contributor-typed.
-  We did not clean them, because picking which titles count is the hand-tuning this check exists to
-  avoid. Likewise some same-brand negatives are close to the recalled product (an older FDC record
-  of the same sausage patty under the maker's name), so a few "false alarms" are defensible.
-- **A printed barcode is not always the unit product.** Case codes and multi-size families mean the
-  catalog product with that code can be an 18-pack where the notice lists a 12-pack.
-- **FDA food only, text only.** No CPSC, no lots, no stores, no exposure numbers, no supplier ship
-  notices, no memory of earlier decisions. The hard negatives are chosen by word overlap and brand
-  owner, which is one definition of "hard"; another would give different counts.
