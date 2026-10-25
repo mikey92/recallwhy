@@ -1,6 +1,6 @@
 // Renders out/<run>/report.html from the run's own files: result.json, briefs/*.md
 // and the trace. Nothing here computes or changes a verdict; it only displays.
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 
 interface Ev { seq: number; kind: string; agent: string; to?: string; text?: string; caseId?: string; code?: string; detail?: string; sqlId?: string; purpose?: string; engine?: string; rows?: number; ms?: number; model?: string; served_model?: string; output?: string; finding?: unknown; checks?: string[]; learned?: Learned[]; since?: string }
 interface Learned { supplier?: string; transform?: string; rows?: number; sqlId?: string; proposedBy?: string }
@@ -202,6 +202,7 @@ header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
 <div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(since)} → ${cases.length} cases</div>
 ${evs.filter((e) => e.kind === "msg" && /^WARNING: live feed/.test(e.text ?? "")).map((e) => `<div class="warn">${esc(e.text ?? "")}</div>`).join("")}
 ${summary()}
+<div class="sub">${existsSync(`${outDir}/digest.md`) ? `<a href="digest.md">Weekly digest</a>` : ""}${existsSync(`${outDir}/actions`) ? ` · Action packets (drafts, not sent): ${readdirSync(`${outDir}/actions`).length} — pull lists, supplier requests and customer notices in <a href="actions/">actions/</a>` : ""}</div>
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
 ${sourceMap(evs)}
 ${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>

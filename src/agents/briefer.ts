@@ -70,7 +70,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   if (f.verdict === "no-exposure") actions.push(`No pull needed. Keep the notice on file; re-run if new lots arrive ${cite("our_lots_named_in_notice")}`);
   if (f.verdict === "needs-human") actions.push(`Review in the queue: \`npm run decide -- ${k.recall.id} <sku> same|not-this --note "..."\`. The decision is stored in memory and used on the next run.`);
 
-  const caveats: string[] = ["Retailer data is synthetic (Northwind Mercantile, generated for this demo)."];
+  const caveats: string[] = ["Retailer stock, sales, lots and ship notices are synthetic (Northwind Mercantile, generated for this demo); food items are real products with real barcodes (USDA FoodData Central, Open Food Facts)."];
   if (n?.lotRule === "all-lots") caveats.push("The notice lists no lot codes we could verify, so every lot of the SKU is treated as affected.");
   if (n?.outsideDistribution.length) caveats.push(`Stores in ${n.outsideDistribution.join(", ")} hold stock although the notice's distribution list does not name those states — product can travel through distributors, so this is not a clearance.`);
   if (n && n.loyaltyCustomers) caveats.push("Customer count sums weekly distinct counts, so it is an upper bound.");

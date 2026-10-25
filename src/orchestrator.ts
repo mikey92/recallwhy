@@ -11,6 +11,7 @@ import { scout, type Case } from "./agents/scout.ts";
 import { chart } from "./agents/cartographer.ts";
 import { renderReport } from "./report-html.ts";
 import { actionPacket, type Packet } from "./actions.ts";
+import { digest, type DigestCase } from "./digest.ts";
 
 const MAX_REVISIONS = 2;
 
@@ -26,6 +27,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   mkdirSync(`${outDir}/briefs`, { recursive: true });
   const results: RunResult["cases"] = [];
   const briefs: Brief[] = [];
+  const forDigest: DigestCase[] = [];
   for (const k of todo) {
     const { finding, open } = await adjudicate(ctx, k);
     if (finding.verdict !== "needs-human") unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
@@ -38,7 +40,10 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
     writeFileSync(`${outDir}/briefs/${k.id}.md`, b.markdown + packetNote);
     briefs.push(b);
     results.push({ id: k.id, recall: k.recall.id, verdict: finding.verdict, rounds: finding.round, whyBy: b.whyBy, ...(p ? { packet: { status: p.status, stores: p.stores, units: p.pullUnits, files: p.files } } : {}) });
+    const n = finding.numbers;
+    forDigest.push({ id: k.id, recall: k.recall.id, firm: k.recall.firm, product: k.recall.title, verdict: finding.verdict, onHand: n?.onHandUnits ?? 0, stores: n?.storesWithStock ?? 0, sold: n?.unitsSoldSince ?? 0, customers: n?.loyaltyCustomers ?? 0, packet: p?.status });
   }
+  await digest(ctx, { runId: ctx.trace.runId, scanned }, forDigest, outDir).catch((e) => ctx.trace.emit("note", "Briefer", { text: `digest not written: ${(e as Error).message}` }));
   writeFileSync(`${outDir}/report.md`, report(ctx, opts.since, scanned, results));
   writeFileSync(`${outDir}/result.json`, JSON.stringify({ runId: ctx.trace.runId, engine: ctx.sql.engine, model: ctx.model, since: opts.since, scanned, cases: results }, null, 2));
   try { renderReport(outDir); } catch (e) { ctx.trace.emit("note", "Orchestrator", { text: `report.html not written: ${(e as Error).message}` }); }
@@ -119,5 +124,5 @@ function report(ctx: AgentContext, since: string, scanned: number, rs: RunResult
     "| Verdict | Count |", "|---|---|", ...Object.entries(count(rs.map((r) => r.verdict))).map(([k, v]) => `| ${k} | ${v} |`), "",
     "| Case | Recall | Verdict | Audit rounds | Why written by | Action packet |", "|---|---|---|---|---|---|",
     ...sorted.map((r) => `| [${r.id}](briefs/${r.id}.md) | ${r.recall} | ${r.verdict} | ${r.rounds} | ${r.whyBy} | ${r.packet ? (r.packet.status === "draft" ? `[pull ${r.packet.units} in ${r.packet.stores} store(s)](actions/${r.id}/)` : "withheld") : ""} |`), "",
-    `Trace: \`${ctx.trace.file}\``].join("\n");
+    `Weekly digest: [digest.md](digest.md) · Trace: \`${ctx.trace.file}\``].join("\n");
 }

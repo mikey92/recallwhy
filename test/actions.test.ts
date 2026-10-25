@@ -48,3 +48,21 @@ test("approving a packet records who and when, and refuses unknown or withheld p
   assert.equal(approvePacket("../etc", "x", "me").ok, false);
   assert.equal(approvePacket("no-such-run", "case-x", "me").ok, false);
 });
+
+test("the weekly digest reads every case through Markovian in bounded chunks, and drops model lines that state numbers no case has", async () => {
+  const { digest } = await import("../src/digest.ts");
+  const dir = mkdtempSync(join(tmpdir(), "rw-digest-"));
+  const trace = new Trace({ dir, quiet: true, runId: "digest" });
+  const cases = Array.from({ length: 40 }, (_, i) => ({ id: `case-${i}`, recall: `fda:H-${i}`, firm: `Firm ${i}`, product: "Product", verdict: i % 3 ? "needs-human" : "act-now", onHand: i % 3 ? 0 : 10 + i, stores: i % 3 ? 0 : 2, sold: 0, customers: i % 3 ? 0 : 3 }));
+  const calls: string[] = [];
+  const honest = { trace, model: "test:model", gen: async (p: string) => { calls.push(p); const ids = [...p.matchAll(/^(case-\d+) \| (Firm \d+)/gm)]; return ids.map((m) => `- ${m[2]}: check it [${m[1]}]`).join("\n") + (/last batch/.test(p) ? "\n[TASK_COMPLETE]" : "\n[STATE_CHECKPOINT]\nCOMPLETED: batch read, most urgent noted\nREMAINING: more\nDECISIONS: none\nCONTEXT: x"); } } as unknown as AgentContext;
+  const d = await digest(honest, { runId: "digest", scanned: 99 }, cases, dir);
+  assert.equal(d.by, "model");
+  assert.ok(d.chunks >= 6, "40 cases in batches of 6");
+  assert.ok(calls.every((p) => p.length < 4000), "every chunk's prompt stays bounded");
+  assert.ok(calls.slice(1).every((p) => p.includes("[CARRYOVER STATE]")), "later chunks get the carried state, not the earlier cases");
+  const liar = { ...honest, gen: async (p: string) => `- Firm 0: pull 99999 units\n${/last batch/.test(p) ? "[TASK_COMPLETE]" : "[STATE_CHECKPOINT]\nCOMPLETED: read a batch of cases"}` } as unknown as AgentContext;
+  const d2 = await digest(liar, { runId: "digest", scanned: 99 }, cases, dir);
+  assert.equal(d2.by, "template");
+  assert.match(d2.rejected ?? "", /99999/);
+});
