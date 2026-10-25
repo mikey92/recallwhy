@@ -180,6 +180,9 @@ test("on Zetaris, a proven rule is written back as a schemastore view and read b
     const ddl: string[] = []; let viewSelect = "";
     const sql = { engine: "zetaris", close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) => {
       if (/^\s*(CREATE SCHEMASTORE|DROP VIEW)/i.test(q)) { ddl.push(q); const m = q.match(/\bAS\s+(SELECT[\s\S]+)$/i); if (m) viewSelect = m[1]; return Promise.resolve({ rows: [], sqlId: "q-ddl", ms: 1 }); }
+      if (/^\s*INFER SQLTABLE SOURCES/i.test(q)) return Promise.resolve({ rows: [{ datasource: "SUPPLIER_PORTAL.ship_notices", alias: "a" }, { datasource: "ERP.skus", alias: "s" }], sqlId: "q-infer", ms: 1 });
+      if (/^\s*ACTIVATE USL TABLE/i.test(q)) return Promise.resolve({ rows: [], sqlId: "q-act", ms: 1 });
+      if (/^\s*RUN DQ/i.test(q)) return duck.run(`SELECT COUNT(*) AS total_record, SUM(CASE WHEN item_sku = notice_sku THEN 1 ELSE 0 END) AS valid_record, SUM(CASE WHEN item_sku <> notice_sku THEN 1 ELSE 0 END) AS invalid_record FROM (${viewSelect}) v`, meta);
       if (q.includes(RECONCILED)) return duck.run(q.replace(RECONCILED, `(${viewSelect}) v`), meta);
       return duck.run(q, meta);
     } };
@@ -191,6 +194,8 @@ test("on Zetaris, a proven rule is written back as a schemastore view and read b
     assert.ok(ddl.some((q) => /CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled/.test(q)));
     const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text as string);
     assert.ok(msgs.some((t) => new RegExp(`written back to Zetaris as ${RECONCILED.replace(".", "\\.")} and read back: SUP007 ${learned[0].rows}/${learned[0].rows}`).test(t)));
+    assert.ok(msgs.some((t) => /Zetaris lineage of reconciled\.ship_notice_item_keys: SUPPLIER_PORTAL\.ship_notices \+ ERP\.skus/.test(t)));
+    assert.ok(msgs.some((t) => /Zetaris data-quality rule barcode_names_the_notice_sku on lightning\.metastore\.recallwhy\.recall_keys\.notice_item: (\d+)\/\1 rows valid, 0 invalid/.test(t)), "blank barcodes do not match each other, so every match names the notice's own SKU");
   } finally {
     await duck.close();
   }
@@ -218,8 +223,8 @@ test("writing the corrected map back is idempotent: a second publish replaces th
     (map.joins.find((j) => j.left === "supplier_portal.ship_notices")!.rules ??= []).push(rule);
     const first = await publish(ctx, map, [rule]), second = await publish(ctx, map, [rule]);
     assert.equal(creates, 2);
-    assert.deepEqual(first.map((p) => [p.supplier, p.read]), [["SUP007", 484]]);
-    assert.deepEqual(second.map((p) => [p.supplier, p.read]), first.map((p) => [p.supplier, p.read]));
+    assert.deepEqual(first.readBack.map((p) => [p.supplier, p.read]), [["SUP007", 484]]);
+    assert.deepEqual(second.readBack.map((p) => [p.supplier, p.read]), first.readBack.map((p) => [p.supplier, p.read]));
   } finally {
     await duck.close();
   }

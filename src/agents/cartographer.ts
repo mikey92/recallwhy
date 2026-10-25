@@ -233,8 +233,10 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     if (ctx.sql.engine === "zetaris") {
       const pub = await publish(ctx, ctx.map, learned).catch((e: Error) => { notes.push(`could not write the corrected map back to Zetaris (${e.message.slice(0, 120)})`); return undefined; });
       if (pub) {
-        notes.push(`corrected map written back to Zetaris as ${RECONCILED} and read back: ${pub.map((p) => `${p.supplier} ${p.read}/${p.rows}`).join(", ")}`);
-        await ctx.world.fact(ent, "published_view", { view: RECONCILED, readBack: pub }, { kind: ctx.sql.engine, by: "Cartographer", ref: pub[0]?.sqlId });
+        notes.push(`corrected map written back to Zetaris as ${RECONCILED} and read back: ${pub.readBack.map((p) => `${p.supplier} ${p.read}/${p.rows}`).join(", ")}`);
+        if (pub.lineage.length) notes.push(`Zetaris lineage of ${RECONCILED}: ${pub.lineage.join(" + ")}`);
+        if (pub.dq) notes.push(`Zetaris data-quality rule ${DQ_RULE} on ${USL_TABLE}: ${pub.dq.valid}/${pub.dq.total} rows valid, ${pub.dq.invalid} invalid`);
+        await ctx.world.fact(ent, "published_view", { view: RECONCILED, readBack: pub.readBack, lineage: pub.lineage, dataQuality: pub.dq ?? null }, { kind: ctx.sql.engine, by: "Cartographer", ref: pub.readBack[0]?.sqlId });
       }
     }
   }
@@ -246,23 +248,38 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
 export const RECONCILED = "reconciled.ship_notice_item_keys";
 
 /** Publish ship notices matched to our items under the corrected map as a Zetaris view, then read each learned supplier back. */
+export const USL_TABLE = "lightning.metastore.recallwhy.recall_keys.notice_item";
+export const DQ_RULE = "barcode_names_the_notice_sku";
+
+/**
+ * Publish ship notices matched to our items under the corrected map as a Zetaris view, read each learned
+ * supplier back, ask Zetaris for the view's lineage, refresh the USL table built on it and run its
+ * data-quality rule (every barcode match must name the notice's own SKU). The USL and the rule are
+ * created once by `npm run setup:zetaris` (sql/03_writeback.sql).
+ */
 export async function publish(ctx: AgentContext, map: SourceMap | undefined, learned: SupplierRule[]) {
   const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
   // The `reconciled` container is created by `npm run setup:zetaris`; create it here only if it is missing.
   const exists = await run("SHOW TABLES IN reconciled", "views already written back").then(() => true, () => false);
   if (!exists) await run("CREATE SCHEMASTORE CONTAINER reconciled", "container for views the agents write back").catch((e: Error) => { if (!/exist/i.test(e.message)) throw e; });
+  const select = `SELECT a.asn_id, a.supplier_id, a.sku AS notice_sku, a.lot_code, a.upc AS notice_upc, s.sku AS item_sku, s.upc AS item_upc
+     FROM ${ASN} a JOIN ${ITEMS} s ON ${barcodeJoin(map, ASN, ITEMS, "a", "s")} WHERE a.upc <> '' AND s.upc <> ''`;
   await run(`DROP VIEW IF EXISTS ${RECONCILED}`, `replace ${RECONCILED}`);
-  await run(`CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled AS
-     SELECT a.asn_id, a.supplier_id, a.sku AS notice_sku, a.lot_code, a.upc AS notice_upc, s.sku AS item_sku, s.upc AS item_upc
-     FROM ${ASN} a JOIN ${ITEMS} s ON ${barcodeJoin(map, ASN, ITEMS, "a", "s")}`, `write the corrected barcode map back to Zetaris as ${RECONCILED}`);
-  const out: { supplier: string; rows: number; read: number; sqlId: string }[] = [];
+  await run(`CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled AS\n     ${select}`, `write the corrected barcode map back to Zetaris as ${RECONCILED}`);
+  const readBack: { supplier: string; rows: number; read: number; sqlId: string }[] = [];
   for (const r of learned) {
     const back = await run(`SELECT COUNT(*) AS n FROM ${RECONCILED} WHERE supplier_id = ${lit(r.supplier)} AND item_sku = notice_sku`, `read ${r.supplier} back from ${RECONCILED}`);
     const read = Number(back.rows[0]?.n ?? 0);
     if (read !== r.rows) throw new Error(`${RECONCILED} read back ${read} of ${r.rows} rows for ${r.supplier}`);
-    out.push({ supplier: r.supplier, rows: r.rows, read, sqlId: back.sqlId });
+    readBack.push({ supplier: r.supplier, rows: r.rows, read, sqlId: back.sqlId });
   }
-  return out;
+  // Zetaris's own lineage of the published view, and its data-quality engine on the USL table built on it.
+  const lineage = await run(`INFER SQLTABLE SOURCES SPEC ${select}`, `Zetaris lineage of ${RECONCILED}`)
+    .then((r) => r.rows.map((x) => String(x.datasource ?? Object.values(x)[0])), () => [] as string[]);
+  const dq = await run(`ACTIVATE USL TABLE ${USL_TABLE} AS SELECT asn_id, supplier_id, notice_sku, item_sku, lot_code FROM ${RECONCILED}`, `refresh the USL table ${USL_TABLE} from ${RECONCILED}`)
+    .then(() => run(`RUN DQ ${DQ_RULE} TABLE ${USL_TABLE}`, `run the Zetaris data-quality rule ${DQ_RULE}`))
+    .then((r) => ({ total: Number(r.rows[0]?.total_record ?? 0), valid: Number(r.rows[0]?.valid_record ?? 0), invalid: Number(r.rows[0]?.invalid_record ?? 0), sqlId: r.sqlId }), () => undefined);
+  return { readBack, lineage, dq };
 }
 
 const dateFormat = (v: string) => (/^\d{8}$/.test(v) ? "yyyymmdd" : /^\d{4}-\d{2}-\d{2}/.test(v) ? "yyyy-mm-dd" : "unknown");

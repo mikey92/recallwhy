@@ -38,7 +38,8 @@ export function whatTheAgentsDid(slice: Ev[]): Highlight[] {
 
   for (const m of msgs.filter((e) => e.agent === "Cartographer" && e.to === "Auditor")) {
     const w = m.text?.match(/written back to Zetaris as (\S+) and read back: ([^;.]+)/);
-    if (w) out.push({ kind: "map", text: `Written back to Zetaris as ${w[1]}, read back in a separate query: ${w[2]}` });
+    const dq = m.text?.match(/Zetaris data-quality rule (\S+) on \S+: (\d+)\/(\d+) rows valid, (\d+) invalid/);
+    if (w) out.push({ kind: "map", text: `Written back to Zetaris as ${w[1]}, read back in a separate query: ${w[2]}${dq ? `; Zetaris data-quality rule ${dq[1]}: ${dq[2]}/${dq[3]} valid` : ""}` });
   }
 
   // 2. Memory: a human's decision was followed, or an earlier run's decision reused.
