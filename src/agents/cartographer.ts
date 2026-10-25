@@ -228,10 +228,39 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     (j.rules ??= []).push(...learned);
     const ent = await ctx.world.entity("join_key", ctx.sql.engine, `${j.left}~${j.right}:upc`, `${j.left} x ${j.right} on barcode`, {}, { kind: ctx.sql.engine, by: "Cartographer", ref: diag.sqlId });
     for (const r of learned) await ctx.world.fact(ent, `supplier_rule:${r.supplier}`, r.ops ? { transform: r.transform, ...r.ops, proposedBy: r.proposedBy } : r.transform, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
+    // Close the loop in the data layer: on Zetaris the corrected join is published as a schemastore
+    // view other tools can query, and read back in a separate query before it counts.
+    if (ctx.sql.engine === "zetaris") {
+      const pub = await publish(ctx, ctx.map, learned).catch((e: Error) => { notes.push(`could not write the corrected map back to Zetaris (${e.message.slice(0, 120)})`); return undefined; });
+      if (pub) {
+        notes.push(`corrected map written back to Zetaris as ${RECONCILED} and read back: ${pub.map((p) => `${p.supplier} ${p.read}/${p.rows}`).join(", ")}`);
+        await ctx.world.fact(ent, "published_view", { view: RECONCILED, readBack: pub }, { kind: ctx.sql.engine, by: "Cartographer", ref: pub[0]?.sqlId });
+      }
+    }
   }
   say(ctx, "Cartographer", "Auditor", `${caseId}: ${notes.join("; ") || "every row already joins with the current key"}.${learned.length ? " Map corrected; re-run your check." : ""}`,
     { diagnosis: diag.sqlId, learned, before: current });
   return learned;
+}
+
+export const RECONCILED = "reconciled.ship_notice_item_keys";
+
+/** Publish ship notices matched to our items under the corrected map as a Zetaris view, then read each learned supplier back. */
+async function publish(ctx: AgentContext, map: SourceMap | undefined, learned: SupplierRule[]) {
+  const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
+  await run("CREATE SCHEMASTORE CONTAINER reconciled", "container for views the agents write back").catch((e: Error) => { if (!/exist/i.test(e.message)) throw e; });
+  await run(`DROP VIEW IF EXISTS ${RECONCILED}`, `replace ${RECONCILED}`);
+  await run(`CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled AS
+     SELECT a.asn_id, a.supplier_id, a.sku AS notice_sku, a.lot_code, a.upc AS notice_upc, s.sku AS item_sku, s.upc AS item_upc
+     FROM ${ASN} a JOIN ${ITEMS} s ON ${barcodeJoin(map, ASN, ITEMS, "a", "s")}`, `write the corrected barcode map back to Zetaris as ${RECONCILED}`);
+  const out: { supplier: string; rows: number; read: number; sqlId: string }[] = [];
+  for (const r of learned) {
+    const back = await run(`SELECT COUNT(*) AS n FROM ${RECONCILED} WHERE supplier_id = ${lit(r.supplier)} AND item_sku = notice_sku`, `read ${r.supplier} back from ${RECONCILED}`);
+    const read = Number(back.rows[0]?.n ?? 0);
+    if (read !== r.rows) throw new Error(`${RECONCILED} read back ${read} of ${r.rows} rows for ${r.supplier}`);
+    out.push({ supplier: r.supplier, rows: r.rows, read, sqlId: back.sqlId });
+  }
+  return out;
 }
 
 const dateFormat = (v: string) => (/^\d{8}$/.test(v) ? "yyyymmdd" : /^\d{4}-\d{2}-\d{2}/.test(v) ? "yyyy-mm-dd" : "unknown");

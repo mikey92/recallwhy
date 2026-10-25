@@ -36,6 +36,11 @@ export function whatTheAgentsDid(slice: Ev[]): Highlight[] {
     }
   }
 
+  for (const m of msgs.filter((e) => e.agent === "Cartographer" && e.to === "Auditor")) {
+    const w = m.text?.match(/written back to Zetaris as (\S+) and read back: ([^;.]+)/);
+    if (w) out.push({ kind: "map", text: `Written back to Zetaris as ${w[1]}, read back in a separate query: ${w[2]}` });
+  }
+
   // 2. Memory: a human's decision was followed, or an earlier run's decision reused.
   for (const m of msgs.filter((e) => e.agent === "Investigator")) {
     const h = m.text?.match(/following human decision (mem-\d+)/);
@@ -77,7 +82,7 @@ export function whatTheAgentsDid(slice: Ev[]): Highlight[] {
   const parts = [sqls.length ? `${sqls.length} SQL quer${sqls.length === 1 ? "y" : "ies"}${engines ? ` on ${engines}` : ""}` : "", llms.length ? `${llms.length} model call${llms.length === 1 ? "" : "s"}${models ? ` (${models})` : ""}` : "no model calls"].filter(Boolean);
   if (sqls.length || llms.length) out.push({ kind: "stats", text: parts.join(" · ") });
 
-  return out.slice(0, 4);
+  return out.slice(0, 5);
 }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);

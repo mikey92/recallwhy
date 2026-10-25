@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { barcodeJoin, chart, reconcile } from "../src/agents/cartographer.ts";
+import { barcodeJoin, chart, reconcile, RECONCILED } from "../src/agents/cartographer.ts";
 import { scout } from "../src/agents/scout.ts";
 import type { AgentContext } from "../src/agents/context.ts";
 import { DuckSampleRunner } from "../src/sql/duck.ts";
@@ -167,5 +167,31 @@ test("a proposal SQL rejects gets one retry, with the rows where it failed, and 
     assert.match(prompts[1], /matched only 0 of \d+ rows\. Where they fail:/);
   } finally {
     await sql.close();
+  }
+});
+
+test("on Zetaris, a proven rule is written back as a schemastore view and read back before it counts", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-publish-"));
+  const trace = new Trace({ dir, quiet: true, runId: "publish" });
+  const duck = new DuckSampleRunner({ trace });
+  await duck.ready;
+  try {
+    // Zetaris stand-in: DDL is recorded, and reads of the published view run its SELECT on DuckDB.
+    const ddl: string[] = []; let viewSelect = "";
+    const sql = { engine: "zetaris", close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) => {
+      if (/^\s*(CREATE SCHEMASTORE|DROP VIEW)/i.test(q)) { ddl.push(q); const m = q.match(/\bAS\s+(SELECT[\s\S]+)$/i); if (m) viewSelect = m[1]; return Promise.resolve({ rows: [], sqlId: "q-ddl", ms: 1 }); }
+      if (q.includes(RECONCILED)) return duck.run(q.replace(RECONCILED, `(${viewSelect}) v`), meta);
+      return duck.run(q, meta);
+    } };
+    const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
+    ctx.map = await chart({ ...ctx, sql: duck } as unknown as AgentContext);
+    const rows = (await duck.run("SELECT sku, lot_code FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP007' AND upc <> '' LIMIT 5", { agent: "test", purpose: "pick rows" })).rows;
+    const learned = await reconcile(ctx, "case-test", rows.map((r) => String(r.sku)), rows.map((r) => String(r.lot_code)));
+    assert.deepEqual(learned.map((r) => r.supplier), ["SUP007"]);
+    assert.ok(ddl.some((q) => /CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled/.test(q)));
+    const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text as string);
+    assert.ok(msgs.some((t) => new RegExp(`written back to Zetaris as ${RECONCILED.replace(".", "\\.")} and read back: SUP007 ${learned[0].rows}/${learned[0].rows}`).test(t)));
+  } finally {
+    await duck.close();
   }
 });
