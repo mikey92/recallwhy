@@ -65,7 +65,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <tr><td>Agents</td><td>TypeScript on Node 22, no agent framework — five agents, one orchestrator, one trace</td></tr>
 <tr><td>Memory, state, long reads</td><td>Meterless H-MEM, World Model and Markovian reference engines (Apache-2.0), mounted in <code>src/engines/</code></td></tr>
 <tr><td>Model</td><td>Meterless <b>Nightshift</b> Runtime API (OpenAI-compatible) → NVIDIA <b>Nemotron 3 Ultra 550B-A55B</b>; no model and a human queue when Nightshift is absent</td></tr>
-<tr><td>Retailer data</td><td>Postgres 16 in Docker — food items are real products (USDA FoodData Central, Open Food Facts: 95 recalled, 86 same-brand, 260 more); stock, sales and ship notices synthetic</td></tr>
+<tr><td>Retailer data</td><td>Postgres 16 in Docker — food items are real products (USDA FoodData Central, Open Food Facts: 95 recalled, 86 same-brand, 260 more); stores at real SNAP-authorized supermarket locations (USDA FNS); stock, sales and ship notices synthetic</td></tr>
 <tr><td>Entry points</td><td><code>POST /run</code> · <code>POST /approve</code> API · Dockerfile · CLI · live trace viewer · review screen</td></tr>
 <tr><td>No-credential mode</td><td><code>SAMPLE_MODE=true</code>: same agents and SQL on an in-process DuckDB stand-in, labelled SAMPLE</td></tr>
 <tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 84 tests incl. Meterless engine tests</td></tr></table>
@@ -112,6 +112,6 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <section class="s"><div class="k">9 · Next</div><h2>From demo to a safety desk.</h2>
 <div class="grid g2"><ul><li>More feeds through Zetaris: USDA FSIS, NHTSA equipment (car seats), Health Canada</li><li>Lot capture from receiving scans instead of the item master</li><li>Send the approved packet: loyalty system for customers, EDI for the supplier credit, store task system for the pull</li></ul>
 <ul><li>Cartographer onboarding new feeds on its own: catalog → profile → join test</li><li>Real stock and ship notices from a pilot retailer (the food catalog is already real)</li><li>Review screen for a team: assignment, and each decision's history from the H-MEM trust ledger</li></ul></div>
-<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> stock, sales and ship notices are synthetic (the food items are real); non-food titles come from the notice; proposed transforms are limited to string ops; lexical Auditor checks; CPSC rarely prints UPCs; hosted model rate limits make a full evaluation take over an hour.</p>
+<p style="margin-top:60px;font-size:36px"><b>Limits today:</b> stock, sales and ship notices are synthetic (the food items and store locations are real; no public data holds per-store lots, sales or ship notices); non-food titles come from the notice; proposed transforms are limited to string ops; lexical Auditor checks; CPSC rarely prints UPCs; hosted model rate limits make a full evaluation take over an hour.</p>
 <div class="foot"><span>RecallWhy · github.com/mikey92/recallwhy</span><span>Track 1</span></div></section>
 </body></html>

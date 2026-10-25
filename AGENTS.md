@@ -27,7 +27,9 @@ reason, or escalates to a human when the evidence is not good enough.
 - Food lines of `erp.skus` are real products (`data/real/`: USDA FoodData Central CC0, Open Food Facts
   ODbL): every product whose barcode an FDA notice in `sample/` prints, same-brand siblings, and a
   seeded FDC shelf sample. Non-food lines are synthetic (CPSC-derived or invented).
-- No personal data anywhere. Store names and cities are fictional.
+- Store locations are real SNAP-authorized supermarkets (`data/real/stores.json`, USDA FNS, public
+  domain); the chain name (Northwind) is fictional and no row names the real business at an address.
+- No personal data anywhere.
 
 ## Agents (separate roles, separate prompts, talk through the bus; every message is traced)
 0. Cartographer — before any case, maps the sources through Zetaris's catalog statements, tags
