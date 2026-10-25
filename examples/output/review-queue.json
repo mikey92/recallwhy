@@ -1,0 +1,94 @@
+[
+  {
+    "caseId": "case-fda-H-1364-2026",
+    "recall": "fda:H-1364-2026",
+    "firm": "Taylor Fresh Foods Inc",
+    "date": "2026-08-07",
+    "notice": "Tomato Salsa Fresca. Ingredients: Tomatoes, Yellow Onion, Red Onion, Cilantro, Jalapeno Pepper, Garlic, Salt, Ground Cumin, Lemon Juice. Net Wt: 4 lbs. Keep Refrigerated.",
+    "runId": "2026-10-25T18-27-13-ce0f44",
+    "skus": [
+      {
+        "sku": "NW-100119",
+        "title": "Salsa Fresca Medium 12 oz",
+        "upc": "030223075080",
+        "vendor": "Taylor Farms",
+        "verdict": "unsure",
+        "why": "Auditor: dismissed, but the quoted recalled product \"Tomato Salsa Fresca. Ingredients: Tomatoes, Yellow Onion, Red Onion, Cilantro, Jalapeno Pepper, Garlic, Salt, Ground Cum\" names every product word of our item \"Salsa Fresca Medium 12 oz\" and differs only in size, count or description; a reviewer checks the package"
+      },
+      {
+        "sku": "NW-100089",
+        "title": "Pineapple Mango Salsa Mild 10 oz",
+        "upc": "030223075653",
+        "vendor": "Taylor Farms",
+        "verdict": "not-this",
+        "why": "notice is about \"Tomato Salsa Fresca\""
+      },
+      {
+        "sku": "NW-100166",
+        "title": "Salsa Roja Medium",
+        "upc": "030223075646",
+        "vendor": "Taylor Farms Inc.",
+        "verdict": "not-this",
+        "why": "notice is about \"Tomato Salsa Fresca\""
+      }
+    ],
+    "open": [
+      "NW-100119 undecided: Auditor: dismissed, but the quoted recalled product \"Tomato Salsa Fresca. Ingredients: Tomatoes, Yellow Onion, Red Onion, Cilantro, Jalapeno Pepper, Garlic, Salt, Ground Cum\" names every product word of our item \"Salsa Fresca Medium 12 oz\" and differs only in size, count or description; a reviewer checks the package"
+    ],
+    "at": "2026-10-25T18:27:36.707Z"
+  },
+  {
+    "caseId": "case-fda-H-1099-2026",
+    "recall": "fda:H-1099-2026",
+    "firm": "Spring & Mulberry Inc.",
+    "date": "2026-01-09",
+    "notice": "Spring & Mulberry Lavender Rose Date-Sweetened Chocolate, Net Wt. 2.1 oz. (60g), individually packaged in a light blue box, UPC 850055470019, Dist. By Spring & Mulberry Raleigh, NC 27606. Wholesale product packed 48 bars (caddied)/56 bars (uncaddied) per case. Retail product sold individually or as a 3-pk, 6-pk, or 12-pk (Amazon only).",
+    "runId": "2026-10-25T18-34-27-f82007",
+    "skus": [
+      {
+        "sku": "NW-100125",
+        "title": "Chocolate",
+        "upc": "850055470019",
+        "vendor": "Spring And Mulberry",
+        "verdict": "same",
+        "why": "our UPC 850055470019 is printed in the notice"
+      },
+      {
+        "sku": "NW-100111",
+        "title": "Mulberry Fennel Date-Sweetened Chocolate",
+        "upc": "850055470149",
+        "vendor": "Spring & Mulberry",
+        "verdict": "not-this",
+        "why": "notice is about \"Spring & Mulberry Lavender Rose Date-Sweetened Chocolate\""
+      },
+      {
+        "sku": "NW-100132",
+        "title": "Mixed Berry Date-Sweetened Chocolate",
+        "upc": "850055470026",
+        "vendor": "Spring & Mulberry",
+        "verdict": "not-this",
+        "why": "notice is about \"Spring & Mulberry Lavender Rose Date-Sweetened Chocolate\""
+      },
+      {
+        "sku": "NW-100156",
+        "title": "Pure Dark Date Sweetened Chocolate",
+        "upc": "850055470002",
+        "vendor": "Spring & Mulberry",
+        "verdict": "not-this",
+        "why": "notice is about \"Spring & Mulberry Lavender Rose Date-Sweetened Chocolate\""
+      },
+      {
+        "sku": "NW-100165",
+        "title": "Date-sweetened chocolate",
+        "upc": "850055470040",
+        "vendor": "Spring & mulberry",
+        "verdict": "not-this",
+        "why": "notice is about \"Spring & Mulberry Lavender Rose Date-Sweetened Chocolate\""
+      }
+    ],
+    "open": [
+      "dismissed, but the quoted recalled product \"Spring & Mulberry Lavender Rose Date-Sweetened Chocolate\" contains every product word of our item \"Date-sweetened chocolate\""
+    ],
+    "at": "2026-10-25T18:35:48.002Z"
+  }
+]

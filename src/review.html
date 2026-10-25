@@ -48,13 +48,27 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 <header><h1>Review queue</h1><p id="sum" role="status" aria-live="polite"></p><a href="/">Live view</a></header>
 <main><h2 class="sec">Action packets</h2><p class="meta">Drafts from the latest run: what to pull, what to ask the supplier, what to tell customers. Approving records who and when; nothing is sent.</p><div id="packets"></div><h2 class="sec">Matches to decide</h2><div id="list" class="intro"></div></main>
 <script>
+// On the public site (scripts/build-site.mjs) RW_STATIC holds a recorded queue and recorded packets:
+// decisions and approvals are kept in this browser only, nothing is recorded or sent.
+const S = window.RW_STATIC;
+const outDir = (run) => S ? (S.runs[run] ?? "#") : `/out/${run}`;
+const local = (k) => { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch { return []; } };
+const keep = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+async function api(path, body) {
+  if (!S) { const r = body ? await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) : await fetch(path); return r; }
+  const ok = (data) => ({ ok: true, json: async () => data, text: async () => "" });
+  if (path === "/api/queue") return ok({ queue: S.queue, decided: local("rw-demo-decided") });
+  if (path === "/api/packets") { const a = Object.fromEntries(local("rw-demo-approved").map((x) => [x.caseId, x])); return ok({ runId: S.packets.runId, packets: S.packets.packets.map((p) => a[p.caseId] ? { ...p, approval: a[p.caseId] } : p) }); }
+  if (path === "/api/decide") { keep("rw-demo-decided", [...local("rw-demo-decided").filter((d) => !(d.recall === body.recall && d.sku === body.sku)), { ...body, memoryId: "kept in this browser only" }]); return ok({}); }
+  if (path === "/api/approve") { keep("rw-demo-approved", [...local("rw-demo-approved").filter((x) => x.caseId !== body.caseId), { caseId: body.caseId, by: body.by || "you", at: new Date().toISOString(), note: "" }]); return ok({}); }
+}
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const label = { "same": "Same product", "not-this": "Not this product", "unsure": "Undecided" };
 let n = 0;
 
 function skuBlock(c, s, done) {
   const d = done.get(c.recall + " " + s.sku);
-  const objections = c.open.filter((o) => (c.skus.length === 1 || o.includes(s.sku) || o.includes(s.title)) && !o.includes(s.why));
+  const objections = c.open.filter((o) => (c.skus.length === 1 || o.includes(s.sku) || o.includes(`"${s.title}"`)) && !o.includes(s.why));
   const id = "n" + (n++);
   return `<div class="sku"><h3>${esc(s.title)} <span>${esc(s.sku)}</span></h3>
     <p class="why">Agents: <b>${label[s.verdict] ?? esc(s.verdict)}</b> — ${esc(s.why)}</p>
@@ -72,13 +86,13 @@ function skuBlock(c, s, done) {
 }
 
 async function load() {
-  const { queue, decided } = await (await fetch("/api/queue")).json();
+  const { queue, decided } = await (await api("/api/queue")).json();
   const done = new Map(decided.map((d) => [d.recall + " " + d.sku, d]));
   const waiting = queue.flatMap((c) => c.skus.filter((s) => !done.has(c.recall + " " + s.sku))).length;
   n = 0;
   document.getElementById("list").innerHTML = queue.length
     ? queue.slice().reverse().map((c, i) => `<section class="case" style="--i:${i}"><h2>${esc(c.firm || c.recall)}</h2>
-        <p class="meta">${esc(c.recall)}${c.date ? " · recalled " + esc(c.date) : ""}${c.runId ? ` · <a class="report" href="/out/${esc(c.runId)}/report.html" target="_blank">Report and agent trace</a>` : ""}</p>
+        <p class="meta">${esc(c.recall)}${c.date ? " · recalled " + esc(c.date) : ""}${c.runId ? ` · <a class="report" href="${esc(outDir(c.runId))}/report.html" target="_blank">Report and agent trace</a>` : ""}</p>
         ${c.notice ? `<p class="notice">${esc(c.notice)}</p>` : ""}
         ${c.skus.map((s) => skuBlock(c, s, done)).join("")}</section>`).join("")
     : `<p class="empty">Nothing to review. Cases the agents cannot settle appear here.</p>`;
@@ -93,8 +107,7 @@ document.getElementById("list").addEventListener("click", async (e) => {
   // A decision is stored with high trust and every later run follows it: confirm before recording.
   if (!confirm(`Record “${what}” for ${row.dataset.sku}?\n\nIt is stored in memory with high trust and the next run follows it. You can change it until then.`)) return;
   b.disabled = true;
-  const r = await fetch("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ recall: row.dataset.recall, sku: row.dataset.sku, verdict: b.dataset.verdict, note: row.querySelector("input").value }) });
+  const r = await api("/api/decide", { recall: row.dataset.recall, sku: row.dataset.sku, verdict: b.dataset.verdict, note: row.querySelector("input").value });
   if (!r.ok) { b.disabled = false; const p = row.closest(".sku").querySelector(".obj[hidden]"); p.textContent = await r.text(); p.hidden = false; return; }
   document.getElementById("list").classList.remove("intro");
   await load();
@@ -102,10 +115,10 @@ document.getElementById("list").addEventListener("click", async (e) => {
   document.getElementById("sum").textContent = `Recorded “${what}” for ${row.dataset.sku}. ` + document.getElementById("sum").textContent;
 });
 async function loadPackets() {
-  const { runId, packets } = await (await fetch("/api/packets")).json();
+  const { runId, packets } = await (await api("/api/packets")).json();
   document.getElementById("packets").innerHTML = packets.length ? packets.map((p) => `<section class="case"><h2>${esc(p.firm || p.recall)}</h2><p class="meta">${esc(p.recall)} · ${esc(p.product || "")}</p>
     <p class="meta">${p.status === "draft" ? `Pull <b>${p.pullUnits}</b> unit(s) in <b>${p.stores}</b> store(s) · ${p.shipNotices} supplier ship notice(s) cited${p.customers ? ` · notice for at most ${p.customers} customer(s)` : ""} · totals match the Auditor's numbers` : `Withheld: ${esc(p.reason)}`}</p>
-    <p class="files">${p.files.map((f) => `<a href="/out/${esc(runId)}/actions/${esc(p.caseId)}/${esc(f)}" target="_blank">${esc(f)}</a>`).join("")}</p>
+    <p class="files">${p.files.map((f) => `<a href="${esc(outDir(runId))}/actions/${esc(p.caseId)}/${esc(f)}" target="_blank">${esc(f)}</a>`).join("")}</p>
     ${p.approval ? `<p class="done">Approved by ${esc(p.approval.by)} at ${esc(p.approval.at.slice(0, 16).replace("T", " "))}. Not sent.</p>`
       : p.status === "draft" ? `<div class="row" data-run="${esc(runId)}" data-case="${esc(p.caseId)}"><label class="sr" for="by-${esc(p.caseId)}">Your name</label><input type="text" id="by-${esc(p.caseId)}" placeholder="Your name"><button class="same" data-approve="1">Approve packet</button></div>` : ""}
     </section>`).join("") : `<p class="empty">No action packets yet. A run drafts one for every recall with our stock or sales.</p>`;
@@ -116,10 +129,12 @@ document.getElementById("packets").addEventListener("click", async (e) => {
   const row = b.closest(".row");
   if (!confirm(`Approve the action packet for ${row.dataset.case}?\n\nThis records your approval. Nothing is sent.`)) return;
   b.disabled = true;
-  const r = await fetch("/api/approve", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ run: row.dataset.run, caseId: row.dataset.case, by: row.querySelector("input").value }) });
+  const r = await api("/api/approve", { run: row.dataset.run, caseId: row.dataset.case, by: row.querySelector("input").value });
   if (!r.ok) { b.disabled = false; alert(await r.text()); return; }
   await loadPackets();
 });
+if (S) { const b = document.createElement("p"); b.className = "meta"; b.style.cssText = "margin:0 0 16px;padding:10px 14px;border-radius:10px;background:var(--card)";
+  b.textContent = S.note; document.querySelector("main").prepend(b); document.querySelector("header a").href = "index.html"; document.querySelector("header a").textContent = "Project page"; }
 load();
 loadPackets();
 </script>
