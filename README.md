@@ -188,6 +188,8 @@ Four suppliers send a 10-digit core (no leading digit, no check digit), a format
 
 A dismissed recall is the dangerous error: recalled stock stays on the shelf. The smaller Lightning model dismisses 76 of 90 covered text matches on its first answer; the Auditor wins back 66 of them. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
 
+**Real public products** ([`eval/REAL.md`](eval/REAL.md)): every barcode printed in the FDA food snapshot was looked up in USDA FoodData Central (CC0) and Open Food Facts (ODbL), giving 95 real products and 97 recall–product pairs, plus 152 real hard negatives (the closest other notice, and other products of the same brand owner). On the barcode path, the one the product uses, the Scout and Investigator settle **93 of 97 by the UPC rule with no model call, and match 0 of 152 negatives**; the other 4 are GTIN-8, EAN-13 or two-zero GTIN-14 prints. With every barcode hidden, the text judge plus Auditor catches 53 of 97, raises 2 false alarms in 152, and sends 20 to a person: real titles are noisier than synthetic ones, so the text path is a safety net, not the main road.
+
 ## Data
 
 - **Live**:
@@ -200,7 +202,7 @@ A dismissed recall is the dangerous error: recalled stock stays on the shelf. Th
 
 ## Limitations
 
-- The retailer data is synthetic. Its barcode quirks (a third of suppliers sending GTIN-14, four sending the UPC without its check digit, four sending a 10-digit core) are planted by `scripts/gen-synthetic.ts`, modelled on real EDI feeds; the Cartographer's code does not know which suppliers they are. Real item masters abbreviate harder, and real lot codes come from receiving scans.
+- The retailer data in the main evaluation is synthetic (the real-product check in `eval/REAL.md` covers FDA food titles and barcodes only). Its barcode quirks (a third of suppliers sending GTIN-14, four sending the UPC without its check digit, four sending a 10-digit core) are planted by `scripts/gen-synthetic.ts`, modelled on real EDI feeds; the Cartographer's code does not know which suppliers they are. Real item masters abbreviate harder, and real lot codes come from receiving scans.
 - A text match rests on one model reading English (Nemotron 3 Ultra by default), and the Auditor's checks are lexical: grounding, item words, lot tokens. Ambiguous cases go to a human instead of being guessed.
 - The Cartographer knows two barcode transforms (leading-zero padding, a dropped check digit); for anything else the model proposes one from a fixed set of string ops and SQL proves it on all of the supplier's rows. A format those ops cannot express (a remapped prefix, a per-row lookup) is still reported as unexplained, and its rows stay with the SKU join.
 - CPSC notices carry no distribution states in our feed view, so the "shipped outside the recall's distribution" caveat only fires for FDA recalls.

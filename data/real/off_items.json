@@ -1,0 +1,1295 @@
+{
+  "source": "Open Food Facts (ODbL), https://world.openfoodfacts.org",
+  "fetched_at": "2026-10-24T23:04:14.726Z",
+  "notices": 333,
+  "noticesWithPrintedUpc": 188,
+  "printedUpcsTried": 528,
+  "uniqueUpcsTried": 285,
+  "found": 95,
+  "uniqueProductsFound": 93,
+  "requests": 289,
+  "requestsFailed": 0,
+  "seconds": 1593,
+  "items": [
+    {
+      "code": "0085315054108",
+      "printedUpc": "085315054108",
+      "recall_number": "H-1258-2026",
+      "product_name": "Sura Tanmen",
+      "brands": "Sun Noodle",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0085315054108",
+      "fetched_at": "2026-10-24T22:39:13.166Z"
+    },
+    {
+      "code": "0100001000297",
+      "printedUpc": "1 00001 00029 7",
+      "recall_number": "H-1192-2026",
+      "product_name": "Spicy Breakfast Burrito",
+      "brands": "Tillamook",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0100001000297",
+      "fetched_at": "2026-10-24T22:39:17.678Z"
+    },
+    {
+      "code": "0194346442706",
+      "printedUpc": "194346442706",
+      "recall_number": "H-1396-2026",
+      "product_name": "Lemon Alfredo Fettuccine",
+      "brands": "bettergoods",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0194346442706",
+      "fetched_at": "2026-10-24T22:39:23.664Z"
+    },
+    {
+      "code": "0011110609021",
+      "printedUpc": "0 11110-60902 1",
+      "recall_number": "H-1230-2026",
+      "product_name": "Medium eggs grade a",
+      "brands": "The Kroger Co.",
+      "quantity": "",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110609021",
+      "fetched_at": "2026-10-24T22:39:25.187Z"
+    },
+    {
+      "code": "0011110609809",
+      "printedUpc": "0 11110-60980 9",
+      "recall_number": "H-1230-2026",
+      "product_name": "Medium Eggs",
+      "brands": "Kroger",
+      "quantity": "",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110609809",
+      "fetched_at": "2026-10-24T22:40:32.488Z"
+    },
+    {
+      "code": "0011110609038",
+      "printedUpc": "0 11110-60903 8",
+      "recall_number": "H-1230-2026",
+      "product_name": "Large Eggs",
+      "brands": "Kroger",
+      "quantity": "50 g",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110609038",
+      "fetched_at": "2026-10-24T22:40:32.698Z"
+    },
+    {
+      "code": "0011110609335",
+      "printedUpc": "0 11110-60933 5",
+      "recall_number": "H-1230-2026",
+      "product_name": "EGGS",
+      "brands": "Kroger",
+      "quantity": "36 oz",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110609335",
+      "fetched_at": "2026-10-24T22:40:34.225Z"
+    },
+    {
+      "code": "0011110609045",
+      "printedUpc": "0 11110-60904 5",
+      "recall_number": "H-1230-2026",
+      "product_name": "Grade A Extra Large Eggs",
+      "brands": "Kroger",
+      "quantity": "27 oz",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110609045",
+      "fetched_at": "2026-10-24T22:40:35.665Z"
+    },
+    {
+      "code": "0011110609052",
+      "printedUpc": "0 11110-60905 2",
+      "recall_number": "H-1230-2026",
+      "product_name": "Jumbo Grade A Eggs",
+      "brands": "Kroger",
+      "quantity": "12 pcs",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs",
+        "en:fresh-eggs",
+        "en:jumbo-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110609052",
+      "fetched_at": "2026-10-24T22:40:37.178Z"
+    },
+    {
+      "code": "0092825095552",
+      "printedUpc": "0 92825-09555 2",
+      "recall_number": "H-1230-2026",
+      "product_name": "Eggs",
+      "brands": "Brookshire's",
+      "quantity": "24 oz",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0092825095552",
+      "fetched_at": "2026-10-24T22:40:40.180Z"
+    },
+    {
+      "code": "0092825095569",
+      "printedUpc": "0 92825-09556 9",
+      "recall_number": "H-1230-2026",
+      "product_name": "large eggs",
+      "brands": "Brookshire's",
+      "quantity": "18 pcs",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs",
+        "en:fresh-eggs",
+        "en:large-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0092825095569",
+      "fetched_at": "2026-10-24T22:40:41.743Z"
+    },
+    {
+      "code": "0092825095637",
+      "printedUpc": "0 92825-09563 7",
+      "recall_number": "H-1230-2026",
+      "product_name": "Farm Fresh Large Eggs",
+      "brands": "",
+      "quantity": "",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0092825095637",
+      "fetched_at": "2026-10-24T22:40:44.904Z"
+    },
+    {
+      "code": "0092825095583",
+      "printedUpc": "0 92825-09558 3",
+      "recall_number": "H-1230-2026",
+      "product_name": "Eggs Jumbo",
+      "brands": "Farm Fresh Brookshire’s Eggs",
+      "quantity": "",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs",
+        "en:fresh-eggs",
+        "en:jumbo-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0092825095583",
+      "fetched_at": "2026-10-24T22:40:47.855Z"
+    },
+    {
+      "code": "0078566200004",
+      "printedUpc": "0 78566-20000 4",
+      "recall_number": "H-1230-2026",
+      "product_name": "Large Egg",
+      "brands": "Country Morning",
+      "quantity": "",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0078566200004",
+      "fetched_at": "2026-10-24T22:40:50.682Z"
+    },
+    {
+      "code": "0688267575778",
+      "printedUpc": "688267575778",
+      "recall_number": "H-1355-2026",
+      "product_name": "Pico de gallo salsa",
+      "brands": "",
+      "quantity": "7 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0688267575778",
+      "fetched_at": "2026-10-24T22:42:11.624Z"
+    },
+    {
+      "code": "0030223075653",
+      "printedUpc": "030223075653",
+      "recall_number": "H-1354-2026",
+      "product_name": "Pineapple Mango Salsa Mild",
+      "brands": "Taylor Farms",
+      "quantity": "10 oz",
+      "categories": [
+        "en:salsa"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0030223075653",
+      "fetched_at": "2026-10-24T22:42:13.132Z"
+    },
+    {
+      "code": "0028989101105",
+      "printedUpc": "028989101105",
+      "recall_number": "H-1129-2026",
+      "product_name": "Buffalo Cnk'n Nuggets",
+      "brands": "Morningstar Farms",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:frozen-foods",
+        "en:meat-alternatives",
+        "en:meat-analogues"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0028989101105",
+      "fetched_at": "2026-10-24T22:43:29.395Z"
+    },
+    {
+      "code": "0850016588067",
+      "printedUpc": "850016588067",
+      "recall_number": "H-1133-2026",
+      "product_name": "Pumpernickel Bagel",
+      "brands": "Boichik",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850016588067",
+      "fetched_at": "2026-10-24T22:43:35.631Z"
+    },
+    {
+      "code": "0815367010780",
+      "printedUpc": "815367010780",
+      "recall_number": "H-1223-2026",
+      "product_name": "Peter rabit",
+      "brands": "",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0815367010780",
+      "fetched_at": "2026-10-24T22:43:38.584Z"
+    },
+    {
+      "code": "0030223073574",
+      "printedUpc": "030223073574",
+      "recall_number": "H-1351-2026",
+      "product_name": "Spicy guacamole",
+      "brands": "Taylor farms",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223073574",
+      "fetched_at": "2026-10-24T22:43:43.146Z"
+    },
+    {
+      "code": "0850073087008",
+      "printedUpc": "8 50073 08700 8",
+      "recall_number": "H-1143-2026",
+      "product_name": "Brown Butter Chocolate Chunk",
+      "brands": "bakr",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850073087008",
+      "fetched_at": "2026-10-24T22:43:50.834Z"
+    },
+    {
+      "code": "0870375005111",
+      "printedUpc": "8 70375 00511 1",
+      "recall_number": "H-1095-2026",
+      "product_name": "5 cheese bread",
+      "brands": "Motor City Pizza Co.",
+      "quantity": "22.43 oz (636g)",
+      "categories": [
+        "en:meals",
+        "en:pizzas-pies-and-quiches",
+        "en:pizzas"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0870375005111",
+      "fetched_at": "2026-10-24T22:44:58.340Z"
+    },
+    {
+      "code": "0870375005098",
+      "printedUpc": "8 70375 00509 8",
+      "recall_number": "H-1095-2026",
+      "product_name": "5cheese bread",
+      "brands": "Motor city",
+      "quantity": "44.86 oz",
+      "categories": [
+        "en:meals",
+        "en:pizzas-pies-and-quiches",
+        "en:pizzas"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0870375005098",
+      "fetched_at": "2026-10-24T22:44:59.517Z"
+    },
+    {
+      "code": "0041548413624",
+      "printedUpc": "041548413624",
+      "recall_number": "H-1265-2026",
+      "product_name": "FRUIT BARS WATERMELON",
+      "brands": "Outshine",
+      "quantity": "15 fl oz",
+      "categories": [
+        "en:desserts",
+        "en:frozen-foods",
+        "en:frozen-desserts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0041548413624",
+      "fetched_at": "2026-10-24T22:45:04.021Z"
+    },
+    {
+      "code": "0650655244825",
+      "printedUpc": "650655244825",
+      "recall_number": "H-1329-2026",
+      "product_name": "Authentic Pounded Yam",
+      "brands": "",
+      "quantity": "32 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0650655244825",
+      "fetched_at": "2026-10-24T22:45:07.033Z"
+    },
+    {
+      "code": "0650655496873",
+      "printedUpc": "650655496873",
+      "recall_number": "H-1329-2026",
+      "product_name": "Ola Ola Authentic Pounded Yam (iyan) Pack of 3 (12 LBS)",
+      "brands": "",
+      "quantity": "64 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0650655496873",
+      "fetched_at": "2026-10-24T22:45:08.615Z"
+    },
+    {
+      "code": "0650655244856",
+      "printedUpc": "650655244856",
+      "recall_number": "H-1329-2026",
+      "product_name": "Pounded yam flour",
+      "brands": "",
+      "quantity": "80 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0650655244856",
+      "fetched_at": "2026-10-24T22:45:10.026Z"
+    },
+    {
+      "code": "0650655244702",
+      "printedUpc": "650655244702",
+      "recall_number": "H-1329-2026",
+      "product_name": "Pounded Yam",
+      "brands": "",
+      "quantity": "160 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0650655244702",
+      "fetched_at": "2026-10-24T22:45:11.575Z"
+    },
+    {
+      "code": "0085239084540",
+      "printedUpc": "0 85239-08454 0",
+      "recall_number": "H-1391-2026",
+      "product_name": "Light Brown Sugar",
+      "brands": "Good & Gather",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0085239084540",
+      "fetched_at": "2026-10-24T22:45:14.562Z"
+    },
+    {
+      "code": "0860864000307",
+      "printedUpc": "8 60864 00030 7",
+      "recall_number": "H-1245-2026",
+      "product_name": "Power play fudge ice cream",
+      "brands": "",
+      "quantity": "",
+      "categories": [
+        "en:desserts",
+        "en:frozen-foods",
+        "en:frozen-desserts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0860864000307",
+      "fetched_at": "2026-10-24T22:45:19.092Z"
+    },
+    {
+      "code": "0030223073581",
+      "printedUpc": "030223073581",
+      "recall_number": "H-1349-2026",
+      "product_name": "Taco Dip",
+      "brands": "Taylor Farms",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223073581",
+      "fetched_at": "2026-10-24T22:46:26.744Z"
+    },
+    {
+      "code": "0850055470149",
+      "printedUpc": "850055470149",
+      "recall_number": "H-1101-2026",
+      "product_name": "Mulberry Fennel Date-Sweetened Chocolate",
+      "brands": "Spring & Mulberry",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850055470149",
+      "fetched_at": "2026-10-24T22:46:29.405Z"
+    },
+    {
+      "code": "0816929000119",
+      "printedUpc": "816929000119",
+      "recall_number": "H-1328-2026",
+      "product_name": "Plant-Based Puffs",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0816929000119",
+      "fetched_at": "2026-10-24T22:47:56.504Z"
+    },
+    {
+      "code": "0815367010780",
+      "printedUpc": "815367010780",
+      "recall_number": "H-1193-2026",
+      "product_name": "Peter rabit",
+      "brands": "",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0815367010780",
+      "fetched_at": "2026-10-24T22:43:38.584Z"
+    },
+    {
+      "code": "0041548244044",
+      "printedUpc": "041548244044",
+      "recall_number": "H-1266-2026",
+      "product_name": "Fruit bars",
+      "brands": "Outshine",
+      "quantity": "",
+      "categories": [
+        "en:desserts",
+        "en:frozen-foods",
+        "en:frozen-desserts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0041548244044",
+      "fetched_at": "2026-10-24T22:48:01.130Z"
+    },
+    {
+      "code": "0030223075639",
+      "printedUpc": "030223075639",
+      "recall_number": "H-1362-2026",
+      "product_name": "Salsa Verde Mild",
+      "brands": "Whole Foods",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223075639",
+      "fetched_at": "2026-10-24T22:48:07.218Z"
+    },
+    {
+      "code": "0681131276344",
+      "printedUpc": "681131276344",
+      "recall_number": "H-1357-2026",
+      "product_name": "Mild Pico De Gallo",
+      "brands": "Walmart",
+      "quantity": "10 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0681131276344",
+      "fetched_at": "2026-10-24T22:48:11.745Z"
+    },
+    {
+      "code": "0681131276351",
+      "printedUpc": "681131276351",
+      "recall_number": "H-1358-2026",
+      "product_name": "Hot Pico De Gallo",
+      "brands": "Walmart",
+      "quantity": "10 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0681131276351",
+      "fetched_at": "2026-10-24T22:48:14.554Z"
+    },
+    {
+      "code": "0073214003280",
+      "printedUpc": "073214003280",
+      "recall_number": "H-0007-2027",
+      "product_name": "Golden Greek Peperoncini",
+      "brands": "Mezzetta",
+      "quantity": "",
+      "categories": [
+        "en:Salted snacks"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0073214003280",
+      "fetched_at": "2026-10-24T22:49:24.988Z"
+    },
+    {
+      "code": "0733163001576",
+      "printedUpc": "733163001576",
+      "recall_number": "H-1244-2026",
+      "product_name": "Yukon Gold Potato Bread",
+      "brands": "Grand Central Bakery, Grand Central Baking Company",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:cereals-and-potatoes",
+        "en:cereals-and-their-products",
+        "en:breads"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0733163001576",
+      "fetched_at": "2026-10-24T22:49:29.538Z"
+    },
+    {
+      "code": "0850055470071",
+      "printedUpc": "850055470071",
+      "recall_number": "H-1104-2026",
+      "product_name": "Cacao Beans Dates Cacao Butter Sea Salt",
+      "brands": "King & Mulberry",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850055470071",
+      "fetched_at": "2026-10-24T22:49:30.971Z"
+    },
+    {
+      "code": "0030223075080",
+      "printedUpc": "030223075080",
+      "recall_number": "H-1363-2026",
+      "product_name": "Salsa Fresca Medium",
+      "brands": "Taylor Farms",
+      "quantity": "12 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223075080",
+      "fetched_at": "2026-10-24T22:49:38.443Z"
+    },
+    {
+      "code": "0194346474004",
+      "printedUpc": "1 94346474004",
+      "recall_number": "H-1271-2026",
+      "product_name": "Tomato Bisque Soup Kit",
+      "brands": "Marketside",
+      "quantity": "14 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0194346474004",
+      "fetched_at": "2026-10-24T22:49:40.014Z"
+    },
+    {
+      "code": "0850055470019",
+      "printedUpc": "850055470019",
+      "recall_number": "H-1099-2026",
+      "product_name": "Chocolate",
+      "brands": "Spring And Mulberry",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850055470019",
+      "fetched_at": "2026-10-24T22:49:41.593Z"
+    },
+    {
+      "code": "0030223075608",
+      "printedUpc": "030223075608",
+      "recall_number": "H-1360-2026",
+      "product_name": "Pico De Gallo Spicy",
+      "brands": "Whole Foods",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223075608",
+      "fetched_at": "2026-10-24T22:50:51.987Z"
+    },
+    {
+      "code": "0078000037982",
+      "printedUpc": "0 78000 03798 2",
+      "recall_number": "H-1397-2026",
+      "product_name": "Tropical",
+      "brands": "7up",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0078000037982",
+      "fetched_at": "2026-10-24T22:50:52.172Z"
+    },
+    {
+      "code": "0850055470026",
+      "printedUpc": "850055470026",
+      "recall_number": "H-1097-2026",
+      "product_name": "Mixed Berry Date-Sweetened Chocolate",
+      "brands": "Spring & Mulberry",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850055470026",
+      "fetched_at": "2026-10-24T22:50:56.744Z"
+    },
+    {
+      "code": "00175029",
+      "printedUpc": "0000000175029",
+      "recall_number": "H-1182-2026",
+      "product_name": "Imitation Crab Meat Sticks",
+      "brands": "Island Pacific",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/00175029",
+      "fetched_at": "2026-10-24T22:50:58.172Z"
+    },
+    {
+      "code": "0042272005833",
+      "printedUpc": "042272005833",
+      "recall_number": "H-1174-2026",
+      "product_name": "Lentil Soup",
+      "brands": "Amy's Organic Soups",
+      "quantity": "14.5 oz",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:fruits-and-vegetables-based-foods",
+        "en:canned-foods",
+        "en:meals",
+        "en:soups",
+        "en:canned-meals",
+        "en:vegetable-soups",
+        "en:canned-soups",
+        "en:reheatable-soups",
+        "en:lentil-soups",
+        "en:reheatable-vegetable-soups"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0042272005833",
+      "fetched_at": "2026-10-24T22:51:02.677Z"
+    },
+    {
+      "code": "0194346442706",
+      "printedUpc": "194346442706",
+      "recall_number": "H-0014-2027",
+      "product_name": "Lemon Alfredo Fettuccine",
+      "brands": "bettergoods",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0194346442706",
+      "fetched_at": "2026-10-24T22:39:23.664Z"
+    },
+    {
+      "code": "0100000010150",
+      "printedUpc": "1 00000 01015 0",
+      "recall_number": "H-1149-2026",
+      "product_name": "Chicken Filet",
+      "brands": "Fresh To You",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0100000010150",
+      "fetched_at": "2026-10-24T22:51:07.252Z"
+    },
+    {
+      "code": "0850055470224",
+      "printedUpc": "850055470224",
+      "recall_number": "H-1105-2026",
+      "product_name": "Spring & Mulberry Coffee",
+      "brands": "Spring & Mulberry",
+      "quantity": "",
+      "categories": [
+        "en:snacks",
+        "en:sweet-snacks",
+        "en:cocoa-and-its-products",
+        "en:chocolates"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0850055470224",
+      "fetched_at": "2026-10-24T22:51:10.200Z"
+    },
+    {
+      "code": "0085239084557",
+      "printedUpc": "0 85239-08455 7",
+      "recall_number": "H-1392-2026",
+      "product_name": "Powdered Sugar",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0085239084557",
+      "fetched_at": "2026-10-24T22:52:20.461Z"
+    },
+    {
+      "code": "0850055470217",
+      "printedUpc": "850055470217",
+      "recall_number": "H-1096-2026",
+      "product_name": "Spring & Mulberry",
+      "brands": "Mint Leaf",
+      "quantity": "",
+      "categories": [
+        "en:snacks",
+        "en:sweet-snacks",
+        "en:cocoa-and-its-products",
+        "en:chocolates"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0850055470217",
+      "fetched_at": "2026-10-24T22:52:25.174Z"
+    },
+    {
+      "code": "0850041392103",
+      "printedUpc": "850041392103",
+      "recall_number": "H-0011-2027",
+      "product_name": "Chocolate Dipped Vanilla Cake",
+      "brands": "Donutful",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850041392103",
+      "fetched_at": "2026-10-24T22:52:26.646Z"
+    },
+    {
+      "code": "0041548610047",
+      "printedUpc": "041548610047",
+      "recall_number": "H-1264-2026",
+      "product_name": "Fruit Bars Strawberry",
+      "brands": "Outshine",
+      "quantity": "",
+      "categories": [
+        "en:desserts",
+        "en:frozen-foods",
+        "en:frozen-desserts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0041548610047",
+      "fetched_at": "2026-10-24T22:52:28.149Z"
+    },
+    {
+      "code": "4056489125846",
+      "printedUpc": "4056489125846",
+      "recall_number": "H-1275-2026",
+      "product_name": "Aprikosenkekse mit Kokosraspeln",
+      "brands": "Eridanous, Lidl",
+      "quantity": "330 g",
+      "categories": [
+        "en:snacks",
+        "en:sweet-snacks",
+        "en:biscuits-and-cakes",
+        "en:biscuits-and-crackers",
+        "en:biscuits",
+        "en:cakes"
+      ],
+      "source": "https://world.openfoodfacts.org/product/4056489125846",
+      "fetched_at": "2026-10-24T22:52:29.651Z"
+    },
+    {
+      "code": "0041548000121",
+      "printedUpc": "041548000121",
+      "recall_number": "H-1268-2026",
+      "product_name": "FRUIT BARS BLACK CHERRY",
+      "brands": "Outshine",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0041548000121",
+      "fetched_at": "2026-10-24T22:53:49.408Z"
+    },
+    {
+      "code": "0850043706465",
+      "printedUpc": "8 50043-70646 5",
+      "recall_number": "H-1398-2026",
+      "product_name": "jalapeño avocado signature salad dressings",
+      "brands": "salata",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850043706465",
+      "fetched_at": "2026-10-24T22:53:50.633Z"
+    },
+    {
+      "code": "0850055470200",
+      "printedUpc": "850055470200",
+      "recall_number": "H-1106-2026",
+      "product_name": "Blood Orange",
+      "brands": "Spring & Mulberry",
+      "quantity": "",
+      "categories": [
+        "en:snacks",
+        "en:sweet-snacks",
+        "en:cocoa-and-its-products",
+        "en:chocolates"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0850055470200",
+      "fetched_at": "2026-10-24T22:53:52.084Z"
+    },
+    {
+      "code": "4056489125839",
+      "printedUpc": "4056489125839",
+      "recall_number": "H-1274-2026",
+      "product_name": "Aprikosenkekse mit Schokostreuseln",
+      "brands": "Eridanous, Lidl",
+      "quantity": "330 g",
+      "categories": [
+        "en:snacks",
+        "en:sweet-snacks",
+        "en:biscuits-and-cakes",
+        "en:biscuits-and-crackers",
+        "en:biscuits",
+        "en:cakes"
+      ],
+      "source": "https://world.openfoodfacts.org/product/4056489125839",
+      "fetched_at": "2026-10-24T22:53:53.569Z"
+    },
+    {
+      "code": "0744473476138",
+      "printedUpc": "744473 476138",
+      "recall_number": "H-1394-2026",
+      "product_name": "So Delicious Salted Caramel Ice Cream",
+      "brands": "So Delicious",
+      "quantity": "",
+      "categories": [
+        "en:desserts",
+        "en:frozen-foods",
+        "en:frozen-desserts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0744473476138",
+      "fetched_at": "2026-10-24T22:53:55.062Z"
+    },
+    {
+      "code": "0628634442166",
+      "printedUpc": "6 28634 44216 6",
+      "recall_number": "H-1330-2026",
+      "product_name": "Broccoli Chips",
+      "brands": "Momchipz",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0628634442166",
+      "fetched_at": "2026-10-24T22:53:56.572Z"
+    },
+    {
+      "code": "0680617100333",
+      "printedUpc": "68061710033",
+      "recall_number": "H-1093-2026",
+      "product_name": "Orange Yogurt Drink (Lassi)",
+      "brands": "Joy",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0680617100333",
+      "fetched_at": "2026-10-24T22:54:01.117Z"
+    },
+    {
+      "code": "0742365002700",
+      "printedUpc": "742365002700",
+      "recall_number": "H-1333-2026",
+      "product_name": "Lowfat milk",
+      "brands": "Horizon Organic, Wwf Operating Company",
+      "quantity": "",
+      "categories": [
+        "en:dairies",
+        "en:milks-liquid-and-powder",
+        "en:milks"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0742365002700",
+      "fetched_at": "2026-10-24T22:54:04.078Z"
+    },
+    {
+      "code": "0742365208867",
+      "printedUpc": "742365208867",
+      "recall_number": "H-1333-2026",
+      "product_name": "Lowfat organic milk box",
+      "brands": "Horizon",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0742365208867",
+      "fetched_at": "2026-10-24T22:54:05.575Z"
+    },
+    {
+      "code": "0850055470002",
+      "printedUpc": "850055470002",
+      "recall_number": "H-1103-2026",
+      "product_name": "Pure Dark Date Sweetened Chocolate",
+      "brands": "Spring & Mulberry",
+      "quantity": "",
+      "categories": [
+        "en:snacks",
+        "en:sweet-snacks",
+        "en:cocoa-and-its-products",
+        "en:chocolates"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0850055470002",
+      "fetched_at": "2026-10-24T22:55:31.008Z"
+    },
+    {
+      "code": "0860013251901",
+      "printedUpc": "860013251901",
+      "recall_number": "H-1137-2026",
+      "product_name": "Organic Infant Formula",
+      "brands": "nara organics",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0860013251901",
+      "fetched_at": "2026-10-24T22:55:34.092Z"
+    },
+    {
+      "code": "0041548816678",
+      "printedUpc": "041548816678",
+      "recall_number": "H-1269-2026",
+      "product_name": "Outshine Fruit Bars",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0041548816678",
+      "fetched_at": "2026-10-24T22:55:38.512Z"
+    },
+    {
+      "code": "0028989100948",
+      "printedUpc": "028989100948",
+      "recall_number": "H-1130-2026",
+      "product_name": "Hot & Spicy Sausage Patties",
+      "brands": "Sweet Earth Farms",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:frozen-foods",
+        "en:meats-and-their-products",
+        "en:meats",
+        "en:frozen-plant-based-foods",
+        "en:meat-alternatives",
+        "en:frozen-meats",
+        "en:meat-analogues",
+        "en:frozen-plant-based-foods-mixes"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0028989100948",
+      "fetched_at": "2026-10-24T22:56:51.930Z"
+    },
+    {
+      "code": "6908791000084",
+      "printedUpc": "6908791000084",
+      "recall_number": "H-1260-2026",
+      "product_name": "宁波汤圆",
+      "brands": "三全",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/6908791000084",
+      "fetched_at": "2026-10-24T22:56:53.433Z"
+    },
+    {
+      "code": "0011110678171",
+      "printedUpc": "011110678171",
+      "recall_number": "H-1346-2026",
+      "product_name": "Roast Beef Sandwich",
+      "brands": "Kroger",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0011110678171",
+      "fetched_at": "2026-10-24T22:56:56.443Z"
+    },
+    {
+      "code": "0212116000007",
+      "printedUpc": "21211600000",
+      "recall_number": "H-1246-2026",
+      "product_name": "Mild Guacamole Dip",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0212116000007",
+      "fetched_at": "2026-10-24T22:56:57.985Z"
+    },
+    {
+      "code": "0850055470040",
+      "printedUpc": "850055470040",
+      "recall_number": "H-1102-2026",
+      "product_name": "Date-sweetened chocolate",
+      "brands": "Spring & mulberry",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850055470040",
+      "fetched_at": "2026-10-24T22:57:05.450Z"
+    },
+    {
+      "code": "0030223075646",
+      "printedUpc": "030223075646",
+      "recall_number": "H-1361-2026",
+      "product_name": "Salsa Roja Medium",
+      "brands": "Taylor Farms Inc.",
+      "quantity": "",
+      "categories": [
+        "en:salsa"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0030223075646",
+      "fetched_at": "2026-10-24T22:57:06.953Z"
+    },
+    {
+      "code": "0681131328951",
+      "printedUpc": "681131328951",
+      "recall_number": "H-1280-2026",
+      "product_name": "Classic Iceberg Salad",
+      "brands": "Marketside",
+      "quantity": "24 oz",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:fruits-and-vegetables-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0681131328951",
+      "fetched_at": "2026-10-24T22:58:14.552Z"
+    },
+    {
+      "code": "0681131328944",
+      "printedUpc": "681131328944",
+      "recall_number": "H-1280-2026",
+      "product_name": "Classic Iceberg Salad",
+      "brands": "Marketside",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:fruits-and-vegetables-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0681131328944",
+      "fetched_at": "2026-10-24T22:58:14.877Z"
+    },
+    {
+      "code": "0681131532099",
+      "printedUpc": "681131532099",
+      "recall_number": "H-1280-2026",
+      "product_name": "SHREDDED ICEBERG LETTUCE",
+      "brands": "MARKETSIDE",
+      "quantity": "16 oz",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:fruits-and-vegetables-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0681131532099",
+      "fetched_at": "2026-10-24T22:58:16.236Z"
+    },
+    {
+      "code": "0681131328968",
+      "printedUpc": "681131328968",
+      "recall_number": "H-1280-2026",
+      "product_name": "Shredded Iceberg Lettuce",
+      "brands": "Marketside",
+      "quantity": "8 oz",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:fruits-and-vegetables-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0681131328968",
+      "fetched_at": "2026-10-24T22:58:17.734Z"
+    },
+    {
+      "code": "0087906000075",
+      "printedUpc": "0 87906-00007 5",
+      "recall_number": "H-1340-2026",
+      "product_name": "River Valley Sprouts",
+      "brands": "",
+      "quantity": "5 oz",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0087906000075",
+      "fetched_at": "2026-10-24T22:58:20.824Z"
+    },
+    {
+      "code": "0850011788769",
+      "printedUpc": "85001178876",
+      "recall_number": "H-1253-2026",
+      "product_name": "Mild Pico De Gallo",
+      "brands": "Soupergirl",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0850011788769",
+      "fetched_at": "2026-10-24T22:58:22.241Z"
+    },
+    {
+      "code": "0075465559127",
+      "printedUpc": "0 75465 55912 7",
+      "recall_number": "H-0002-2027",
+      "product_name": "Living Alfalfa Sprouts",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0075465559127",
+      "fetched_at": "2026-10-24T22:58:25.258Z"
+    },
+    {
+      "code": "0838796001051",
+      "printedUpc": "8 38796 00105 1",
+      "recall_number": "H-1390-2026",
+      "product_name": "Broccoli Sprouts",
+      "brands": "",
+      "quantity": "4 oz",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:fruits-and-vegetables-based-foods",
+        "en:vegetable-based-foods-and-beverages",
+        "en:vegetables-based-foods"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0838796001051",
+      "fetched_at": "2026-10-24T22:58:28.251Z"
+    },
+    {
+      "code": "0011110797704",
+      "printedUpc": "0 11110-79770 4",
+      "recall_number": "H-1229-2026",
+      "product_name": "Natural Large Brown Eggs Grain Fed",
+      "brands": "Simple Truth",
+      "quantity": "24 oz",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110797704",
+      "fetched_at": "2026-10-24T22:58:34.277Z"
+    },
+    {
+      "code": "0011110893109",
+      "printedUpc": "0 11110-89310 9",
+      "recall_number": "H-1229-2026",
+      "product_name": "Large Brown Eggs",
+      "brands": "simple truth",
+      "quantity": "36 oz",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110893109",
+      "fetched_at": "2026-10-24T22:58:35.849Z"
+    },
+    {
+      "code": "0011110150974",
+      "printedUpc": "0 11110-15097 4",
+      "recall_number": "H-1229-2026",
+      "product_name": "Eggs - Organic, Cage Free, Brown",
+      "brands": "Kroger Simple Truth",
+      "quantity": "0 oz",
+      "categories": [
+        "en:eggs-and-their-products",
+        "en:farming-products",
+        "en:eggs",
+        "en:chicken-eggs",
+        "en:free-range-chicken-eggs"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0011110150974",
+      "fetched_at": "2026-10-24T22:59:43.012Z"
+    },
+    {
+      "code": "0030223075097",
+      "printedUpc": "030223075097",
+      "recall_number": "H-1359-2026",
+      "product_name": "Pico",
+      "brands": "Whole Foods",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223075097",
+      "fetched_at": "2026-10-24T22:59:44.713Z"
+    },
+    {
+      "code": "0041548612041",
+      "printedUpc": "041548612041",
+      "recall_number": "H-1267-2026",
+      "product_name": "Fruit bars, tangerine",
+      "brands": "Outshine",
+      "quantity": "",
+      "categories": [
+        "en:desserts",
+        "en:frozen-foods",
+        "en:frozen-desserts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0041548612041",
+      "fetched_at": "2026-10-24T22:59:46.698Z"
+    },
+    {
+      "code": "0891551000928",
+      "printedUpc": "8 91551 00092 8",
+      "recall_number": "H-1336-2026",
+      "product_name": "Moringa Powder",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0891551000928",
+      "fetched_at": "2026-10-24T22:59:52.228Z"
+    },
+    {
+      "code": "0070784023144",
+      "printedUpc": "070784023144",
+      "recall_number": "H-1332-2026",
+      "product_name": "Greek Nonfat Yogurt Vanilla",
+      "brands": "Tops",
+      "quantity": "",
+      "categories": [
+        "en:dairies",
+        "en:fermented-foods",
+        "en:desserts",
+        "en:fermented-milk-products",
+        "en:dairy-desserts",
+        "en:fermented-dairy-desserts",
+        "en:yogurts"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0070784023144",
+      "fetched_at": "2026-10-24T23:01:30.973Z"
+    },
+    {
+      "code": "0194346207961",
+      "printedUpc": "194346207961",
+      "recall_number": "H-1273-2026",
+      "product_name": "Pistachio Nut Butter",
+      "brands": "bettergoods",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:spreads",
+        "en:plant-based-spreads",
+        "en:nuts-and-their-products",
+        "en:oilseed-purees",
+        "en:nut-butters"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0194346207961",
+      "fetched_at": "2026-10-24T23:02:45.814Z"
+    },
+    {
+      "code": "0030223073543",
+      "printedUpc": "030223073543",
+      "recall_number": "H-1353-2026",
+      "product_name": "Mango Pico De Gallo",
+      "brands": "Taylor Farms",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0030223073543",
+      "fetched_at": "2026-10-24T23:02:50.324Z"
+    },
+    {
+      "code": "0070381100149",
+      "printedUpc": "0-70381-10014-9",
+      "recall_number": "H-1142-2026",
+      "product_name": "Salad pasta elegance",
+      "brands": "",
+      "quantity": "",
+      "categories": [],
+      "source": "https://world.openfoodfacts.org/product/0070381100149",
+      "fetched_at": "2026-10-24T23:02:56.411Z"
+    },
+    {
+      "code": "0070381100132",
+      "printedUpc": "0-70381-10013-2",
+      "recall_number": "H-1142-2026",
+      "product_name": "Johnny's, Salad & Pasta Elegance",
+      "brands": "Johnny's Fine Foods Inc.",
+      "quantity": "",
+      "categories": [
+        "en:condiments",
+        "en:Groceries"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0070381100132",
+      "fetched_at": "2026-10-24T23:02:57.825Z"
+    },
+    {
+      "code": "0073171003163",
+      "printedUpc": "07317100316",
+      "recall_number": "H-1118-2026",
+      "product_name": "Sunflower seeds",
+      "brands": "",
+      "quantity": "",
+      "categories": [
+        "en:plant-based-foods-and-beverages",
+        "en:plant-based-foods",
+        "en:seeds",
+        "en:sunflower-seeds-and-their-products",
+        "en:sunflower-seeds"
+      ],
+      "source": "https://world.openfoodfacts.org/product/0073171003163",
+      "fetched_at": "2026-10-24T23:04:14.726Z"
+    }
+  ]
+}

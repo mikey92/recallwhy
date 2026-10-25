@@ -36,6 +36,10 @@ The hosted model rate-limits per minute. With three retries, 60 of 522 calls fai
 
 The 3 remaining wrongly dismissed pairs are generator artefacts more than model errors: one SKU's barcode was derived wrongly from the notice's GTIN (`WINFIELD'S CWB 8OZ`, 008100798339 vs the notice's 00810079833030), and two generated titles name no product at all (`LIGHT-UP CHILDREN'S TOYS`, `CORDLESS VACUUM CLEANERS WITH LITHIUM-ION` against a notice listing model numbers). We left the data as it is rather than fix it to suit the model.
 
+## Real public products (25 Oct 2026)
+
+The synthetic titles above are built from notice text. [`REAL.md`](REAL.md) repeats the question on 95 real products from USDA FoodData Central and Open Food Facts whose barcodes FDA notices print (97 positives, 152 real hard negatives; `npx tsx eval/real-items.ts`). Barcode path: 93/97 settled by the UPC rule without a model, 0/152 negatives matched. Barcode hidden, Ultra judge plus Auditor: 53/97 caught, 29 dismissed, 2/152 false alarms, 20 to a person.
+
 ## Earlier runs (21 Oct, older prompt, data and Auditor — not comparable with the table above)
 
 | Judge model (via the one injected generator) | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Time |

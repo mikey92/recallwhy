@@ -14,7 +14,7 @@ Every week U.S. regulators publish dozens of recall notices (517 CPSC and FDA no
 - The **Auditor** can block it: it re-checks the live notice in Zetaris, requires quotes, lot codes, product words and package sizes to be in the notice, rejects a dismissal whose own quote names our product, re-derives every number with its own SQL, and confirms lots through the supplier's ship notices by barcode. After two failed revisions a case goes to a human.
 - The **Briefer** writes the action brief only from the World Model context, where every fact carries its source query.
 
-Human decisions go into Meterless H-MEM with high trust, and the next run follows them. The retailer is synthetic; its barcode quirks (GTIN-14 padding, a dropped check digit, a 10-digit core) are planted by the generator, modelled on real EDI feeds.
+Human decisions go into Meterless H-MEM with high trust, and the next run follows them. The retailer is synthetic; its barcode quirks (GTIN-14 padding, a dropped check digit, a 10-digit core) are planted by the generator, modelled on real EDI feeds. On 95 real products from USDA FoodData Central and Open Food Facts whose barcodes FDA notices print, the barcode path settles 93 of 97 recalls by rule with no model call and matches 0 of 152 real hard negatives (`eval/REAL.md`).
 
 **Repository:** https://github.com/mikey92/recallwhy
 

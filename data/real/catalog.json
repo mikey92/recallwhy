@@ -1,0 +1,1895 @@
+{
+  "builtAt": "2026-10-25T04:45:15.627Z",
+  "sources": [
+    "USDA FoodData Central Branded Foods (CC0)",
+    "Open Food Facts (ODbL)"
+  ],
+  "fdcDir": "~/Downloads/fdc/FoodData_Central_branded_food_csv_2026-04-30",
+  "offFile": "data/real/off_items.json",
+  "counts": {
+    "printedKeys": 365,
+    "fdcPositives": 30,
+    "offOnlyPositives": 65,
+    "items": 95,
+    "sameBrandNegatives": 58,
+    "itemsWithSameBrandNegative": 29
+  },
+  "items": [
+    {
+      "id": "FDC-2014258",
+      "source": "fdc",
+      "upc": "733163001576",
+      "title": "GRAND CENTRAL BAKING COMPANY, RUSTIC BREADS 20 oz",
+      "brand": "The Grand Central Bakery, Inc.",
+      "brandName": "GRAND CENTRAL BAKING COMPANY",
+      "category": "Breads & Buns",
+      "packageWeight": "20 oz/568 g",
+      "fdcId": "2014258",
+      "url": "https://fdc.nal.usda.gov/food-details/2014258/nutrients",
+      "printedUpc": "733163001576",
+      "recall_numbers": [
+        "H-1244-2026"
+      ]
+    },
+    {
+      "id": "FDC-2110052",
+      "source": "fdc",
+      "upc": "041548413624",
+      "title": "WATERMELON FRUIT ICE BARS, WATERMELON 14.7 FL OZ",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Ice Cream & Frozen Yogurt",
+      "packageWeight": "14.7 FL OZ/435 mL",
+      "fdcId": "2110052",
+      "url": "https://fdc.nal.usda.gov/food-details/2110052/nutrients",
+      "printedUpc": "041548413624",
+      "recall_numbers": [
+        "H-1265-2026"
+      ]
+    },
+    {
+      "id": "FDC-2213773",
+      "source": "fdc",
+      "upc": "070784023144",
+      "title": "VANILLA BLENDED GREEK NONFAT YOGURT, VANILLA 32 oz",
+      "brand": "Tops Markets, LLC",
+      "brandName": "TOPS",
+      "category": "Yogurt",
+      "packageWeight": "32 oz/2 lbs/907 g",
+      "fdcId": "2213773",
+      "url": "https://fdc.nal.usda.gov/food-details/2213773/nutrients",
+      "printedUpc": "070784023144",
+      "recall_numbers": [
+        "H-1332-2026"
+      ]
+    },
+    {
+      "id": "FDC-2279026",
+      "source": "fdc",
+      "upc": "681131276344",
+      "title": "MILD PICO DE GALLO, MILD 10 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "FRESHNESS GUARANTEED",
+      "category": "Dips & Salsa",
+      "packageWeight": "10 oz/284 g",
+      "fdcId": "2279026",
+      "url": "https://fdc.nal.usda.gov/food-details/2279026/nutrients",
+      "printedUpc": "681131276344",
+      "recall_numbers": [
+        "H-1357-2026"
+      ]
+    },
+    {
+      "id": "FDC-2279027",
+      "source": "fdc",
+      "upc": "681131276351",
+      "title": "HOT PICO DE GALLO, HOT 10 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "FRESHNESS GUARANTEED",
+      "category": "Dips & Salsa",
+      "packageWeight": "10 oz/283 g",
+      "fdcId": "2279027",
+      "url": "https://fdc.nal.usda.gov/food-details/2279027/nutrients",
+      "printedUpc": "681131276351",
+      "recall_numbers": [
+        "H-1358-2026"
+      ]
+    },
+    {
+      "id": "FDC-2306432",
+      "source": "fdc",
+      "upc": "041548816678",
+      "title": "ASSORTED FRUIT ICE BARS, STRAWBERRY PINEAPPLE GRAPE TANGERINE 58.8 FL OZ",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Ice Cream & Frozen Yogurt",
+      "packageWeight": "58.8 FL OZ/1.74 L",
+      "fdcId": "2306432",
+      "url": "https://fdc.nal.usda.gov/food-details/2306432/nutrients",
+      "printedUpc": "041548816678",
+      "recall_numbers": [
+        "H-1269-2026"
+      ]
+    },
+    {
+      "id": "FDC-2309190",
+      "source": "fdc",
+      "upc": "681131328944",
+      "title": "CLASSIC ICEBERG LETTUCE, CARROTS, RED CABBAGE SALAD, CLASSIC ICEBERG 12 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pre-Packaged Fruit & Vegetables",
+      "packageWeight": "12 oz/340 g",
+      "fdcId": "2309190",
+      "url": "https://fdc.nal.usda.gov/food-details/2309190/nutrients",
+      "printedUpc": "681131328944",
+      "recall_numbers": [
+        "H-1280-2026"
+      ]
+    },
+    {
+      "id": "FDC-2309211",
+      "source": "fdc",
+      "upc": "681131328951",
+      "title": "CLASSIC ICEBERG LETTUCE, CARROTS, RED CABBAGE SALAD, CLASSIC ICEBERG 24 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pre-Packaged Fruit & Vegetables",
+      "packageWeight": "24 oz/680 g",
+      "fdcId": "2309211",
+      "url": "https://fdc.nal.usda.gov/food-details/2309211/nutrients",
+      "printedUpc": "681131328951",
+      "recall_numbers": [
+        "H-1280-2026"
+      ]
+    },
+    {
+      "id": "FDC-2309213",
+      "source": "fdc",
+      "upc": "681131532099",
+      "title": "ICEBERG SHREDDED LETTUCE, ICEBERG 16 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pre-Packaged Fruit & Vegetables",
+      "packageWeight": "16 oz/1 lbs/454 g",
+      "fdcId": "2309213",
+      "url": "https://fdc.nal.usda.gov/food-details/2309213/nutrients",
+      "printedUpc": "681131532099",
+      "recall_numbers": [
+        "H-1280-2026"
+      ]
+    },
+    {
+      "id": "FDC-2309421",
+      "source": "fdc",
+      "upc": "681131328968",
+      "title": "ICEBERG SHREDDED LETTUCE, ICEBERG 8 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pre-Packaged Fruit & Vegetables",
+      "packageWeight": "8 oz/227 g",
+      "fdcId": "2309421",
+      "url": "https://fdc.nal.usda.gov/food-details/2309421/nutrients",
+      "printedUpc": "681131328968",
+      "recall_numbers": [
+        "H-1280-2026"
+      ]
+    },
+    {
+      "id": "FDC-2412860",
+      "source": "fdc",
+      "upc": "042272005833",
+      "title": "LENTIL LIGHT IN SODIUM ORGANIC SOUPS, LENTIL 14.5 OZ.",
+      "brand": "Amy's Kitchen Inc.",
+      "brandName": "AMY'S",
+      "category": "Canned Soup",
+      "packageWeight": "14.5 OZ./411 g",
+      "fdcId": "2412860",
+      "url": "https://fdc.nal.usda.gov/food-details/2412860/nutrients",
+      "printedUpc": "042272005833",
+      "recall_numbers": [
+        "H-1174-2026"
+      ]
+    },
+    {
+      "id": "FDC-2416521",
+      "source": "fdc",
+      "upc": "870375005111",
+      "title": "5 CHEESE BREAD A THICK, CRISPY CRUST TOPPED EDGE TO EDGE WITH MOZZARELLA, PARMESAN, ASIAGO, ROMANO AND CHEDDAR CHEESES AND PARMESAN CHEESE SAUCE DETROIT-STYLE DEEP DISH CHEESE BREAD, 5 CHEESE BREAD 22.43 oz",
+      "brand": "Champion Foods, LLC",
+      "brandName": "MOTOR CITY PIZZA CO.",
+      "category": "Frozen Bread & Dough",
+      "packageWeight": "22.43 oz/636 g",
+      "fdcId": "2416521",
+      "url": "https://fdc.nal.usda.gov/food-details/2416521/nutrients",
+      "printedUpc": "8 70375 00511 1",
+      "recall_numbers": [
+        "H-1095-2026"
+      ]
+    },
+    {
+      "id": "FDC-2543473",
+      "source": "fdc",
+      "upc": "041548612041",
+      "title": "TANGERINE FRUIT ICE BARS, TANGERINE 14.7 FL OZ",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Ice Cream & Frozen Yogurt",
+      "packageWeight": "14.7 FL OZ/435 mL",
+      "fdcId": "2543473",
+      "url": "https://fdc.nal.usda.gov/food-details/2543473/nutrients",
+      "printedUpc": "041548612041",
+      "recall_numbers": [
+        "H-1267-2026"
+      ]
+    },
+    {
+      "id": "FDC-2576964",
+      "source": "fdc",
+      "upc": "041548244044",
+      "title": "GRAPE FRUIT ICE BARS, GRAPE 14.7 fl oz",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Ice Cream & Frozen Yogurt",
+      "packageWeight": "14.7 fl oz/435 mL",
+      "fdcId": "2576964",
+      "url": "https://fdc.nal.usda.gov/food-details/2576964/nutrients",
+      "printedUpc": "041548244044",
+      "recall_numbers": [
+        "H-1266-2026"
+      ]
+    },
+    {
+      "id": "FDC-2595345",
+      "source": "fdc",
+      "upc": "028989101105",
+      "title": "MORNINGSTAR FARMS VEGGITIZERS VEGGIE BUFFALO WINGS, 10.5 OZ",
+      "brand": "Kellogg Company",
+      "brandName": "MORNINGSTAR FARMS",
+      "category": "Frozen Dinners & Entrees",
+      "packageWeight": "10.5 oz",
+      "fdcId": "2595345",
+      "url": "https://fdc.nal.usda.gov/food-details/2595345/nutrients",
+      "printedUpc": "028989101105",
+      "recall_numbers": [
+        "H-1129-2026"
+      ]
+    },
+    {
+      "id": "FDC-2605640",
+      "source": "fdc",
+      "upc": "085239084557",
+      "title": "POWDERED SUGAR 2 lbs",
+      "brand": "Target Stores",
+      "brandName": "GOOD & GATHER",
+      "category": "Granulated, Brown & Powdered Sugar",
+      "packageWeight": "2 lbs/32 oz/907 g",
+      "fdcId": "2605640",
+      "url": "https://fdc.nal.usda.gov/food-details/2605640/nutrients",
+      "printedUpc": "0 85239-08455 7",
+      "recall_numbers": [
+        "H-1392-2026"
+      ]
+    },
+    {
+      "id": "FDC-2616583",
+      "source": "fdc",
+      "upc": "073171003163",
+      "title": "GEORGE J. HOWE COMPANY SUNFLOWER SEEDS, 11 OZ",
+      "brand": "George J. Howe Company",
+      "brandName": "GEORGE J. HOWE COMPANY",
+      "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+      "packageWeight": "11 oz",
+      "fdcId": "2616583",
+      "url": "https://fdc.nal.usda.gov/food-details/2616583/nutrients",
+      "printedUpc": "07317100316",
+      "recall_numbers": [
+        "H-1118-2026"
+      ]
+    },
+    {
+      "id": "FDC-2616584",
+      "source": "fdc",
+      "upc": "073171003200",
+      "title": "FRESH ROASTED SUNFLOWER SEEDS 11 oz",
+      "brand": "George J. Howe Company",
+      "brandName": "GEORGE J. HOWE COMPANY",
+      "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+      "packageWeight": "11 oz",
+      "fdcId": "2616584",
+      "url": "https://fdc.nal.usda.gov/food-details/2616584/nutrients",
+      "printedUpc": "07317100320",
+      "recall_numbers": [
+        "H-1119-2026"
+      ]
+    },
+    {
+      "id": "FDC-2623608",
+      "source": "fdc",
+      "upc": "742365002700",
+      "title": "CHOCOLATE ORGANIC LOWFAT MILK, CHOCOLATE 8 fl oz",
+      "brand": "Danone US, LLC",
+      "brandName": "HORIZON",
+      "category": "Milk",
+      "packageWeight": "8 fl oz",
+      "fdcId": "2623608",
+      "url": "https://fdc.nal.usda.gov/food-details/2623608/nutrients",
+      "printedUpc": "742365002700",
+      "recall_numbers": [
+        "H-1333-2026"
+      ]
+    },
+    {
+      "id": "FDC-2624413",
+      "source": "fdc",
+      "upc": "083791520148",
+      "title": "SALT & VINEGAR POTATO CHIPS, SALT & VINEGAR 2 oz",
+      "brand": "UTZ Quality Foods, LLC",
+      "brandName": "\"DIRTY\"",
+      "category": "Chips, Pretzels & Snacks",
+      "packageWeight": "2 oz/56.7 g",
+      "fdcId": "2624413",
+      "url": "https://fdc.nal.usda.gov/food-details/2624413/nutrients",
+      "printedUpc": "83791520148",
+      "recall_numbers": [
+        "H-1114-2026"
+      ]
+    },
+    {
+      "id": "FDC-2625108",
+      "source": "fdc",
+      "upc": "085239084540",
+      "title": "LIGHT BROWN SUGAR, LIGHT BROWN 2 lbs",
+      "brand": "Target Stores",
+      "brandName": "GOOD & GATHER",
+      "category": "Granulated, Brown & Powdered Sugar",
+      "packageWeight": "2 lbs/32 oz/907 g",
+      "fdcId": "2625108",
+      "url": "https://fdc.nal.usda.gov/food-details/2625108/nutrients",
+      "printedUpc": "0 85239-08454 0",
+      "recall_numbers": [
+        "H-1391-2026"
+      ]
+    },
+    {
+      "id": "FDC-2627701",
+      "source": "fdc",
+      "upc": "742365208867",
+      "title": "CHOCOLATE ORGANIC LOWFAT MILK, CHOCOLATE 144 fl oz",
+      "brand": "Danone US, LLC",
+      "brandName": "HORIZON ORGANIC",
+      "category": "Milk",
+      "packageWeight": "144 fl oz/4.5 Quart/4.2 L",
+      "fdcId": "2627701",
+      "url": "https://fdc.nal.usda.gov/food-details/2627701/nutrients",
+      "printedUpc": "742365208867",
+      "recall_numbers": [
+        "H-1333-2026"
+      ]
+    },
+    {
+      "id": "FDC-2628149",
+      "source": "fdc",
+      "upc": "815367010780",
+      "title": "BANANA & STRAWBERRY ORGANIC FRUIT PUREE, BANANA & STRAWBERRY 4 oz",
+      "brand": "Rennan J inc",
+      "brandName": "PUMPKIN TREE",
+      "category": "Wholesome Snacks",
+      "packageWeight": "4 oz/113 g",
+      "fdcId": "2628149",
+      "url": "https://fdc.nal.usda.gov/food-details/2628149/nutrients",
+      "printedUpc": "815367010780",
+      "recall_numbers": [
+        "H-1193-2026",
+        "H-1223-2026"
+      ]
+    },
+    {
+      "id": "FDC-2672780",
+      "source": "fdc",
+      "upc": "041548610047",
+      "title": "STRAWBERRY FRUIT ICE BARS, STRAWBERRY 14.7 FL OZ",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Ice Cream & Frozen Yogurt",
+      "packageWeight": "14.7 FL OZ/435 mL",
+      "fdcId": "2672780",
+      "url": "https://fdc.nal.usda.gov/food-details/2672780/nutrients",
+      "printedUpc": "041548610047",
+      "recall_numbers": [
+        "H-1264-2026"
+      ]
+    },
+    {
+      "id": "FDC-2676856",
+      "source": "fdc",
+      "upc": "073214003280",
+      "title": "GOLDEN GREEK PEPERONCINI 32 FL OZ",
+      "brand": "G L Mezzetta, Inc.",
+      "brandName": "MEZZETTA",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "packageWeight": "32 FL OZ/946 mL",
+      "fdcId": "2676856",
+      "url": "https://fdc.nal.usda.gov/food-details/2676856/nutrients",
+      "printedUpc": "073214003280",
+      "recall_numbers": [
+        "H-0007-2027"
+      ]
+    },
+    {
+      "id": "FDC-2740137",
+      "source": "fdc",
+      "upc": "028989100948",
+      "title": "Morningstar Farms Breakfast Hot & Spicy Sausage Patties 8oz",
+      "brand": "Kellogg Company US",
+      "brandName": "Morningstar Farms",
+      "category": "Vegetable Based Products / Meals",
+      "packageWeight": "8 ONZ",
+      "fdcId": "2740137",
+      "url": "https://fdc.nal.usda.gov/food-details/2740137/nutrients",
+      "printedUpc": "028989100948",
+      "recall_numbers": [
+        "H-1130-2026"
+      ]
+    },
+    {
+      "id": "FDC-2751800",
+      "source": "fdc",
+      "upc": "744473476138",
+      "title": "So Delicious SD FRZN CASH SALTED CARM CLUST 16OZ",
+      "brand": "Danone US LLC",
+      "brandName": "So Delicious",
+      "category": "Desserts/Dessert Sauces/Toppings",
+      "packageWeight": "16 ONZ",
+      "fdcId": "2751800",
+      "url": "https://fdc.nal.usda.gov/food-details/2751800/nutrients",
+      "printedUpc": "744473 476138",
+      "recall_numbers": [
+        "H-1394-2026"
+      ]
+    },
+    {
+      "id": "FDC-392072",
+      "source": "fdc",
+      "upc": "070381100132",
+      "title": "JOHNNY'S, SALAD & PASTA ELEGANCE",
+      "brand": "Johnny's Fine Foods Inc.",
+      "category": "Seasoning Mixes, Salts, Marinades & Tenderizers",
+      "fdcId": "392072",
+      "url": "https://fdc.nal.usda.gov/food-details/392072/nutrients",
+      "printedUpc": "0-70381-10013-2",
+      "recall_numbers": [
+        "H-1142-2026"
+      ]
+    },
+    {
+      "id": "FDC-517166",
+      "source": "fdc",
+      "upc": "860864000307",
+      "title": "POWER PLAY FUDGE ICE CREAM",
+      "brand": "POWER PLAY FUDGE",
+      "category": "Ice Cream & Frozen Yogurt",
+      "fdcId": "517166",
+      "url": "https://fdc.nal.usda.gov/food-details/517166/nutrients",
+      "printedUpc": "8 60864 00030 7",
+      "recall_numbers": [
+        "H-1245-2026"
+      ]
+    },
+    {
+      "id": "FDC-579779",
+      "source": "fdc",
+      "upc": "092825095637",
+      "title": "FARM FRESH LARGE EGGS",
+      "brand": "SUPER 1 FOODS",
+      "category": "Eggs & Egg Substitutes",
+      "fdcId": "579779",
+      "url": "https://fdc.nal.usda.gov/food-details/579779/nutrients",
+      "printedUpc": "0 92825-09563 7",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-e58fccc2",
+      "source": "off",
+      "upc": "085315054108",
+      "title": "Sura Tanmen",
+      "brand": "Sun Noodle",
+      "offCode": "0085315054108",
+      "url": "https://world.openfoodfacts.org/product/0085315054108",
+      "printedUpc": "085315054108",
+      "recall_numbers": [
+        "H-1258-2026"
+      ]
+    },
+    {
+      "id": "OFF-644f2f81",
+      "source": "off",
+      "upc": "100001000297",
+      "title": "Spicy Breakfast Burrito",
+      "brand": "Tillamook",
+      "offCode": "0100001000297",
+      "url": "https://world.openfoodfacts.org/product/0100001000297",
+      "printedUpc": "1 00001 00029 7",
+      "recall_numbers": [
+        "H-1192-2026"
+      ]
+    },
+    {
+      "id": "OFF-8b0a1c14",
+      "source": "off",
+      "upc": "194346442706",
+      "title": "Lemon Alfredo Fettuccine",
+      "brand": "bettergoods",
+      "offCode": "0194346442706",
+      "url": "https://world.openfoodfacts.org/product/0194346442706",
+      "printedUpc": "194346442706",
+      "recall_numbers": [
+        "H-0014-2027",
+        "H-1396-2026"
+      ]
+    },
+    {
+      "id": "OFF-97dcc9ba",
+      "source": "off",
+      "upc": "011110609021",
+      "title": "Medium eggs grade a",
+      "brand": "The Kroger Co.",
+      "offCode": "0011110609021",
+      "url": "https://world.openfoodfacts.org/product/0011110609021",
+      "printedUpc": "0 11110-60902 1",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-8a616ac7",
+      "source": "off",
+      "upc": "011110609809",
+      "title": "Medium Eggs",
+      "brand": "Kroger",
+      "offCode": "0011110609809",
+      "url": "https://world.openfoodfacts.org/product/0011110609809",
+      "printedUpc": "0 11110-60980 9",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-92192bf4",
+      "source": "off",
+      "upc": "011110609038",
+      "title": "Large Eggs 50 g",
+      "brand": "Kroger",
+      "offCode": "0011110609038",
+      "url": "https://world.openfoodfacts.org/product/0011110609038",
+      "printedUpc": "0 11110-60903 8",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-54645c09",
+      "source": "off",
+      "upc": "011110609335",
+      "title": "EGGS 36 oz",
+      "brand": "Kroger",
+      "offCode": "0011110609335",
+      "url": "https://world.openfoodfacts.org/product/0011110609335",
+      "printedUpc": "0 11110-60933 5",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-a876cc1b",
+      "source": "off",
+      "upc": "011110609045",
+      "title": "Grade A Extra Large Eggs 27 oz",
+      "brand": "Kroger",
+      "offCode": "0011110609045",
+      "url": "https://world.openfoodfacts.org/product/0011110609045",
+      "printedUpc": "0 11110-60904 5",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-0078b0b1",
+      "source": "off",
+      "upc": "011110609052",
+      "title": "Jumbo Grade A Eggs 12 pcs",
+      "brand": "Kroger",
+      "offCode": "0011110609052",
+      "url": "https://world.openfoodfacts.org/product/0011110609052",
+      "printedUpc": "0 11110-60905 2",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-59b4754b",
+      "source": "off",
+      "upc": "092825095552",
+      "title": "Eggs 24 oz",
+      "brand": "Brookshire's",
+      "offCode": "0092825095552",
+      "url": "https://world.openfoodfacts.org/product/0092825095552",
+      "printedUpc": "0 92825-09555 2",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-cfe131d3",
+      "source": "off",
+      "upc": "092825095569",
+      "title": "large eggs 18 pcs",
+      "brand": "Brookshire's",
+      "offCode": "0092825095569",
+      "url": "https://world.openfoodfacts.org/product/0092825095569",
+      "printedUpc": "0 92825-09556 9",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-d93cb255",
+      "source": "off",
+      "upc": "092825095583",
+      "title": "Eggs Jumbo",
+      "brand": "Farm Fresh Brookshire’s Eggs",
+      "offCode": "0092825095583",
+      "url": "https://world.openfoodfacts.org/product/0092825095583",
+      "printedUpc": "0 92825-09558 3",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-2c12c731",
+      "source": "off",
+      "upc": "078566200004",
+      "title": "Large Egg",
+      "brand": "Country Morning",
+      "offCode": "0078566200004",
+      "url": "https://world.openfoodfacts.org/product/0078566200004",
+      "printedUpc": "0 78566-20000 4",
+      "recall_numbers": [
+        "H-1230-2026"
+      ]
+    },
+    {
+      "id": "OFF-880a1000",
+      "source": "off",
+      "upc": "688267575778",
+      "title": "Pico de gallo salsa 7 oz",
+      "brand": "(unknown)",
+      "offCode": "0688267575778",
+      "url": "https://world.openfoodfacts.org/product/0688267575778",
+      "printedUpc": "688267575778",
+      "recall_numbers": [
+        "H-1355-2026"
+      ]
+    },
+    {
+      "id": "OFF-185761f7",
+      "source": "off",
+      "upc": "030223075653",
+      "title": "Pineapple Mango Salsa Mild 10 oz",
+      "brand": "Taylor Farms",
+      "offCode": "0030223075653",
+      "url": "https://world.openfoodfacts.org/product/0030223075653",
+      "printedUpc": "030223075653",
+      "recall_numbers": [
+        "H-1354-2026"
+      ]
+    },
+    {
+      "id": "OFF-bb3b2f27",
+      "source": "off",
+      "upc": "850016588067",
+      "title": "Pumpernickel Bagel",
+      "brand": "Boichik",
+      "offCode": "0850016588067",
+      "url": "https://world.openfoodfacts.org/product/0850016588067",
+      "printedUpc": "850016588067",
+      "recall_numbers": [
+        "H-1133-2026"
+      ]
+    },
+    {
+      "id": "OFF-45f53023",
+      "source": "off",
+      "upc": "030223073574",
+      "title": "Spicy guacamole",
+      "brand": "Taylor farms",
+      "offCode": "0030223073574",
+      "url": "https://world.openfoodfacts.org/product/0030223073574",
+      "printedUpc": "030223073574",
+      "recall_numbers": [
+        "H-1351-2026"
+      ]
+    },
+    {
+      "id": "OFF-c482afea",
+      "source": "off",
+      "upc": "850073087008",
+      "title": "Brown Butter Chocolate Chunk",
+      "brand": "bakr",
+      "offCode": "0850073087008",
+      "url": "https://world.openfoodfacts.org/product/0850073087008",
+      "printedUpc": "8 50073 08700 8",
+      "recall_numbers": [
+        "H-1143-2026"
+      ]
+    },
+    {
+      "id": "OFF-1d32e42d",
+      "source": "off",
+      "upc": "870375005098",
+      "title": "5cheese bread 44.86 oz",
+      "brand": "Motor city",
+      "offCode": "0870375005098",
+      "url": "https://world.openfoodfacts.org/product/0870375005098",
+      "printedUpc": "8 70375 00509 8",
+      "recall_numbers": [
+        "H-1095-2026"
+      ]
+    },
+    {
+      "id": "OFF-50da90b1",
+      "source": "off",
+      "upc": "650655244825",
+      "title": "Authentic Pounded Yam 32 oz",
+      "brand": "(unknown)",
+      "offCode": "0650655244825",
+      "url": "https://world.openfoodfacts.org/product/0650655244825",
+      "printedUpc": "650655244825",
+      "recall_numbers": [
+        "H-1329-2026"
+      ]
+    },
+    {
+      "id": "OFF-8346686b",
+      "source": "off",
+      "upc": "650655496873",
+      "title": "Ola Ola Authentic Pounded Yam (iyan) Pack of 3 (12 LBS) 64 oz",
+      "brand": "(unknown)",
+      "offCode": "0650655496873",
+      "url": "https://world.openfoodfacts.org/product/0650655496873",
+      "printedUpc": "650655496873",
+      "recall_numbers": [
+        "H-1329-2026"
+      ]
+    },
+    {
+      "id": "OFF-158fbf9c",
+      "source": "off",
+      "upc": "650655244856",
+      "title": "Pounded yam flour 80 oz",
+      "brand": "(unknown)",
+      "offCode": "0650655244856",
+      "url": "https://world.openfoodfacts.org/product/0650655244856",
+      "printedUpc": "650655244856",
+      "recall_numbers": [
+        "H-1329-2026"
+      ]
+    },
+    {
+      "id": "OFF-85ab687f",
+      "source": "off",
+      "upc": "650655244702",
+      "title": "Pounded Yam 160 oz",
+      "brand": "(unknown)",
+      "offCode": "0650655244702",
+      "url": "https://world.openfoodfacts.org/product/0650655244702",
+      "printedUpc": "650655244702",
+      "recall_numbers": [
+        "H-1329-2026"
+      ]
+    },
+    {
+      "id": "OFF-de6af635",
+      "source": "off",
+      "upc": "030223073581",
+      "title": "Taco Dip",
+      "brand": "Taylor Farms",
+      "offCode": "0030223073581",
+      "url": "https://world.openfoodfacts.org/product/0030223073581",
+      "printedUpc": "030223073581",
+      "recall_numbers": [
+        "H-1349-2026"
+      ]
+    },
+    {
+      "id": "OFF-17e32c75",
+      "source": "off",
+      "upc": "850055470149",
+      "title": "Mulberry Fennel Date-Sweetened Chocolate",
+      "brand": "Spring & Mulberry",
+      "offCode": "0850055470149",
+      "url": "https://world.openfoodfacts.org/product/0850055470149",
+      "printedUpc": "850055470149",
+      "recall_numbers": [
+        "H-1101-2026"
+      ]
+    },
+    {
+      "id": "OFF-adcb6410",
+      "source": "off",
+      "upc": "816929000119",
+      "title": "Plant-Based Puffs",
+      "brand": "(unknown)",
+      "offCode": "0816929000119",
+      "url": "https://world.openfoodfacts.org/product/0816929000119",
+      "printedUpc": "816929000119",
+      "recall_numbers": [
+        "H-1328-2026"
+      ]
+    },
+    {
+      "id": "OFF-974caa6f",
+      "source": "off",
+      "upc": "030223075639",
+      "title": "Salsa Verde Mild",
+      "brand": "Whole Foods",
+      "offCode": "0030223075639",
+      "url": "https://world.openfoodfacts.org/product/0030223075639",
+      "printedUpc": "030223075639",
+      "recall_numbers": [
+        "H-1362-2026"
+      ]
+    },
+    {
+      "id": "OFF-8ae209e2",
+      "source": "off",
+      "upc": "850055470071",
+      "title": "Cacao Beans Dates Cacao Butter Sea Salt",
+      "brand": "King & Mulberry",
+      "offCode": "0850055470071",
+      "url": "https://world.openfoodfacts.org/product/0850055470071",
+      "printedUpc": "850055470071",
+      "recall_numbers": [
+        "H-1104-2026"
+      ]
+    },
+    {
+      "id": "OFF-3215874b",
+      "source": "off",
+      "upc": "030223075080",
+      "title": "Salsa Fresca Medium 12 oz",
+      "brand": "Taylor Farms",
+      "offCode": "0030223075080",
+      "url": "https://world.openfoodfacts.org/product/0030223075080",
+      "printedUpc": "030223075080",
+      "recall_numbers": [
+        "H-1363-2026"
+      ]
+    },
+    {
+      "id": "OFF-13e3e3ce",
+      "source": "off",
+      "upc": "194346474004",
+      "title": "Tomato Bisque Soup Kit 14 oz",
+      "brand": "Marketside",
+      "offCode": "0194346474004",
+      "url": "https://world.openfoodfacts.org/product/0194346474004",
+      "printedUpc": "1 94346474004",
+      "recall_numbers": [
+        "H-1271-2026"
+      ]
+    },
+    {
+      "id": "OFF-bc72a30b",
+      "source": "off",
+      "upc": "850055470019",
+      "title": "Chocolate",
+      "brand": "Spring And Mulberry",
+      "offCode": "0850055470019",
+      "url": "https://world.openfoodfacts.org/product/0850055470019",
+      "printedUpc": "850055470019",
+      "recall_numbers": [
+        "H-1099-2026"
+      ]
+    },
+    {
+      "id": "OFF-aebfbb85",
+      "source": "off",
+      "upc": "030223075608",
+      "title": "Pico De Gallo Spicy",
+      "brand": "Whole Foods",
+      "offCode": "0030223075608",
+      "url": "https://world.openfoodfacts.org/product/0030223075608",
+      "printedUpc": "030223075608",
+      "recall_numbers": [
+        "H-1360-2026"
+      ]
+    },
+    {
+      "id": "OFF-d48f019a",
+      "source": "off",
+      "upc": "078000037982",
+      "title": "Tropical",
+      "brand": "7up",
+      "offCode": "0078000037982",
+      "url": "https://world.openfoodfacts.org/product/0078000037982",
+      "printedUpc": "0 78000 03798 2",
+      "recall_numbers": [
+        "H-1397-2026"
+      ]
+    },
+    {
+      "id": "OFF-912e8cf6",
+      "source": "off",
+      "upc": "850055470026",
+      "title": "Mixed Berry Date-Sweetened Chocolate",
+      "brand": "Spring & Mulberry",
+      "offCode": "0850055470026",
+      "url": "https://world.openfoodfacts.org/product/0850055470026",
+      "printedUpc": "850055470026",
+      "recall_numbers": [
+        "H-1097-2026"
+      ]
+    },
+    {
+      "id": "OFF-1e17ea2f",
+      "source": "off",
+      "upc": "000000175029",
+      "title": "Imitation Crab Meat Sticks",
+      "brand": "Island Pacific",
+      "offCode": "00175029",
+      "url": "https://world.openfoodfacts.org/product/00175029",
+      "printedUpc": "0000000175029",
+      "recall_numbers": [
+        "H-1182-2026"
+      ]
+    },
+    {
+      "id": "OFF-82d49a28",
+      "source": "off",
+      "upc": "100000010150",
+      "title": "Chicken Filet",
+      "brand": "Fresh To You",
+      "offCode": "0100000010150",
+      "url": "https://world.openfoodfacts.org/product/0100000010150",
+      "printedUpc": "1 00000 01015 0",
+      "recall_numbers": [
+        "H-1149-2026"
+      ]
+    },
+    {
+      "id": "OFF-4934eef9",
+      "source": "off",
+      "upc": "850055470224",
+      "title": "Spring & Mulberry Coffee",
+      "brand": "Spring & Mulberry",
+      "offCode": "0850055470224",
+      "url": "https://world.openfoodfacts.org/product/0850055470224",
+      "printedUpc": "850055470224",
+      "recall_numbers": [
+        "H-1105-2026"
+      ]
+    },
+    {
+      "id": "OFF-3abdf75c",
+      "source": "off",
+      "upc": "850055470217",
+      "title": "Spring & Mulberry",
+      "brand": "Mint Leaf",
+      "offCode": "0850055470217",
+      "url": "https://world.openfoodfacts.org/product/0850055470217",
+      "printedUpc": "850055470217",
+      "recall_numbers": [
+        "H-1096-2026"
+      ]
+    },
+    {
+      "id": "OFF-c8bf331b",
+      "source": "off",
+      "upc": "850041392103",
+      "title": "Chocolate Dipped Vanilla Cake",
+      "brand": "Donutful",
+      "offCode": "0850041392103",
+      "url": "https://world.openfoodfacts.org/product/0850041392103",
+      "printedUpc": "850041392103",
+      "recall_numbers": [
+        "H-0011-2027"
+      ]
+    },
+    {
+      "id": "OFF-02ae0f83",
+      "source": "off",
+      "upc": "4056489125846",
+      "title": "Aprikosenkekse mit Kokosraspeln 330 g",
+      "brand": "Eridanous, Lidl",
+      "offCode": "4056489125846",
+      "url": "https://world.openfoodfacts.org/product/4056489125846",
+      "printedUpc": "4056489125846",
+      "recall_numbers": [
+        "H-1275-2026"
+      ]
+    },
+    {
+      "id": "OFF-08ff659b",
+      "source": "off",
+      "upc": "041548000121",
+      "title": "FRUIT BARS BLACK CHERRY",
+      "brand": "Outshine",
+      "offCode": "0041548000121",
+      "url": "https://world.openfoodfacts.org/product/0041548000121",
+      "printedUpc": "041548000121",
+      "recall_numbers": [
+        "H-1268-2026"
+      ]
+    },
+    {
+      "id": "OFF-da29490d",
+      "source": "off",
+      "upc": "850043706465",
+      "title": "jalapeño avocado signature salad dressings",
+      "brand": "salata",
+      "offCode": "0850043706465",
+      "url": "https://world.openfoodfacts.org/product/0850043706465",
+      "printedUpc": "8 50043-70646 5",
+      "recall_numbers": [
+        "H-1398-2026"
+      ]
+    },
+    {
+      "id": "OFF-4f699e73",
+      "source": "off",
+      "upc": "850055470200",
+      "title": "Blood Orange",
+      "brand": "Spring & Mulberry",
+      "offCode": "0850055470200",
+      "url": "https://world.openfoodfacts.org/product/0850055470200",
+      "printedUpc": "850055470200",
+      "recall_numbers": [
+        "H-1106-2026"
+      ]
+    },
+    {
+      "id": "OFF-15723fd5",
+      "source": "off",
+      "upc": "4056489125839",
+      "title": "Aprikosenkekse mit Schokostreuseln 330 g",
+      "brand": "Eridanous, Lidl",
+      "offCode": "4056489125839",
+      "url": "https://world.openfoodfacts.org/product/4056489125839",
+      "printedUpc": "4056489125839",
+      "recall_numbers": [
+        "H-1274-2026"
+      ]
+    },
+    {
+      "id": "OFF-98b5d5ff",
+      "source": "off",
+      "upc": "628634442166",
+      "title": "Broccoli Chips",
+      "brand": "Momchipz",
+      "offCode": "0628634442166",
+      "url": "https://world.openfoodfacts.org/product/0628634442166",
+      "printedUpc": "6 28634 44216 6",
+      "recall_numbers": [
+        "H-1330-2026"
+      ]
+    },
+    {
+      "id": "OFF-37609592",
+      "source": "off",
+      "upc": "680617100333",
+      "title": "Orange Yogurt Drink (Lassi)",
+      "brand": "Joy",
+      "offCode": "0680617100333",
+      "url": "https://world.openfoodfacts.org/product/0680617100333",
+      "printedUpc": "68061710033",
+      "recall_numbers": [
+        "H-1093-2026"
+      ]
+    },
+    {
+      "id": "OFF-b69ec9c5",
+      "source": "off",
+      "upc": "850055470002",
+      "title": "Pure Dark Date Sweetened Chocolate",
+      "brand": "Spring & Mulberry",
+      "offCode": "0850055470002",
+      "url": "https://world.openfoodfacts.org/product/0850055470002",
+      "printedUpc": "850055470002",
+      "recall_numbers": [
+        "H-1103-2026"
+      ]
+    },
+    {
+      "id": "OFF-8c022041",
+      "source": "off",
+      "upc": "860013251901",
+      "title": "Organic Infant Formula",
+      "brand": "nara organics",
+      "offCode": "0860013251901",
+      "url": "https://world.openfoodfacts.org/product/0860013251901",
+      "printedUpc": "860013251901",
+      "recall_numbers": [
+        "H-1137-2026"
+      ]
+    },
+    {
+      "id": "OFF-c163c01c",
+      "source": "off",
+      "upc": "6908791000084",
+      "title": "宁波汤圆",
+      "brand": "三全",
+      "offCode": "6908791000084",
+      "url": "https://world.openfoodfacts.org/product/6908791000084",
+      "printedUpc": "6908791000084",
+      "recall_numbers": [
+        "H-1260-2026"
+      ]
+    },
+    {
+      "id": "OFF-c4591fd8",
+      "source": "off",
+      "upc": "011110678171",
+      "title": "Roast Beef Sandwich",
+      "brand": "Kroger",
+      "offCode": "0011110678171",
+      "url": "https://world.openfoodfacts.org/product/0011110678171",
+      "printedUpc": "011110678171",
+      "recall_numbers": [
+        "H-1346-2026"
+      ]
+    },
+    {
+      "id": "OFF-e7525467",
+      "source": "off",
+      "upc": "212116000007",
+      "title": "Mild Guacamole Dip",
+      "brand": "(unknown)",
+      "offCode": "0212116000007",
+      "url": "https://world.openfoodfacts.org/product/0212116000007",
+      "printedUpc": "21211600000",
+      "recall_numbers": [
+        "H-1246-2026"
+      ]
+    },
+    {
+      "id": "OFF-23460e37",
+      "source": "off",
+      "upc": "850055470040",
+      "title": "Date-sweetened chocolate",
+      "brand": "Spring & mulberry",
+      "offCode": "0850055470040",
+      "url": "https://world.openfoodfacts.org/product/0850055470040",
+      "printedUpc": "850055470040",
+      "recall_numbers": [
+        "H-1102-2026"
+      ]
+    },
+    {
+      "id": "OFF-1d25a4e2",
+      "source": "off",
+      "upc": "030223075646",
+      "title": "Salsa Roja Medium",
+      "brand": "Taylor Farms Inc.",
+      "offCode": "0030223075646",
+      "url": "https://world.openfoodfacts.org/product/0030223075646",
+      "printedUpc": "030223075646",
+      "recall_numbers": [
+        "H-1361-2026"
+      ]
+    },
+    {
+      "id": "OFF-a345563b",
+      "source": "off",
+      "upc": "087906000075",
+      "title": "River Valley Sprouts 5 oz",
+      "brand": "(unknown)",
+      "offCode": "0087906000075",
+      "url": "https://world.openfoodfacts.org/product/0087906000075",
+      "printedUpc": "0 87906-00007 5",
+      "recall_numbers": [
+        "H-1340-2026"
+      ]
+    },
+    {
+      "id": "OFF-011e45ac",
+      "source": "off",
+      "upc": "850011788769",
+      "title": "Mild Pico De Gallo",
+      "brand": "Soupergirl",
+      "offCode": "0850011788769",
+      "url": "https://world.openfoodfacts.org/product/0850011788769",
+      "printedUpc": "85001178876",
+      "recall_numbers": [
+        "H-1253-2026"
+      ]
+    },
+    {
+      "id": "OFF-2490605a",
+      "source": "off",
+      "upc": "075465559127",
+      "title": "Living Alfalfa Sprouts",
+      "brand": "(unknown)",
+      "offCode": "0075465559127",
+      "url": "https://world.openfoodfacts.org/product/0075465559127",
+      "printedUpc": "0 75465 55912 7",
+      "recall_numbers": [
+        "H-0002-2027"
+      ]
+    },
+    {
+      "id": "OFF-87b26ff5",
+      "source": "off",
+      "upc": "838796001051",
+      "title": "Broccoli Sprouts 4 oz",
+      "brand": "(unknown)",
+      "offCode": "0838796001051",
+      "url": "https://world.openfoodfacts.org/product/0838796001051",
+      "printedUpc": "8 38796 00105 1",
+      "recall_numbers": [
+        "H-1390-2026"
+      ]
+    },
+    {
+      "id": "OFF-86bdcb9a",
+      "source": "off",
+      "upc": "011110797704",
+      "title": "Natural Large Brown Eggs Grain Fed 24 oz",
+      "brand": "Simple Truth",
+      "offCode": "0011110797704",
+      "url": "https://world.openfoodfacts.org/product/0011110797704",
+      "printedUpc": "0 11110-79770 4",
+      "recall_numbers": [
+        "H-1229-2026"
+      ]
+    },
+    {
+      "id": "OFF-1f46dcb0",
+      "source": "off",
+      "upc": "011110893109",
+      "title": "Large Brown Eggs 36 oz",
+      "brand": "simple truth",
+      "offCode": "0011110893109",
+      "url": "https://world.openfoodfacts.org/product/0011110893109",
+      "printedUpc": "0 11110-89310 9",
+      "recall_numbers": [
+        "H-1229-2026"
+      ]
+    },
+    {
+      "id": "OFF-8724a3a2",
+      "source": "off",
+      "upc": "011110150974",
+      "title": "Eggs - Organic, Cage Free, Brown 0 oz",
+      "brand": "Kroger Simple Truth",
+      "offCode": "0011110150974",
+      "url": "https://world.openfoodfacts.org/product/0011110150974",
+      "printedUpc": "0 11110-15097 4",
+      "recall_numbers": [
+        "H-1229-2026"
+      ]
+    },
+    {
+      "id": "OFF-bdb6986a",
+      "source": "off",
+      "upc": "030223075097",
+      "title": "Pico",
+      "brand": "Whole Foods",
+      "offCode": "0030223075097",
+      "url": "https://world.openfoodfacts.org/product/0030223075097",
+      "printedUpc": "030223075097",
+      "recall_numbers": [
+        "H-1359-2026"
+      ]
+    },
+    {
+      "id": "OFF-137cd3fd",
+      "source": "off",
+      "upc": "891551000928",
+      "title": "Moringa Powder",
+      "brand": "(unknown)",
+      "offCode": "0891551000928",
+      "url": "https://world.openfoodfacts.org/product/0891551000928",
+      "printedUpc": "8 91551 00092 8",
+      "recall_numbers": [
+        "H-1336-2026"
+      ]
+    },
+    {
+      "id": "OFF-192fb35d",
+      "source": "off",
+      "upc": "194346207961",
+      "title": "Pistachio Nut Butter",
+      "brand": "bettergoods",
+      "offCode": "0194346207961",
+      "url": "https://world.openfoodfacts.org/product/0194346207961",
+      "printedUpc": "194346207961",
+      "recall_numbers": [
+        "H-1273-2026"
+      ]
+    },
+    {
+      "id": "OFF-16c481cb",
+      "source": "off",
+      "upc": "030223073543",
+      "title": "Mango Pico De Gallo",
+      "brand": "Taylor Farms",
+      "offCode": "0030223073543",
+      "url": "https://world.openfoodfacts.org/product/0030223073543",
+      "printedUpc": "030223073543",
+      "recall_numbers": [
+        "H-1353-2026"
+      ]
+    },
+    {
+      "id": "OFF-e80dccaa",
+      "source": "off",
+      "upc": "070381100149",
+      "title": "Salad pasta elegance",
+      "brand": "(unknown)",
+      "offCode": "0070381100149",
+      "url": "https://world.openfoodfacts.org/product/0070381100149",
+      "printedUpc": "0-70381-10014-9",
+      "recall_numbers": [
+        "H-1142-2026"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "FDC-2538615",
+      "upc": "733163001309",
+      "title": "GRAND CENTRAL BAKING COMPANY, RUSTIC BAGUETTE 15 oz",
+      "brand": "The Grand Central Bakery, Inc.",
+      "brandName": "GRAND CENTRAL BAKING COMPANY",
+      "category": "Breads & Buns",
+      "fdcId": "2538615",
+      "forItem": "FDC-2014258"
+    },
+    {
+      "id": "FDC-367891",
+      "upc": "733163001583",
+      "title": "GRAND CENTRAL BAKING COMPANY, GRANDE BOLO",
+      "brand": "The Grand Central Bakery, Inc.",
+      "category": "Breads & Buns",
+      "fdcId": "367891",
+      "forItem": "FDC-2014258"
+    },
+    {
+      "id": "FDC-938416",
+      "upc": "041548976402",
+      "title": "BANANA FRUIT ICE BARS, BANANA",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "category": "Other Frozen Desserts",
+      "fdcId": "938416",
+      "forItem": "FDC-2110052"
+    },
+    {
+      "id": "FDC-1415823",
+      "upc": "028000852245",
+      "title": "STRAWBERRY WATERMELON FRUIT ENHANCED COCONUT WATER, STRAWBERRY WATERMELON",
+      "brand": "Nestle USA Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Plant Based Water",
+      "fdcId": "1415823",
+      "forItem": "FDC-2110052"
+    },
+    {
+      "id": "FDC-898788",
+      "upc": "070784472669",
+      "title": "FRUIT & YOGURT FRIENDLY HARVEST CRISPY RICE & WHEAT FLAKES WITH OAT & FRUIT CLUSTERS & YOGURT COATED CLUSTERS, FRUIT & YOGURT",
+      "brand": "Tops Markets, LLC",
+      "category": "Cereal",
+      "fdcId": "898788",
+      "forItem": "FDC-2213773"
+    },
+    {
+      "id": "FDC-416611",
+      "upc": "070784503202",
+      "title": "TOPS, GREEK YOGURT FRUIT & BERRY",
+      "brand": "Tops Markets, LLC",
+      "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+      "fdcId": "416611",
+      "forItem": "FDC-2213773"
+    },
+    {
+      "id": "FDC-804401",
+      "upc": "681131388047",
+      "title": "LETTUCE BLEND GRILLED CHICKEN PICO DE GALLO TORTILLA STRIPS CHIPOTLE SHREDDED CHEESE & CHIPOTLE RANCH DRESSING SOUTHWEST SALAD",
+      "brand": "Wal-Mart Stores, Inc.",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "fdcId": "804401",
+      "forItem": "FDC-2279026"
+    },
+    {
+      "id": "FDC-2151678",
+      "upc": "681131288439",
+      "title": "SOUTHWEST STYLE SALAD WITH CHICKEN ROMAINE LETTUCE, GRILLED WHITE CHICKEN MEAT, TORTILLA STRIPS, CHEESE, PICO DE GALLO WITH CHIPOTLE RANCH DRESSING, SOUTHWEST STYLE 12.5 OZ",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Deli Salads",
+      "fdcId": "2151678",
+      "forItem": "FDC-2279026"
+    },
+    {
+      "id": "FDC-804401",
+      "upc": "681131388047",
+      "title": "LETTUCE BLEND GRILLED CHICKEN PICO DE GALLO TORTILLA STRIPS CHIPOTLE SHREDDED CHEESE & CHIPOTLE RANCH DRESSING SOUTHWEST SALAD",
+      "brand": "Wal-Mart Stores, Inc.",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "fdcId": "804401",
+      "forItem": "FDC-2279027"
+    },
+    {
+      "id": "FDC-1678687",
+      "upc": "078742074900",
+      "title": "NASHVILLE HOT SPICY CHICKEN BREAST FRITTER WITH RIB MEAT TOPPED WITH NASHVILLE STYLE HOT PEPPER SAUCE ON A CORN DUSTED BUN CHICKEN SANDWICHES, NASHVILLE HOT",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "GREAT VALUE",
+      "category": "Frozen Appetizers & Hors D'oeuvres",
+      "fdcId": "1678687",
+      "forItem": "FDC-2279027"
+    },
+    {
+      "id": "FDC-938416",
+      "upc": "041548976402",
+      "title": "BANANA FRUIT ICE BARS, BANANA",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "category": "Other Frozen Desserts",
+      "fdcId": "938416",
+      "forItem": "FDC-2306432"
+    },
+    {
+      "id": "FDC-1415823",
+      "upc": "028000852245",
+      "title": "STRAWBERRY WATERMELON FRUIT ENHANCED COCONUT WATER, STRAWBERRY WATERMELON",
+      "brand": "Nestle USA Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Plant Based Water",
+      "fdcId": "1415823",
+      "forItem": "FDC-2306432"
+    },
+    {
+      "id": "FDC-1845496",
+      "upc": "681131377300",
+      "title": "AVOCADO RANCH ICEBERG AND GREEN LEAF LETTUCE BLEND, CHILI LIME SEASONED WHITE CHICKEN MEAT, BLACK BEANS, FIRE ROASTED CORN, PEPPER JACK CHEESE, CARROTS, RED CABBAGE, SEASONED TORTILLA CHIPS AND AVOCADO RANCH DRESSING CHICKEN DELUXE SALAD, AVOCADO RANCH 261 g",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "fdcId": "1845496",
+      "forItem": "FDC-2309190"
+    },
+    {
+      "id": "FDC-2585949",
+      "upc": "681131148207",
+      "title": "BROCCOLI, CARROTS & RED CABBAGE SLAW, BROCCOLI, CARROTS & RED CABBAGE 16 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Deli Salads",
+      "fdcId": "2585949",
+      "forItem": "FDC-2309190"
+    },
+    {
+      "id": "FDC-1845496",
+      "upc": "681131377300",
+      "title": "AVOCADO RANCH ICEBERG AND GREEN LEAF LETTUCE BLEND, CHILI LIME SEASONED WHITE CHICKEN MEAT, BLACK BEANS, FIRE ROASTED CORN, PEPPER JACK CHEESE, CARROTS, RED CABBAGE, SEASONED TORTILLA CHIPS AND AVOCADO RANCH DRESSING CHICKEN DELUXE SALAD, AVOCADO RANCH 261 g",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "fdcId": "1845496",
+      "forItem": "FDC-2309211"
+    },
+    {
+      "id": "FDC-2585949",
+      "upc": "681131148207",
+      "title": "BROCCOLI, CARROTS & RED CABBAGE SLAW, BROCCOLI, CARROTS & RED CABBAGE 16 oz",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Deli Salads",
+      "fdcId": "2585949",
+      "forItem": "FDC-2309211"
+    },
+    {
+      "id": "FDC-2507220",
+      "upc": "681131355070",
+      "title": "COBB SALAD WITH TURKEY & BACON TURKEY, BACON BITS, EGG, CRISP ICEBERG LETTUCE & GREEN LEAF LETTUCE AND BLUE CHEESE DRESSING, COBB SALAD WITH TURKEY & BACON 7.25 OZ",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "fdcId": "2507220",
+      "forItem": "FDC-2309213"
+    },
+    {
+      "id": "FDC-2507221",
+      "upc": "681131377362",
+      "title": "BLT WITH TURKEY & BACON ROASTED TURKEY, BACON BITS, CHEDDAR CHEESE, GRAPE TOMATOES, ICEBERG LETTUCE & GREEN LEAF LETTUCE AND AVOCADO RANCH DRESSING SALAD WITH TURKEY & BACON, BLT WITH TURKEY & BACON 6.81 OZ",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Deli Salads",
+      "fdcId": "2507221",
+      "forItem": "FDC-2309213"
+    },
+    {
+      "id": "FDC-2507220",
+      "upc": "681131355070",
+      "title": "COBB SALAD WITH TURKEY & BACON TURKEY, BACON BITS, EGG, CRISP ICEBERG LETTUCE & GREEN LEAF LETTUCE AND BLUE CHEESE DRESSING, COBB SALAD WITH TURKEY & BACON 7.25 OZ",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Pickles, Olives, Peppers & Relishes",
+      "fdcId": "2507220",
+      "forItem": "FDC-2309421"
+    },
+    {
+      "id": "FDC-2507221",
+      "upc": "681131377362",
+      "title": "BLT WITH TURKEY & BACON ROASTED TURKEY, BACON BITS, CHEDDAR CHEESE, GRAPE TOMATOES, ICEBERG LETTUCE & GREEN LEAF LETTUCE AND AVOCADO RANCH DRESSING SALAD WITH TURKEY & BACON, BLT WITH TURKEY & BACON 6.81 OZ",
+      "brand": "Wal-Mart Stores, Inc.",
+      "brandName": "MARKETSIDE",
+      "category": "Deli Salads",
+      "fdcId": "2507221",
+      "forItem": "FDC-2309421"
+    },
+    {
+      "id": "FDC-2369954",
+      "upc": "042272005840",
+      "title": "SPLIT PEA LIGHT IN SODIUM ORGANIC SOUPS, SPLIT PEA 14.1 oz",
+      "brand": "Amy's Kitchen Inc.",
+      "brandName": "AMY'S",
+      "category": "Other Soups",
+      "fdcId": "2369954",
+      "forItem": "FDC-2412860"
+    },
+    {
+      "id": "FDC-2365561",
+      "upc": "042272005871",
+      "title": "MEDIUM LIGHT IN SODIUM ORGANIC CHILI, MEDIUM 14.7 oz",
+      "brand": "Amy's Kitchen Inc.",
+      "brandName": "AMY'S",
+      "category": "Chili & Stew",
+      "fdcId": "2365561",
+      "forItem": "FDC-2412860"
+    },
+    {
+      "id": "FDC-2179909",
+      "upc": "870375005128",
+      "title": "BACON CHEESE BREAD DETROIT-STYLE DEEP DISH BACON CHEESE BREAD A THICK, CRISPY CRUST TOPPED EDGE TO EDGE WITH MOZZARELLA, PARMESAN, ASIAGO, ROMANO AND CHEDDAR CHEESES, BACON CRUMBLES AND PARMESAN CHEESE SAUCE PIZZA, BACON CHEESE BREAD",
+      "brand": "Champion Foods, LLC",
+      "brandName": "MOTOR CITY PIZZA CO.",
+      "category": "Pizza",
+      "fdcId": "2179909",
+      "forItem": "FDC-2416521"
+    },
+    {
+      "id": "FDC-2416520",
+      "upc": "870375005029",
+      "title": "FOUR CHEESE A THICK, CRISPY CRUST TOPPED EDGE TO EDGE WITH 100% REAL MOZZARELLA, PARMESAN, ASIAGO, AND ROMANO CHEESE DETROIT-STYLE DEEP DISH PIZZA, FOUR CHEESE 25.84 oz",
+      "brand": "Champion Foods, LLC",
+      "brandName": "MOTOR CITY PIZZA CO.",
+      "category": "Pizza",
+      "fdcId": "2416520",
+      "forItem": "FDC-2416521"
+    },
+    {
+      "id": "FDC-938416",
+      "upc": "041548976402",
+      "title": "BANANA FRUIT ICE BARS, BANANA",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "category": "Other Frozen Desserts",
+      "fdcId": "938416",
+      "forItem": "FDC-2543473"
+    },
+    {
+      "id": "FDC-1789781",
+      "upc": "041548605852",
+      "title": "FRUIT & VEGGIE BARS, TANGERINE MEDLEY 435 mL",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Frozen Fruit & Fruit Juice Concentrates",
+      "fdcId": "1789781",
+      "forItem": "FDC-2543473"
+    },
+    {
+      "id": "FDC-938416",
+      "upc": "041548976402",
+      "title": "BANANA FRUIT ICE BARS, BANANA",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "category": "Other Frozen Desserts",
+      "fdcId": "938416",
+      "forItem": "FDC-2576964"
+    },
+    {
+      "id": "FDC-502225",
+      "upc": "789785668895",
+      "title": "ICE CREAM BARS",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "category": "Candy",
+      "fdcId": "502225",
+      "forItem": "FDC-2576964"
+    },
+    {
+      "id": "FDC-1332895",
+      "upc": "028989975508",
+      "title": "CHIK'N BUFFALO VEGGIE BUFFALO WINGS WITH A CRISPY BREADING, CHIK'N BUFFALO",
+      "brand": "Worthington Foods Inc.",
+      "brandName": "MORNINGSTAR FARMS",
+      "category": "Vegetarian Frozen Meats",
+      "fdcId": "1332895",
+      "forItem": "FDC-2595345"
+    },
+    {
+      "id": "FDC-1306187",
+      "upc": "028989100405",
+      "title": "SPICY CHIK'N BUFFALO CHIK BUFFALO-STYLE VEGGIE PATTIES WITH CRISPY BREADING, SPICY CHIK'N BUFFALO CHIK",
+      "brand": "Worthington Foods Inc.",
+      "brandName": "MORNINGSTAR FARMS",
+      "category": "Vegetarian Frozen Meats",
+      "fdcId": "1306187",
+      "forItem": "FDC-2595345"
+    },
+    {
+      "id": "FDC-604233",
+      "upc": "085239035924",
+      "title": "PLAIN, CHOCOLATE, CINNAMON & POWDERED SUGAR ASSORTED CAKE DONUTS, PLAIN, CHOCOLATE, CINNAMON & POWDERED SUGAR",
+      "brand": "Target Stores",
+      "category": "Cakes, Cupcakes, Snack Cakes",
+      "fdcId": "604233",
+      "forItem": "FDC-2605640"
+    },
+    {
+      "id": "FDC-692256",
+      "upc": "085239035955",
+      "title": "POWDERED SUGAR MINI DONUTS, POWDERED SUGAR",
+      "brand": "Target Stores",
+      "category": "Cakes, Cupcakes, Snack Cakes",
+      "fdcId": "692256",
+      "forItem": "FDC-2605640"
+    },
+    {
+      "id": "FDC-416832",
+      "upc": "073171028562",
+      "title": "GEORGE J HOWE COMPANY, CHOCOLATE NONPAREILS",
+      "brand": "George J. Howe Company",
+      "category": "Chocolate",
+      "fdcId": "416832",
+      "forItem": "FDC-2616583"
+    },
+    {
+      "id": "FDC-420200",
+      "upc": "073171027077",
+      "title": "GEORGE J HOWE COMPANY, ORIENTAL SNACK MIX",
+      "brand": "George J. Howe Company",
+      "category": "Other Snacks",
+      "fdcId": "420200",
+      "forItem": "FDC-2616583"
+    },
+    {
+      "id": "FDC-2205540",
+      "upc": "073171043756",
+      "title": "CAJUN ROASTED PEANUTS, CHILI BITS, SESAME STICKS & OUR OWN SPECIAL SEASONING MIX, CAJUN 9 oz",
+      "brand": "George J. Howe Company",
+      "brandName": "GEORGE J HOWE",
+      "category": "Other Snacks",
+      "fdcId": "2205540",
+      "forItem": "FDC-2616584"
+    },
+    {
+      "id": "FDC-2205626",
+      "upc": "073171043725",
+      "title": "SMOKY MOUNTAIN ROASTED PEANUTS, CASHEW PIECES, JUICY RAISINS & CHOCOLATE BUTTONS MIX, SMOKY MOUNTAIN 10 oz",
+      "brand": "George J. Howe Company",
+      "brandName": "GEORGE J. HOWE COMPANY",
+      "category": "Other Snacks",
+      "fdcId": "2205626",
+      "forItem": "FDC-2616584"
+    },
+    {
+      "id": "FDC-1646389",
+      "upc": "036632018991",
+      "title": "MILK CHOCOLATE FLAVORED PUDDING, MILK CHOCOLATE",
+      "brand": "Danone US, LLC",
+      "brandName": "DANNON",
+      "category": "Puddings & Custards",
+      "fdcId": "1646389",
+      "forItem": "FDC-2623608"
+    },
+    {
+      "id": "FDC-814002",
+      "upc": "795709060034",
+      "title": "WALLLABY, ORGANIC, ORGANIC LOWFAT GREEK YOGURT WITH HONEY",
+      "brand": "Danone US, LLC",
+      "category": "Yogurt",
+      "fdcId": "814002",
+      "forItem": "FDC-2623608"
+    },
+    {
+      "id": "FDC-846034",
+      "upc": "041780036223",
+      "title": "TORTILLA CHIPS, BBQ CORN CHIPS, NACHOS PRETZEL WHEELS, CHEESE CRUNCHIES HOOPS MIX, TORTILLA CHIPS, BBQ CORN CHIPS, NACHOS PRETZEL WHEELS, CHEESE CRUNCHIES",
+      "brand": "UTZ Quality Foods, LLC",
+      "category": "Other Snacks",
+      "fdcId": "846034",
+      "forItem": "FDC-2624413"
+    },
+    {
+      "id": "FDC-891814",
+      "upc": "041780013286",
+      "title": "CRUNCHY CURLS, TORTILLA CHIPS, BBQ CORN CHIPS, PRETZEL WHEELS, NACHOS PARTY MIX, CRUNCHY CURLS, TORTILLA CHIPS, BBQ CORN CHIPS, PRETZEL WHEELS, NACHOS",
+      "brand": "UTZ Quality Foods, LLC",
+      "category": "Other Snacks",
+      "fdcId": "891814",
+      "forItem": "FDC-2624413"
+    },
+    {
+      "id": "FDC-2195887",
+      "upc": "085239209424",
+      "title": "BROWN SUGAR BALSAMIC GREEN & RED CABBAGE, CARROTS, BROCCOLI STALK, KALE, CRISPY ONIONS & UNCURED BACON CHOPPED SALAD KIT BROWN SUGAR BALSAMIC VINAIGRETTE DRESSING, BROWN SUGAR BALSAMIC 10 oz",
+      "brand": "Target Stores",
+      "brandName": "GOOD & GATHER",
+      "category": "Pre-Packaged Fruit & Vegetables",
+      "fdcId": "2195887",
+      "forItem": "FDC-2625108"
+    },
+    {
+      "id": "FDC-821376",
+      "upc": "085239948729",
+      "title": "MAPLE & BROWN SUGAR INSTANT OATMEAL, MAPLE & BROWN SUGAR",
+      "brand": "Target Stores",
+      "category": "Cereal",
+      "fdcId": "821376",
+      "forItem": "FDC-2625108"
+    },
+    {
+      "id": "FDC-1646389",
+      "upc": "036632018991",
+      "title": "MILK CHOCOLATE FLAVORED PUDDING, MILK CHOCOLATE",
+      "brand": "Danone US, LLC",
+      "brandName": "DANNON",
+      "category": "Puddings & Custards",
+      "fdcId": "1646389",
+      "forItem": "FDC-2627701"
+    },
+    {
+      "id": "FDC-2755509",
+      "upc": "742365004322",
+      "title": "Horizon Organic DHA Omega-3 Chocolate Lowfat Milk 6 Pk",
+      "brand": "Horizon Organic",
+      "brandName": "Horizon Organic",
+      "category": "Milk/Milk Substitutes",
+      "fdcId": "2755509",
+      "forItem": "FDC-2627701"
+    },
+    {
+      "id": "FDC-1768410",
+      "upc": "815367010469",
+      "title": "ORGANIC OAT CRUSH, MANGO & PASSION 120 g",
+      "brand": "Rennan J inc",
+      "brandName": "PUMPKIN TREE",
+      "category": "Cereal",
+      "fdcId": "1768410",
+      "forItem": "FDC-2628149"
+    },
+    {
+      "id": "FDC-829790",
+      "upc": "815367010100",
+      "title": "STRAWBERRY & BANANA ORGANIC FRUIT PUREE, STRAWBERRY & BANANA",
+      "brand": "Rennan J inc",
+      "category": "Wholesome Snacks",
+      "fdcId": "829790",
+      "forItem": "FDC-2628149"
+    },
+    {
+      "id": "FDC-938416",
+      "upc": "041548976402",
+      "title": "BANANA FRUIT ICE BARS, BANANA",
+      "brand": "Dreyer's Grand Ice Cream Inc.",
+      "category": "Other Frozen Desserts",
+      "fdcId": "938416",
+      "forItem": "FDC-2672780"
+    },
+    {
+      "id": "FDC-1415823",
+      "upc": "028000852245",
+      "title": "STRAWBERRY WATERMELON FRUIT ENHANCED COCONUT WATER, STRAWBERRY WATERMELON",
+      "brand": "Nestle USA Inc.",
+      "brandName": "OUTSHINE",
+      "category": "Plant Based Water",
+      "fdcId": "1415823",
+      "forItem": "FDC-2672780"
+    },
+    {
+      "id": "FDC-369893",
+      "upc": "073214009503",
+      "title": "NAPA VALLEY PARMESAN, ASIAGO & ROMANO PASTA SAUCE",
+      "brand": "G L Mezzetta, Inc.",
+      "category": "Prepared Pasta & Pizza Sauces",
+      "fdcId": "369893",
+      "forItem": "FDC-2676856"
+    },
+    {
+      "id": "FDC-374674",
+      "upc": "073214002894",
+      "title": "PARMIGIANO REGGIANO MARINARA",
+      "brand": "G L Mezzetta, Inc.",
+      "category": "Prepared Pasta & Pizza Sauces",
+      "fdcId": "374674",
+      "forItem": "FDC-2676856"
+    },
+    {
+      "id": "FDC-1332660",
+      "upc": "028989491947",
+      "title": "BREAKFAST HOT & SPICY VEGGIE SAUSAGE PATTIES SEASONED WITH A SAVORY BLEND OF SPICES, BREAKFAST HOT & SPICY",
+      "brand": "Worthington Foods Inc.",
+      "brandName": "MORNINGSTAR FARMS",
+      "category": "Vegetarian Frozen Meats",
+      "fdcId": "1332660",
+      "forItem": "FDC-2740137"
+    },
+    {
+      "id": "FDC-345053",
+      "upc": "028989100887",
+      "title": "Morningstar Farms Breakfast Sausage Patties 8oz",
+      "brand": "Kellogg Company US",
+      "category": "Vegetable Based Products / Meals - Not Ready to Eat (Frozen)",
+      "fdcId": "345053",
+      "forItem": "FDC-2740137"
+    },
+    {
+      "id": "FDC-1176966",
+      "upc": "744473911103",
+      "title": "SO DELICIOUS, CULTURED COCONUT MILK, PLAIN",
+      "brand": "WWF Operating Company",
+      "brandName": "SO DELICIOUS",
+      "category": "Yogurt",
+      "fdcId": "1176966",
+      "forItem": "FDC-2751800"
+    },
+    {
+      "id": "FDC-1180971",
+      "upc": "744473720934",
+      "title": "SO DELICIOUS, DAIRY FREE, SOYMILK NON-DAIRY FROZEN DESSERT, MOCHA FUDGE",
+      "brand": "WWF Operating Company",
+      "brandName": "SO DELICIOUS",
+      "category": "Other Frozen Desserts",
+      "fdcId": "1180971",
+      "forItem": "FDC-2751800"
+    },
+    {
+      "id": "FDC-392811",
+      "upc": "070381101009",
+      "title": "JOHNNY'S, FRENCH DIP AU JUS CONCENTRATED SAUCE",
+      "brand": "Johnny's Fine Foods Inc.",
+      "category": "Ketchup, Mustard, BBQ & Cheese Sauce",
+      "fdcId": "392811",
+      "forItem": "FDC-392072"
+    },
+    {
+      "id": "FDC-461274",
+      "upc": "070381100040",
+      "title": "SEASONING & SALAD DRESSING MIX RANCH",
+      "brand": "Johnny's Fine Foods Inc.",
+      "category": "Salad Dressing & Mayonnaise",
+      "fdcId": "461274",
+      "forItem": "FDC-392072"
+    },
+    {
+      "id": "FDC-587254",
+      "upc": "092825017769",
+      "title": "PREMIUM CHUNK WHITE CHICKEN",
+      "brand": "SUPER 1 FOODS",
+      "category": "Canned Meat",
+      "fdcId": "587254",
+      "forItem": "FDC-579779"
+    },
+    {
+      "id": "FDC-587956",
+      "upc": "092825018018",
+      "title": "RESTAURANT STYLE TORTILLA CHIPS",
+      "brand": "SUPER 1 FOODS",
+      "category": "Chips, Pretzels & Snacks",
+      "fdcId": "587956",
+      "forItem": "FDC-579779"
+    }
+  ]
+}
