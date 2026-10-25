@@ -8,11 +8,15 @@ import type { Trace } from "./trace.ts";
 export interface GenOpts { purpose: string; agent: string; system?: string; maxTokens?: number; json?: boolean }
 export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 
-export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string }
+export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string; rpm?: number }
 
 const NIGHTSHIFT_URL = "http://127.0.0.1:8088/v1";
 // Hosted NVIDIA endpoints rate-limit per minute, so the last waits reach past a minute.
 const RETRIES = [3_000, 8_000, 20_000, 45_000, 90_000]; // backoff before attempts 2-6
+// Hosted NVIDIA models through Nightshift answered about 4 calls a minute (2026-10-24: 239 of
+// 931 upstream calls in an hour succeeded, the rest were 429). Pacing to that keeps a run as fast
+// and avoids the 429 → Nightshift 502 → retry chain. LLM_RPM overrides; 0 turns pacing off.
+const NVIDIA_RPM = 4;
 
 /** Provider settings from the environment. Meterless Nightshift is the default (hackathon rule: primary AI provider). */
 export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
@@ -22,10 +26,41 @@ export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
     // No Nightshift on this machine (a judge's laptop, a container): run without a model rather
     // than fail every call. Text matches then go to the human queue and briefs use the template.
     if (!apiKey) return { provider: "none", model: "none", note: "Meterless Nightshift is not configured (no METERLESS_RUNTIME_TOKEN): running without a model; text matches go to the human queue." };
-    return { provider, model: env.METERLESS_MODEL || "nvidia/nemotron-3-ultra-550b-a55b", baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy" };
+    const model = env.METERLESS_MODEL || "nvidia/nemotron-3-ultra-550b-a55b";
+    return { provider, model, baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy", rpm: rpmFromEnv(env, model) };
   }
   if (provider === "none") return { provider, model: "none" };
-  return { provider, model: env.LLM_MODEL ?? "nemotron-3-nano", ollamaUrl: env.OLLAMA_URL, baseUrl: env.OPENAI_BASE_URL, apiKey: env.OPENAI_API_KEY };
+  const model = env.LLM_MODEL ?? "nemotron-3-nano";
+  return { provider, model, ollamaUrl: env.OLLAMA_URL, baseUrl: env.OPENAI_BASE_URL, apiKey: env.OPENAI_API_KEY, rpm: rpmFromEnv(env, provider === "openai" ? model : "") };
+}
+
+function rpmFromEnv(env: NodeJS.ProcessEnv, model: string): number {
+  const set = Number(env.LLM_RPM);
+  if (env.LLM_RPM?.trim() && Number.isFinite(set) && set >= 0) return set;
+  return /^nvidia\//i.test(model) ? NVIDIA_RPM : 0;
+}
+
+interface Clock { now(): number; sleep(ms: number): Promise<void> }
+const realClock: Clock = { now: () => Date.now(), sleep: (ms) => new Promise((r) => setTimeout(r, ms)) };
+
+/** Token bucket: up to `perMinute` calls start at once, then one every 60/perMinute s. Calls wait in order. */
+export function makePacer(perMinute: number, clock: Clock = realClock): () => Promise<void> {
+  if (!(perMinute > 0)) return async () => {};
+  const interval = 60_000 / perMinute;
+  let tokens = perMinute;
+  let last = clock.now();
+  let queue: Promise<void> = Promise.resolve();
+  return () => (queue = queue.then(async () => {
+    const t = clock.now();
+    tokens = Math.min(perMinute, tokens + (t - last) / interval);
+    last = t;
+    if (tokens < 1) {
+      await clock.sleep(Math.ceil((1 - tokens) * interval));
+      tokens = 1;
+      last = clock.now();
+    }
+    tokens -= 1;
+  }));
 }
 
 /** The Runtime API key Nightshift writes next to its settings on this Mac (used when METERLESS_RUNTIME_TOKEN is unset). Never logged. */
@@ -40,6 +75,7 @@ function nightshiftToken(): string | undefined {
 }
 
 export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
+  const pace = makePacer(cfg.rpm ?? 0);
   return async (prompt, opts) => {
     // No model: callers fall back (judge → UNSURE, lots → regex, brief → template); nothing was called, so nothing is logged.
     if (cfg.provider === "none") throw new Error("no model configured (LLM_PROVIDER=none)");
@@ -53,6 +89,7 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
         // Rate limits (429) and slow first tokens (502/504) from the hosted model are transient:
         // wait and try again, and record each retry so the trace shows the recovery.
         for (let attempt = 1; ; attempt++) {
+          await pace();
           try { ({ output, served } = await openai(cfg, prompt, opts)); break; } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
             if (attempt >= RETRIES.length + 1 || !/HTTP (429|502|503|504)\b|\b429\b|first token|fetch failed/i.test(msg)) throw e;

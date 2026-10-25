@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { llmFromEnv, makeGenerator } from "../src/llm.ts";
+import { llmFromEnv, makeGenerator, makePacer } from "../src/llm.ts";
 import { Trace } from "../src/trace.ts";
 
 test("Meterless Nightshift is the default provider", () => {
@@ -36,4 +36,24 @@ test("Nightshift calls carry the app headers and the trace records the model tha
   const ev = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).find((e) => e.kind === "llm");
   assert.equal(ev.data?.served_model ?? ev.served_model, "nvidia/nemotron-3-super-120b-a12b");
   assert.ok(!readFileSync(trace.file, "utf8").includes("Bearer"), "the token never reaches the trace");
+});
+
+test("hosted NVIDIA models are paced to 4 calls a minute unless LLM_RPM says otherwise", () => {
+  assert.equal(llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t" }).rpm, 4);
+  assert.equal(llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", LLM_RPM: "0" }).rpm, 0);
+  assert.equal(llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", LLM_RPM: "10" }).rpm, 10);
+  assert.equal(llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", METERLESS_MODEL: "meterless/auto" }).rpm, 0);
+  assert.equal(llmFromEnv({ LLM_PROVIDER: "ollama" }).rpm, 0);
+});
+
+test("the pacer lets a burst through, then spaces calls evenly", async () => {
+  let now = 0;
+  const waits: number[] = [];
+  const pace = makePacer(4, { now: () => now, sleep: async (ms) => { waits.push(ms); now += ms; } });
+  for (let i = 0; i < 6; i++) await pace();
+  assert.deepEqual(waits, [15_000, 15_000], "4 at once, then one every 15 s");
+  now += 60_000;
+  waits.length = 0;
+  for (let i = 0; i < 4; i++) await pace();
+  assert.deepEqual(waits, [], "a quiet minute refills the bucket");
 });
