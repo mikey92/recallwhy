@@ -30,7 +30,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   const forDigest: DigestCase[] = [];
   for (const k of todo) {
     const { finding, open } = await adjudicate(ctx, k);
-    if (finding.verdict !== "needs-human") unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
+    if (finding.verdict !== "needs-human" && !finding.decisions.some((d) => d.verdict === "unsure")) unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
     const entities = await record(ctx, k, finding);
     const b = await brief(ctx, k, finding, entities, open);
     const p = await actionPacket(ctx, k, finding, outDir);
@@ -56,8 +56,10 @@ export async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding:
   for (;;) {
     const a = await audit(ctx, k, f);
     if (a.ok) {
-      // Approved, but nobody could decide a pair (no model, or the judge was unsure): that is the reviewer's too.
-      if (f.verdict === "needs-human") queue(ctx, k, f, f.decisions.filter((d) => d.verdict === "unsure").map((d) => `${d.sku} undecided: ${d.why}`));
+      // Approved, but nobody could decide a pair (no model, or the judge was unsure): that pair is the reviewer's,
+      // even when another SKU of the same recall is already confirmed and being pulled.
+      const undecided = f.decisions.filter((d) => d.verdict === "unsure");
+      if (undecided.length) queue(ctx, k, f, undecided.map((d) => `${d.sku} undecided: ${d.why}`));
       return { finding: f, open: [], openSkus: [] };
     }
     if (f.round > MAX_REVISIONS) {

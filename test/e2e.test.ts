@@ -30,3 +30,18 @@ test("sample mode end to end: a case goes to review, a reviewer decides, the nex
     process.chdir(cwd);
   }
 });
+
+test("an undecided SKU is queued for a reviewer even when another SKU of the same recall is confirmed and pulled", async () => {
+  const cwd = process.cwd();
+  process.chdir(mkdtempSync(join(tmpdir(), "rw-e2e-mixed-")));
+  try {
+    // H-1099-2026 prints our UPC for one chocolate (confirmed by rule); the same brand's other bars are text candidates no model decides.
+    const r = await runOnce({ SAMPLE_MODE: "true", LLM_PROVIDER: "none" }, { since: "2026-07-01", only: ["H-1099-2026"] }, new Trace({ quiet: true }));
+    assert.equal(r.cases[0].verdict, "act-now");
+    const q = reviewQueue() as { recall: string; skus: { sku: string; verdict: string }[] }[];
+    assert.equal(q.length, 1);
+    assert.ok(q[0].skus.some((s) => s.verdict === "unsure"), "the undecided bars wait for a reviewer");
+  } finally {
+    process.chdir(cwd);
+  }
+});
