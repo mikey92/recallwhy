@@ -1,7 +1,7 @@
 {
   "model": "meterless:nvidia/nemotron-3-ultra-550b-a55b",
-  "startedAt": "2026-10-25T13:35:21.737Z",
-  "seconds": 4757,
+  "startedAt": "2026-10-25T18:50:28.359Z",
+  "seconds": 4756,
   "catalog": {
     "printedKeys": 365,
     "fdcPositives": 30,
@@ -31,10 +31,10 @@
     "negatives": 152,
     "caught": 69,
     "wronglyDismissed": 28,
-    "falseAlarms": 3,
+    "falseAlarms": 2,
     "falseAlarmsOtherNotice": 0,
-    "falseAlarmsSameBrand": 3,
-    "correctlyDismissed": 148,
+    "falseAlarmsSameBrand": 2,
+    "correctlyDismissed": 149,
     "toHuman": 1,
     "positivesToHuman": 0
   },
@@ -43,36 +43,36 @@
     "positives": 97,
     "negatives": 152,
     "caught": 55,
-    "wronglyDismissed": 11,
+    "wronglyDismissed": 23,
     "falseAlarms": 2,
     "falseAlarmsOtherNotice": 1,
     "falseAlarmsSameBrand": 1,
-    "correctlyDismissed": 117,
-    "toHuman": 64,
-    "positivesToHuman": 31
+    "correctlyDismissed": 138,
+    "toHuman": 31,
+    "positivesToHuman": 19
   },
   "afterAuditorBySource": {
     "fdc": {
       "caught": 14,
       "positives": 31,
-      "wronglyDismissed": 6
+      "wronglyDismissed": 12
     },
     "off": {
       "caught": 41,
       "positives": 66,
-      "wronglyDismissed": 5
+      "wronglyDismissed": 11
     }
   },
   "ruledWithoutJudge": 0,
-  "revisedPairs": 69,
+  "revisedPairs": 37,
   "modelCalls": {
-    "total": 298,
+    "total": 294,
     "failedAfterRetries": 0
   },
   "critiqueCounts": {
-    "item-word-missing": 44,
-    "dismissal-names-our-item": 22,
-    "dismissal-same-line": 43,
+    "item-word-missing": 40,
+    "dismissal-names-our-item": 21,
+    "dismissal-same-line": 11,
     "size-not-in-notice": 3
   },
   "rows": [
@@ -355,14 +355,12 @@
       "recall": "fda:H-1280-2026",
       "firm": "Taylor Farms de Mexico S. de R.L. de C.V.",
       "label": "same",
-      "first": "same",
+      "first": "not-this",
       "firstBy": "judge",
       "final": "not-this",
-      "rounds": 2,
-      "critiques": [
-        "item-word-missing"
-      ],
-      "quote": "MARKETSIDE SHREDDED LETT 12/16 oz"
+      "rounds": 1,
+      "critiques": [],
+      "quote": "MARKETSIDE ICEBERG SALAD 10/24 oz; MARKETSIDE ICEBERG SALAD 12/12 oz; MARKETSIDE SHREDDED LETT 12/16 oz; MARKETSIDE SHREDDED LETT 12/8 oz"
     },
     {
       "kind": "other-notice",
@@ -391,11 +389,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "MARKETSIDE ICEBERG SALAD 10/24 oz; MARKETSIDE ICEBERG SALAD 12/12 oz; MARKETSIDE SHREDDED LETT 12/16 oz; MARKETSIDE SHREDDED LETT 12/8 oz"
     },
     {
@@ -525,13 +521,11 @@
       "recall": "fda:H-1266-2026",
       "firm": "Dreyer's Grand  Ice Cream Inc.",
       "label": "same",
-      "first": "not-this",
+      "first": "same",
       "firstBy": "judge",
       "final": "same",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-names-our-item"
-      ],
+      "rounds": 1,
+      "critiques": [],
       "quote": "Outshine Fruit Bars Grape, 6-Count 2.5 ounce"
     },
     {
@@ -561,11 +555,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "MorningStar Farms Buffalo Chik'n Nuggets, 100% Plant Protein Vegan Nuggets"
     },
     {
@@ -659,11 +651,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "6/11oz No Salt Sunflower Seeds"
     },
     {
@@ -843,11 +833,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Flexible food pouch (3-layer foil, spouted, #CP6088), manufactured for packaging Pumpkin Tree Peter Rabbit Organics Banana & Strawberry, 4 oz food puree"
     },
     {
@@ -861,12 +849,10 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
-      "quote": "Outshine Fruit Bars Strawberry, 6-Count 2.5 ounce"
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
+      "quote": "Outshine Fruit Bars Strawberry"
     },
     {
       "kind": "positive",
@@ -943,11 +929,9 @@
       "label": "same",
       "first": "same",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 3,
+      "final": "not-this",
+      "rounds": 2,
       "critiques": [
-        "item-word-missing",
-        "item-word-missing",
         "item-word-missing"
       ],
       "quote": "MorningStar Farms Hot & Spicy Sausage Patties, 100% Plant Protein Vegan Sausage Patties, Net Wt. 8 oz. (228g)"
@@ -1083,11 +1067,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Kroger, Large 12 Eggs, Net Wt 24 oz (1lb 8oz) 681g"
     },
     {
@@ -1563,11 +1545,10 @@
       "label": "same",
       "first": "same",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 3,
+      "final": "not-this",
+      "rounds": 2,
       "critiques": [
-        "item-word-missing",
-        "dismissal-same-line"
+        "item-word-missing"
       ],
       "quote": "Pico De Gallo"
     },
@@ -1754,11 +1735,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT, NET WT. 2 lbs., 4 lbs., 5 lbs., 10 lbs"
     },
     {
@@ -1788,11 +1767,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT, NET WT. 2 lbs., 4 lbs., 5 lbs., 10 lbs"
     },
     {
@@ -1822,11 +1799,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "OLA-OLA Pounded Yam (Iyan) IYANINSTANT, NET WT. 2 lbs., 4 lbs., 5 lbs., 10 lbs"
     },
     {
@@ -1876,11 +1851,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "OLA-OLA POUNDED GROUNDNUTS (INTWILO)"
     },
     {
@@ -1974,11 +1947,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "functional formularies NOURISH ORGANIC WHOLE FOODS MEAL REPLACEMENT PEPTIDE FORMULA BERRY MEDLEY COMPLETE PLANT BASED NUTRITION NET WT. 12 OZ (341g)"
     },
     {
@@ -2290,11 +2261,10 @@
       "label": "same",
       "first": "same",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 3,
+      "final": "not-this",
+      "rounds": 2,
       "critiques": [
-        "item-word-missing",
-        "dismissal-same-line"
+        "item-word-missing"
       ],
       "quote": "Fresh to You Burger Chicken Fillet"
     },
@@ -2309,11 +2279,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Grade A White In-shell Chicken eggs"
     },
     {
@@ -2527,11 +2495,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Joy Mango-Pina-Orange Lassi 16 oz., 64 oz."
     },
     {
@@ -2597,11 +2563,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Todd's Seeds Salad Sprouting Mixture - Broccoli, Mustard, Alfalfa and Cabbage"
     },
     {
@@ -2699,11 +2663,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "functional formularies LIQUID HOPE ORGANIC WHOLE FOODS MEAL REPLACEMENT PEPTIDE FORMULA BERRY MEDLEY"
     },
     {
@@ -2783,11 +2745,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Taco Dip"
     },
     {
@@ -2947,11 +2907,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Everything Sprouts Crunchy Protein Sprout Mix, containing Alfalfa Fenugreek, Cabbage, Mung, Adzuki, Lentils, Green Pea"
     },
     {
@@ -2981,11 +2939,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Everything Sprouts Crunchy Protein Sprout Mix, containing Alfalfa Fenugreek, Cabbage, Mung, Adzuki, Lentils, Green Pea"
     },
     {
@@ -3063,11 +3019,9 @@
       "label": "same",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Simple Truth, Natural Cage Free Grain Fed, Medium, 12 Eggs, Net Wt 21 oz (1lb 5oz) 596g; Simple Truth, Natural Cage Free Grain Fed, Large, 12 Eggs, Net Wt 24 oz (1lb 8oz) 681g; Simple Truth, Natural Cage Free Grain Fed, Large, 18 Eggs, Net "
     },
     {
@@ -3298,7 +3252,7 @@
       "final": "not-this",
       "rounds": 1,
       "critiques": [],
-      "quote": "Outshine Fruit Bar Watermelon"
+      "quote": "Outshine Fruit Bar Watermelon, 6-Count 2.5 ounce"
     },
     {
       "kind": "same-brand",
@@ -3423,11 +3377,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Outshine Fruit Bars Strawberry, Pineapple, Grape, Tangerine. 24-Count 2.5 ounce"
     },
     {
@@ -3585,11 +3537,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Amy's ORGANIC SOUPS LENTIL LIGHT IN SODIUM"
     },
     {
@@ -3603,11 +3553,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Amy's ORGANIC SOUPS LENTIL LIGHT IN SODIUM"
     },
     {
@@ -3653,12 +3601,10 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
-      "quote": "Outshine Fruit Bars Tangerine, 6-Count 2.5 ounce"
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
+      "quote": "Outshine Fruit Bars Tangerine"
     },
     {
       "kind": "same-brand",
@@ -3671,12 +3617,10 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
-      "quote": "Outshine Fruit Bars Tangerine, 6-Count 2.5 ounce"
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
+      "quote": "Outshine Fruit Bars Tangerine"
     },
     {
       "kind": "same-brand",
@@ -3689,11 +3633,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Outshine Fruit Bars Grape, 6-Count 2.5 ounce"
     },
     {
@@ -3966,7 +3908,7 @@
       "final": "not-this",
       "rounds": 1,
       "critiques": [],
-      "quote": "Horizon Organic ORG ASEP CHOC MILK 1% 8OZ 12 CT"
+      "quote": "Horizon Organic ORG ASEP CHOC MILK 1% 8OZ 12 CT (Item 136990, [barcode removed]) and 18 CT (Item 136917, [barcode removed])"
     },
     {
       "kind": "same-brand",
@@ -4029,11 +3971,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Flexible food pouch (3-layer foil, spouted, #CP6088), manufactured for packaging Pumpkin Tree Peter Rabbit Organics Banana & Strawberry, 4 oz food puree"
     },
     {
@@ -4047,11 +3987,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Outshine Fruit Bars Strawberry"
     },
     {
@@ -4131,14 +4069,11 @@
       "recall": "fda:H-1130-2026",
       "firm": "MARS SNACKING",
       "label": "not-this",
-      "first": "same",
+      "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 3,
-      "critiques": [
-        "item-word-missing",
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "MorningStar Farms Hot & Spicy Sausage Patties, 100% Plant Protein Vegan Sausage Patties"
     },
     {
@@ -4168,11 +4103,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "So Delicious Dairy Free Salted Caramel Cluster Cashewmilk, Non-Dairy Frozen Dessert"
     },
     {
@@ -4218,11 +4151,9 @@
       "label": "not-this",
       "first": "not-this",
       "firstBy": "judge",
-      "final": "unsure",
-      "rounds": 2,
-      "critiques": [
-        "dismissal-same-line"
-      ],
+      "final": "not-this",
+      "rounds": 1,
+      "critiques": [],
       "quote": "Grade A White In-shell Chicken eggs"
     },
     {
