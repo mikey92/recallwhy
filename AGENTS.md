@@ -12,7 +12,7 @@ RecallWhy is a team of agents that investigates each new recall across those sou
 Zetaris federated SQL and returns an evidence-backed action brief, or says "not ours" with the
 reason, or escalates to a human when the evidence is not good enough.
 
-## Data (all retailer data is SYNTHETIC and labelled as such)
+## Data (retailer stock, sales and ship notices are SYNTHETIC and labelled as such; food items are real products)
 - Live public feeds, registered in Zetaris as Lightning REST tables:
   - `CPSC_REST.recalls_2026h2`   (saferproducts.gov Recall API, top-level JSON array)
   - `OPENFDA_REST.food_enforcement` → view `recallfeeds.fda_food` (api.fda.gov food enforcement)
@@ -24,6 +24,9 @@ reason, or escalates to a human when the evidence is not good enough.
     (loyalty_customers is a COUNT of distinct synthetic loyalty IDs, never identities)
   - `supplier_portal` : suppliers(supplier_id, name, contact_role), ship_notices(asn_id,
     supplier_id, sku, upc, lot_code, shipped_on, units, dc_state)
+- Food lines of `erp.skus` are real products (`data/real/`: USDA FoodData Central CC0, Open Food Facts
+  ODbL): every product whose barcode an FDA notice in `sample/` prints, same-brand siblings, and a
+  seeded FDC shelf sample. Non-food lines are synthetic (CPSC-derived or invented).
 - No personal data anywhere. Store names and cities are fictional.
 
 ## Agents (separate roles, separate prompts, talk through the bus; every message is traced)
@@ -52,6 +55,11 @@ reason, or escalates to a human when the evidence is not good enough.
 4. Briefer — writes the action brief only from the World Model context builder (it never sees
    raw rows): verdict, why (evidence list with source + SQL id), actions (pull lots from
    stores, notify N loyalty customers, contact supplier), caveats. Auditor approves the brief.
+5. Action packet (`src/actions.ts`, Orchestrator step) — for act-now/notify cases: pull list per
+   store × lot (withheld unless it sums to the Auditor's on-hand), supplier request citing ASNs,
+   customer notice (count only). Drafts; approval records who/when; nothing is sent.
+6. Weekly digest (`src/digest.ts`) — all cases of a run through the Markovian engine in bounded
+   chunks; totals in code; model lines dropped if they state a number no case has.
 
 Human decisions (`recallwhy decide <case> same|not-this --note ...`) go into H-MEM with high
 trust; the next run retrieves them and the Investigator must honour or explicitly overrule them.
@@ -59,6 +67,7 @@ trust; the next run retrieves them and the Investigator must honour or explicitl
 ## Meterless engines mounted (Apache-2.0 reference code, adapted, see engines/*/NOTICE)
 - `src/engines/hmem/`        H-MEM: MemoryStoreService, MemoryRetrievalService, TrustLedgerService.
 - `src/engines/world-model/` World Model: WorldStoreService, IngestPipelineService. `src/world.ts` adds our context builder over its fact view.
+- `src/engines/markovian/`   Markovian: chunked chain with compressed carryover, used by `src/digest.ts`.
 Engine state persists under `state/` (gitignored). Engines emit JSONL to `logs/`.
 
 ## Model calls
