@@ -190,20 +190,34 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     if (ok[0] === n || (covered?.chosen === "normalized" && ok[1] === n) || covered?.rules?.some((r) => r.supplier === supplier)) continue;
     let transform: Transform | undefined = (["no-leading-zeros", "no-check-digit"] as const).find((_, i) => ok[i + 1] === n);
     let proposal: { ops: ProposedOps; why: string; by: string } | undefined;
-    if (!transform) {
-      // Outside what the code knows: the model proposes a transform from real pairs, SQL decides.
-      proposal = await propose(ctx, supplier, `${row.asn_len}-digit`, `${row.item_len}-digit`).catch((e: Error) => { notes.push(`${supplier}: ${n} rows with ${row.asn_len}-digit barcodes match our ${row.item_len}-digit UPCs under no known transform, and no usable proposal (${e.message.slice(0, 100)})`); return undefined; });
-      if (!proposal) continue;
-      transform = "proposed";
-    }
-    const label = transform === "proposed" ? `proposed by ${proposal!.by}: supplier ${proposal!.ops.supplier.join(" → ") || "as written"}, ours ${proposal!.ops.ours.join(" → ") || "as written"}` : transform;
-    // A rule from one case, or from a model, is a guess; check it on everything this supplier has shipped.
-    const all = await run(
-      `SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s", proposal?.ops)} THEN 1 ELSE 0 END) AS ok
+    let label = "", all: Awaited<ReturnType<typeof run>> | undefined, tot = 0, hit = 0, feedback = "";
+    // A known transform is tested once; a model proposal that SQL rejects gets one retry, shown where it failed.
+    const attempts = transform ? 1 : 2;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      if (!transform || transform === "proposed") {
+        // Outside what the code knows: the model proposes a transform from real pairs, SQL decides.
+        proposal = await propose(ctx, supplier, `${row.asn_len}-digit`, `${row.item_len}-digit`, feedback).catch((e: Error) => { notes.push(`${supplier}: ${n} rows with ${row.asn_len}-digit barcodes match our ${row.item_len}-digit UPCs under no known transform, and no usable proposal (${e.message.slice(0, 100)})`); return undefined; });
+        if (!proposal) break;
+        transform = "proposed";
+      }
+      label = transform === "proposed" ? `proposed by ${proposal!.by}: supplier ${proposal!.ops.supplier.join(" → ") || "as written"}, ours ${proposal!.ops.ours.join(" → ") || "as written"}` : transform;
+      // A rule from one case, or from a model, is a guess; check it on everything this supplier has shipped.
+      all = await run(
+        `SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s", proposal?.ops)} THEN 1 ELSE 0 END) AS ok
        FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> ''`,
-      `test "${transform}" on every ship notice from ${supplier}`);
-    const [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
-    if (hit !== tot) { notes.push(`${supplier}: "${label}" holds for only ${hit}/${tot} of its ship notices; not adopted`); continue; }
+        `test "${transform}" on every ship notice from ${supplier}${attempt > 1 ? ` (attempt ${attempt})` : ""}`);
+      [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
+      if (hit === tot) break;
+      notes.push(`${supplier}: "${label}" holds for only ${hit}/${tot} of its ship notices; not adopted`);
+      if (transform !== "proposed" || !proposal) break;
+      const miss = await run(
+        `SELECT a.upc AS supplier_barcode, s.upc AS our_upc, ${applyOps("a.upc", proposal.ops.supplier)} AS theirs_after, ${applyOps("s.upc", proposal.ops.ours)} AS ours_after
+       FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> '' AND NOT (${keyEq("proposed", "a", "s", proposal.ops)}) LIMIT 3`,
+        `rows where the proposed transform for ${supplier} fails`);
+      feedback = [`Your previous steps (supplier: ${proposal.ops.supplier.join(", ") || "none"}; ours: ${proposal.ops.ours.join(", ") || "none"}) matched only ${hit} of ${tot} rows. Where they fail:`,
+        ...miss.rows.map((r) => `  supplier ${r.supplier_barcode} -> ${r.theirs_after}   ours ${r.our_upc} -> ${r.ours_after}`)].join("\n");
+    }
+    if (!transform || !all || !tot || hit !== tot) continue;
     learned.push({ supplier, transform, rows: tot, learnedFrom: caseId, sqlId: all.sqlId, ...(proposal ? { ops: proposal.ops, proposedBy: proposal.by } : {}) });
     notes.push(`${supplier} sends ${row.asn_len}-digit barcodes against our ${row.item_len}-digit UPCs: "${label}" holds for all ${tot} of its ship notices (${all.sqlId})${proposal ? ` — ${proposal.why}` : ""}`);
   }
@@ -268,7 +282,7 @@ async function profileFeeds(ctx: AgentContext, map: SourceMap): Promise<FeedProf
  * supplier and accept only the safe ops above. The caller proves the proposal with SQL on every
  * ship notice from the supplier before anything changes.
  */
-async function propose(ctx: AgentContext, supplier: string, theirs: string, ours: string): Promise<{ ops: ProposedOps; why: string; by: string }> {
+async function propose(ctx: AgentContext, supplier: string, theirs: string, ours: string, feedback = ""): Promise<{ ops: ProposedOps; why: string; by: string }> {
   const pairs = await ctx.sql.run(
     `SELECT a.upc AS supplier_barcode, s.upc AS our_upc FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku
      WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> '' AND s.upc <> '' LIMIT 6`,
@@ -279,6 +293,7 @@ async function propose(ctx: AgentContext, supplier: string, theirs: string, ours
     "", "Give the steps that make both sides equal, using only these operations:",
     "digits_only, strip_leading_zeros, drop_first:N, drop_last:N, take_first:N, take_last:N",
     'Reply with JSON only: {"supplier": [steps for the supplier code], "ours": [steps for our UPC], "why": "one short sentence"}',
+    ...(feedback ? ["", feedback, "Propose corrected steps."] : []),
   ].join("\n"), { agent: "Cartographer", purpose: `propose a barcode transform for ${supplier}`, maxTokens: 200 });
   const m = out.match(/\{[\s\S]*\}/);
   if (!m) throw new Error("the model gave no JSON");

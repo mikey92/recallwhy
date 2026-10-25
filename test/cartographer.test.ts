@@ -147,3 +147,25 @@ test("a live feed that answers with almost nothing is flagged as degraded, not r
     await duck.close();
   }
 });
+
+test("a proposal SQL rejects gets one retry, with the rows where it failed, and the corrected one is adopted", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-repropose-"));
+  const trace = new Trace({ dir, quiet: true, runId: "repropose" });
+  const sql = new DuckSampleRunner({ trace });
+  await sql.ready;
+  try {
+    const rows = (await sql.run("SELECT sku, lot_code FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP019' AND length(upc) = 10 LIMIT 5", { agent: "test", purpose: "pick rows" })).rows;
+    const prompts: string[] = [];
+    const replies = ['{"supplier": ["digits_only", "take_last:10"], "ours": ["digits_only", "drop_first:2"], "why": "guess"}',
+      '{"supplier": ["digits_only", "take_last:10"], "ours": ["digits_only", "drop_first:1", "drop_last:1"], "why": "drop both ends"}'];
+    const gen = async (p: string) => { prompts.push(p); return replies[Math.min(prompts.length - 1, 1)]; };
+    const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen, model: "test:model" } as unknown as AgentContext;
+    ctx.map = await chart(ctx);
+    const learned = await reconcile(ctx, "case-test", rows.map((r) => String(r.sku)), rows.map((r) => String(r.lot_code)));
+    assert.deepEqual(learned.map((r) => [r.supplier, r.transform, r.ops?.ours]), [["SUP019", "proposed", ["digits_only", "drop_first:1", "drop_last:1"]]]);
+    assert.equal(prompts.length, 2, "one retry");
+    assert.match(prompts[1], /matched only 0 of \d+ rows\. Where they fail:/);
+  } finally {
+    await sql.close();
+  }
+});
