@@ -1,25 +1,25 @@
 store_id,name,city,state
-S001,Northwind #001 Amber Ridge,Amber Ridge,CA
-S002,Northwind #002 Cedar Hollow,Cedar Hollow,CA
-S003,Northwind #003 Pinecrest Vale,Pinecrest Vale,OR
-S004,Northwind #004 Riverbend Mills,Riverbend Mills,OR
-S005,Northwind #005 Fog Harbor,Fog Harbor,WA
-S006,Northwind #006 Summit Creek,Summit Creek,WA
-S007,Northwind #007 Mesquite Flats,Mesquite Flats,TX
-S008,Northwind #008 Bluebonnet Crossing,Bluebonnet Crossing,TX
-S009,Northwind #009 Prairie View,Prairie View,IL
-S010,Northwind #010 Lakewood Bend,Lakewood Bend,IL
-S011,Northwind #011 Northpine,Northpine,MN
-S012,Northwind #012 Crystal Falls,Crystal Falls,MN
-S013,Northwind #013 Maple Grove Mills,Maple Grove Mills,WI
-S014,Northwind #014 Bayfront Knoll,Bayfront Knoll,WI
-S015,Northwind #015 Hudson Reach,Hudson Reach,NY
-S016,Northwind #016 Stonebridge,Stonebridge,NY
-S017,Northwind #017 Cedar Falls,Cedar Falls,NJ
-S018,Northwind #018 Meadowbrook,Meadowbrook,NJ
-S019,Northwind #019 Ironwood,Ironwood,PA
-S020,Northwind #020 Valley Forge Hill,Valley Forge Hill,PA
-S021,Northwind #021 Palm Dunes,Palm Dunes,FL
-S022,Northwind #022 Coral Springs Bay,Coral Springs Bay,FL
-S023,Northwind #023 Peachtree Ridge,Peachtree Ridge,GA
-S024,Northwind #024 Magnolia Bend,Magnolia Bend,GA
+S001,Northwind #001 Palm Springs,Palm Springs,CA
+S002,Northwind #002 Garden Grove,Garden Grove,CA
+S003,Northwind #003 Saint Helens,Saint Helens,OR
+S004,Northwind #004 Albany,Albany,OR
+S005,Northwind #005 Seattle,Seattle,WA
+S006,Northwind #006 Everett,Everett,WA
+S007,Northwind #007 Tyler,Tyler,TX
+S008,Northwind #008 Jacksonville,Jacksonville,TX
+S009,Northwind #009 Algonquin,Algonquin,IL
+S010,Northwind #010 Batavia,Batavia,IL
+S011,Northwind #011 Grand Rapids,Grand Rapids,MN
+S012,Northwind #012 Foley,Foley,MN
+S013,Northwind #013 Milwaukee,Milwaukee,WI
+S014,Northwind #014 Iola,Iola,WI
+S015,Northwind #015 New York,New York,NY
+S016,Northwind #016 Brooklyn,Brooklyn,NY
+S017,Northwind #017 Trenton,Trenton,NJ
+S018,Northwind #018 Wildwood,Wildwood,NJ
+S019,Northwind #019 Hazleton,Hazleton,PA
+S020,Northwind #020 Clearfield,Clearfield,PA
+S021,Northwind #021 Deltona,Deltona,FL
+S022,Northwind #022 Naples,Naples,FL
+S023,Northwind #023 Buford,Buford,GA
+S024,Northwind #024 Atlanta,Atlanta,GA

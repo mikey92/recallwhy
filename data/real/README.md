@@ -1,7 +1,7 @@
 # data/real — real products
 
 These are the food lines of the retailer's item master (`scripts/gen-synthetic.ts` reads them; the
-retailer's stores, stock, sales and ship notices stay synthetic in `data/synthetic/`), and the pairs
+retailer's stock, sales and ship notices stay synthetic in `data/synthetic/`; the stores' locations are real, see `stores.json` below), and the pairs
 of the real-product check (`eval/real-items.ts`, see `eval/REAL.md`).
 
 - `catalog.json` (`scripts/build-real-catalog.ts`): recalled products and their same-brand siblings, below.
@@ -36,3 +36,13 @@ npx tsx scripts/build-real-catalog.ts --fdc <folder with branded_food.csv and fo
   individual contents under the [Database Contents License](https://opendatacommons.org/licenses/dbcl/1.0/).
   These files are an extract of that database; any reuse of them must keep this attribution and the same licence.
 - The recall notices come from openFDA (https://open.fda.gov/terms/), captured on the date in `sample/CAPTURED_AT`.
+
+## stores.json — real store locations
+
+24 active SNAP-authorized supermarkets, two per state in the generator's 12 states, picked by
+`sha256(seed:record id)` from the USDA FNS *Historical SNAP Retailer Locator Data 2005-2025*
+(https://www.fns.usda.gov/snap/retailer-locator/data; US federal data, public domain).
+Rebuild: download and unzip the CSV, then `node --experimental-strip-types scripts/build-real-stores.ts --snap <csv>`.
+`scripts/gen-synthetic.ts` takes each store's city and state; the business name is kept here only
+for provenance and never appears in `data/synthetic/`, because the stock, sales and ship notices
+placed at that store are synthetic.

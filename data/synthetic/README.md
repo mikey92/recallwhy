@@ -1,8 +1,10 @@
 # Synthetic retailer data — Northwind Mercantile (synthetic)
 
-**Every row in these CSVs is synthetic.** No real store addresses, no person names, no emails,
-no loyalty identities. Store cities are invented place names. `loyalty_customers` is a count
-only.
+**Inventory, sales, ship notices and suppliers are synthetic.** Store locations are real
+SNAP-authorized supermarkets (address, city, state, ZIP from the USDA FNS SNAP Retailer Locator,
+public domain; see `data/real/stores.json`), but the chain is the fictional Northwind and no row
+names the real business at that address. No person names, no emails, no loyalty identities;
+`loyalty_customers` is a count only.
 
 ## How it was made
 
@@ -16,7 +18,7 @@ Inputs (public recall snapshots under `sample/`, captured per `sample/CAPTURED_A
 
 | File | Rows (approx) | Notes |
 |------|---------------|-------|
-| stores.csv | 24 | Fictional Northwind stores across 12 US states |
+| stores.csv | 24 | Northwind stores at real SNAP-authorized supermarket addresses, 12 US states |
 | suppliers.csv | 40 | Fictional suppliers; contact_role only |
 | skus.csv | 900 | Item master only (no origin / source_recall) |
 | inventory.csv | 14982 | ~35% of SKUs per store; 1–3 lots |

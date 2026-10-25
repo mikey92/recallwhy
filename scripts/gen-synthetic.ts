@@ -33,21 +33,6 @@ export function asnBarcode(supplierId: string, upc: string): string {
 
 const STATES = ["CA", "OR", "WA", "TX", "IL", "MN", "WI", "NY", "NJ", "PA", "FL", "GA"] as const;
 
-const FICTIONAL_CITIES: Record<(typeof STATES)[number], [string, string]> = {
-  CA: ["Amber Ridge", "Cedar Hollow"],
-  OR: ["Pinecrest Vale", "Riverbend Mills"],
-  WA: ["Fog Harbor", "Summit Creek"],
-  TX: ["Mesquite Flats", "Bluebonnet Crossing"],
-  IL: ["Prairie View", "Lakewood Bend"],
-  MN: ["Northpine", "Crystal Falls"],
-  WI: ["Maple Grove Mills", "Bayfront Knoll"],
-  NY: ["Hudson Reach", "Stonebridge"],
-  NJ: ["Cedar Falls", "Meadowbrook"],
-  PA: ["Ironwood", "Valley Forge Hill"],
-  FL: ["Palm Dunes", "Coral Springs Bay"],
-  GA: ["Peachtree Ridge", "Magnolia Bend"],
-};
-
 const CONTACT_ROLES = [
   "Quality manager",
   "Compliance lead",
@@ -506,20 +491,20 @@ async function main(): Promise<void> {
   await mkdir(OUT, { recursive: true });
 
   // --- stores (24) ---
-  const stores: { store_id: string; name: string; city: string; state: string }[] = [];
-  let storeNum = 1;
-  for (const state of STATES) {
-    for (const city of FICTIONAL_CITIES[state]) {
-      const id = `S${String(storeNum).padStart(3, "0")}`;
-      stores.push({
-        store_id: id,
-        name: `Northwind #${String(storeNum).padStart(3, "0")} ${city}`,
-        city,
-        state,
-      });
-      storeNum++;
-    }
-  }
+  // Locations are real SNAP-authorized supermarkets (data/real/stores.json, USDA FNS, public domain).
+  // The chain name stays fictional: the stock, sales and ship notices around each store are synthetic,
+  // so no row attributes them to the real business at that address.
+  const realStores = JSON.parse(await readFile(path.join(ROOT, "data", "real", "stores.json"), "utf8")) as {
+    stores: { store_id: string; city: string; state: string }[];
+  };
+  const stores = realStores.stores.map((s) => ({
+    store_id: s.store_id,
+    name: `Northwind #${s.store_id.slice(1)} ${s.city}`,
+    city: s.city,
+    state: s.state,
+  }));
+  if (stores.length !== 24 || stores.some((s) => !(STATES as readonly string[]).includes(s.state)))
+    throw new Error("data/real/stores.json must hold 24 stores in the generator's states");
 
   // --- suppliers (40) ---
   const suppliers = Array.from({ length: 40 }, (_, i) => ({
@@ -829,9 +814,11 @@ async function main(): Promise<void> {
 
   const readme = `# Synthetic retailer data — Northwind Mercantile (synthetic)
 
-**Every row in these CSVs is synthetic.** No real store addresses, no person names, no emails,
-no loyalty identities. Store cities are invented place names. \`loyalty_customers\` is a count
-only.
+**Inventory, sales, ship notices and suppliers are synthetic.** Store locations are real
+SNAP-authorized supermarkets (address, city, state, ZIP from the USDA FNS SNAP Retailer Locator,
+public domain; see \`data/real/stores.json\`), but the chain is the fictional Northwind and no row
+names the real business at that address. No person names, no emails, no loyalty identities;
+\`loyalty_customers\` is a count only.
 
 ## How it was made
 
@@ -845,7 +832,7 @@ Inputs (public recall snapshots under \`sample/\`, captured per \`sample/CAPTURE
 
 | File | Rows (approx) | Notes |
 |------|---------------|-------|
-| stores.csv | ${stores.length} | Fictional Northwind stores across ${STATES.length} US states |
+| stores.csv | ${stores.length} | Northwind stores at real SNAP-authorized supermarket addresses, ${STATES.length} US states |
 | suppliers.csv | ${suppliers.length} | Fictional suppliers; contact_role only |
 | skus.csv | ${skus.length} | Item master only (no origin / source_recall) |
 | inventory.csv | ${inventory.length} | ~35% of SKUs per store; 1–3 lots |
