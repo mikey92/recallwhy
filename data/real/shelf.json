@@ -1,0 +1,2096 @@
+{
+ "builtAt": "2026-10-25T13:43:28.220Z",
+ "source": "USDA FoodData Central Branded Foods, April 2026 release (CC0)",
+ "seed": 7,
+ "counts": {
+  "sampled": 20000,
+  "printedOrTaken": 0,
+  "recallingFirm": 134,
+  "badBarcode": 15,
+  "noTitle": 0,
+  "duplicate": 68,
+  "items": 260
+ },
+ "items": [
+  {
+   "id": "FDC-1000707",
+   "upc": "026400895022",
+   "title": "PLAIN LOWFAT YOGURT, PLAIN",
+   "brand": "Darigold, Inc. ",
+   "category": "Yogurt",
+   "fdcId": "1000707"
+  },
+  {
+   "id": "FDC-1001817",
+   "upc": "705432015256",
+   "title": "TURKEY MEDALLION CHEF SALAD",
+   "brand": "Dandee Foods",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1001817"
+  },
+  {
+   "id": "FDC-1001895",
+   "upc": "036800495630",
+   "title": "DUPLEX CHOCOLATE & VANILLA SANDWICH COOKIES WITH VANILLA CREME FILLING, DUPLEX",
+   "brand": "Topco Associates, Inc.",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1001895"
+  },
+  {
+   "id": "FDC-1002305",
+   "upc": "826766951918",
+   "title": "WRAPS & SANDWICHES, TURKEY PROVOLONE SLIDERS WITH APPLES",
+   "brand": "Renaissance Food Group, LLC",
+   "category": "Prepared Subs & Sandwiches",
+   "fdcId": "1002305"
+  },
+  {
+   "id": "FDC-1002345",
+   "upc": "826766952328",
+   "title": "LASAGNA WITH ITALIAN SAUSAGE",
+   "brand": "Renaissance Food Group, LLC",
+   "category": "Other Deli",
+   "fdcId": "1002345"
+  },
+  {
+   "id": "FDC-1002557",
+   "upc": "021000066605",
+   "title": "GOUDA CHEESE SLICES, GOUDA",
+   "brand": "Kraft Heinz Foods Company",
+   "category": "Cheese",
+   "fdcId": "1002557"
+  },
+  {
+   "id": "FDC-1003261",
+   "upc": "034000790173",
+   "title": "HERSHEY'S, MILK CHOCOLATE CARAMELS",
+   "brand": "The Hershey Company",
+   "category": "Chocolate",
+   "fdcId": "1003261"
+  },
+  {
+   "id": "FDC-1003689",
+   "upc": "044300104242",
+   "title": "TRADITIONAL REFRIED BEANS, TRADITIONAL",
+   "brand": "Conagra Brands, Inc.",
+   "category": "Canned & Bottled Beans",
+   "fdcId": "1003689"
+  },
+  {
+   "id": "FDC-1004041",
+   "upc": "034000137732",
+   "title": "MILK CHOCOLATE",
+   "brand": "The Hershey Company",
+   "category": "Chocolate",
+   "fdcId": "1004041"
+  },
+  {
+   "id": "FDC-1004263",
+   "upc": "034000451227",
+   "title": "CLUSTERS",
+   "brand": "The Hershey Company",
+   "category": "Candy",
+   "fdcId": "1004263"
+  },
+  {
+   "id": "FDC-1005433",
+   "upc": "686207803028",
+   "title": "PROTEIN BAR, DOUBLE CHOCOLATE",
+   "brand": "Wristwand, LLC.",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1005433"
+  },
+  {
+   "id": "FDC-1005547",
+   "upc": "074401714231",
+   "title": "PEARL COUSCOUS TURMERIC",
+   "brand": "Riviana Foods Inc.",
+   "category": "Pasta by Shape & Type",
+   "fdcId": "1005547"
+  },
+  {
+   "id": "FDC-1005585",
+   "upc": "021130125357",
+   "title": "EXTRA SMALL COOKED SHRIMP SHELL OFF TAIL ON",
+   "brand": "Safeway, Inc.",
+   "category": "Frozen Fish & Seafood",
+   "fdcId": "1005585"
+  },
+  {
+   "id": "FDC-1006247",
+   "upc": "027000082652",
+   "title": "SIMPLY MICROWAVE POPCORN",
+   "brand": "Conagra Brands, Inc.",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1006247"
+  },
+  {
+   "id": "FDC-1006385",
+   "upc": "017400140311",
+   "title": "JASMINE RICE",
+   "brand": "Riviana Foods Inc.",
+   "category": "Entrees, Sides & Small Meals",
+   "fdcId": "1006385"
+  },
+  {
+   "id": "FDC-1006701",
+   "upc": "070892210450",
+   "title": "HONEY 98% FAT FREE HAM, HONEY",
+   "brand": "Plumrose USA, Inc.",
+   "category": "Pepperoni, Salami & Cold Cuts",
+   "fdcId": "1006701"
+  },
+  {
+   "id": "FDC-1006949",
+   "upc": "087684009192",
+   "title": "LEMON LIME RUSH FLAVORED ELECTROLYTES AND WATER BEVERAGE, LEMON LIME RUSH",
+   "brand": "Kraft Heinz Foods Company",
+   "category": "Water",
+   "fdcId": "1006949"
+  },
+  {
+   "id": "FDC-1006979",
+   "upc": "070038321798",
+   "title": "100% JUICE FROM CONCENTRATE, WHITE GRAPE",
+   "brand": "Associated Wholesale Grocers, Inc.",
+   "category": "Fruit & Vegetable Juice, Nectars & Fruit Drinks",
+   "fdcId": "1006979"
+  },
+  {
+   "id": "FDC-1007097",
+   "upc": "070038348658",
+   "title": "PINTO BEANS",
+   "brand": "Associated Wholesale Grocers, Inc.",
+   "category": "Vegetable and Lentil Mixes",
+   "fdcId": "1007097"
+  },
+  {
+   "id": "FDC-1007525",
+   "upc": "025800019656",
+   "title": "CHICKEN ENCHILADAS SUIZA IN A ZESTY LIGHT SOUR CREAM AND GREEN CHILE SAUCE WITH SPANISH RICE, CHICKEN ENCHILADAS SUIZA",
+   "brand": "Kraft Heinz Foods Company",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1007525"
+  },
+  {
+   "id": "FDC-1007821",
+   "upc": "075450075625",
+   "title": "ORIGINAL FROSTED BITE SIZE LIGHTLY SWEETENED SHREDDED WHOLE GRAIN WHEAT CEREAL, ORIGINAL",
+   "brand": "Hy-Vee, Inc.",
+   "category": "Cereal",
+   "fdcId": "1007821"
+  },
+  {
+   "id": "FDC-1007825",
+   "upc": "042400049135",
+   "title": "HONEY NUT TOASTY O'S SWEETENED WHOLE GRAIN OAT CEREAL WITH REAL HONEY, HONEY NUT TOASTY O'S",
+   "brand": "Post Consumer Brands, LLC",
+   "category": "Cereal",
+   "fdcId": "1007825"
+  },
+  {
+   "id": "FDC-1007861",
+   "upc": "745367383211",
+   "title": "HOLIDAY SUGAR CRYSTALS",
+   "brand": "CK Products LLC",
+   "category": "Baking Decorations & Dessert Toppings",
+   "fdcId": "1007861"
+  },
+  {
+   "id": "FDC-1007937",
+   "upc": "041736080041",
+   "title": "OLIVE PESTO, OLIVE",
+   "brand": "Salov North America Corp.",
+   "category": "Prepared Pasta & Pizza Sauces",
+   "fdcId": "1007937"
+  },
+  {
+   "id": "FDC-1008173",
+   "upc": "046567001876",
+   "title": "LOW SODIUM GARBANZO BEANS",
+   "brand": "Raley's",
+   "category": "Canned & Bottled Beans",
+   "fdcId": "1008173"
+  },
+  {
+   "id": "FDC-1008233",
+   "upc": "052100041551",
+   "title": "PINK HIMALAYAN SALT & HERB BLEND",
+   "brand": "McCormick & Company, Inc.",
+   "category": "Seasoning Mixes, Salts, Marinades & Tenderizers",
+   "fdcId": "1008233"
+  },
+  {
+   "id": "FDC-1008507",
+   "upc": "070038613718",
+   "title": "DRIED APRICOTS",
+   "brand": "Associated Wholesale Grocers, Inc.",
+   "category": "Wholesome Snacks",
+   "fdcId": "1008507"
+  },
+  {
+   "id": "FDC-1009171",
+   "upc": "4712688791021",
+   "title": "ALMOND HANDMADE BISCUITS",
+   "brand": "TSAN YU YEN FOOD CO., LTD",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1009171"
+  },
+  {
+   "id": "FDC-1009345",
+   "upc": "022655101642",
+   "title": "EXTRA THIN SLICED TURKEY BREAST WITH ROTISSERIE STYLE SEASONINGS, ROTISSERIE STYLE SEASONINGS",
+   "brand": "Butterball, LLC",
+   "category": "Pepperoni, Salami & Cold Cuts",
+   "fdcId": "1009345"
+  },
+  {
+   "id": "FDC-1009821",
+   "upc": "079893401652",
+   "title": "ORGANIC HARD-COOKED PEELED EGGS",
+   "brand": "Glencourt Inc.",
+   "category": "Eggs & Egg Substitutes",
+   "fdcId": "1009821"
+  },
+  {
+   "id": "FDC-1011705",
+   "upc": "075450035797",
+   "title": "1938 GOURMET STEAK SAUCE, 1938",
+   "brand": "Hy-Vee, Inc.",
+   "category": "Ketchup, Mustard, BBQ & Cheese Sauce",
+   "fdcId": "1011705"
+  },
+  {
+   "id": "FDC-1011907",
+   "upc": "086700689554",
+   "title": "ORGANIC HIT THE TRAIL MIX",
+   "brand": "Falcon Trading Company Inc.",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1011907"
+  },
+  {
+   "id": "FDC-1012231",
+   "upc": "075450060140",
+   "title": "ACAI POMEGRANATE BLUEBERRY GREEN TEA BAGS, ACAI POMEGRANATE BLUEBERRY",
+   "brand": "Hy-Vee, Inc.",
+   "category": "Tea Bags",
+   "fdcId": "1012231"
+  },
+  {
+   "id": "FDC-1012611",
+   "upc": "070253493362",
+   "title": "CINNAMON HONEY GRAHAM CRACKERS, CINNAMON HONEY GRAHAM",
+   "brand": "Nash Finch Company",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1012611"
+  },
+  {
+   "id": "FDC-1013573",
+   "upc": "021130382378",
+   "title": "HOT COCOA MIX, RICH MILK CHOCOLATE",
+   "brand": "Safeway, Inc.",
+   "category": "Powdered Drinks",
+   "fdcId": "1013573"
+  },
+  {
+   "id": "FDC-1013917",
+   "upc": "031000670757",
+   "title": "LO MEIN NOODLE BOWL WITH CHICKEN BREAST, SHIITAKE MUSHROOMS, CARROTS, CELERY, ONIONS AND PEAS WITH A SAVORY GARLIC AND GINGER SAUCE, CHICKEN LO MEIN",
+   "brand": "Conagra Frozen Foods",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1013917"
+  },
+  {
+   "id": "FDC-1014497",
+   "upc": "051500030721",
+   "title": "SPREADABLE FRUIT, ORANGE",
+   "brand": "The J.M. Smucker Company",
+   "category": "Jam, Jelly & Fruit Spreads",
+   "fdcId": "1014497"
+  },
+  {
+   "id": "FDC-1015069",
+   "upc": "039400012085",
+   "title": "BEAN DIP, ORIGINAL",
+   "brand": "Bush Brothers & Company ",
+   "category": "Dips & Salsa",
+   "fdcId": "1015069"
+  },
+  {
+   "id": "FDC-1015435",
+   "upc": "028400589307",
+   "title": "CORN CHIPS, BAR-B-Q",
+   "brand": "Frito-Lay Company",
+   "category": "Chips, Pretzels & Snacks",
+   "fdcId": "1015435"
+  },
+  {
+   "id": "FDC-1016191",
+   "upc": "028400126717",
+   "title": "POPPIN' JALAPENO FLAVORED TORTILLA CHIPS, POPPIN' JALAPENO",
+   "brand": "Frito-Lay Company",
+   "category": "Chips, Pretzels & Snacks",
+   "fdcId": "1016191"
+  },
+  {
+   "id": "FDC-1016567",
+   "upc": "027815004597",
+   "title": "BOLOGNA",
+   "brand": "Smithfield Packaged Meats Corp.",
+   "category": "Pepperoni, Salami & Cold Cuts",
+   "fdcId": "1016567"
+  },
+  {
+   "id": "FDC-1017133",
+   "upc": "041501801024",
+   "title": "MEDIUM JALAPENO LIME FLAVOR CRAVER TACO SAUCE, JALAPENO LIME",
+   "brand": "B&G Foods, Inc.",
+   "category": "Oriental, Mexican & Ethnic Sauces",
+   "fdcId": "1017133"
+  },
+  {
+   "id": "FDC-1017293",
+   "upc": "679757168471",
+   "title": "PREMIUM ANIMAL CRACKER",
+   "brand": "Ktm Services, Inc.",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1017293"
+  },
+  {
+   "id": "FDC-1017611",
+   "upc": "023637431788",
+   "title": "ASSORTED NORDIC FISH",
+   "brand": "Holiday Candy Corp, Inc.",
+   "category": "Candy",
+   "fdcId": "1017611"
+  },
+  {
+   "id": "FDC-1018167",
+   "upc": "753656701417",
+   "title": "CHOCOLATE FUDGE HIGH PROTEIN BARS, CHOCOLATE FUDGE",
+   "brand": "ThinkThin, LLC",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1018167"
+  },
+  {
+   "id": "FDC-1018657",
+   "upc": "046567010533",
+   "title": "GRANULATED PURE CANE SUGAR",
+   "brand": "Raley's",
+   "category": "Granulated, Brown & Powdered Sugar",
+   "fdcId": "1018657"
+  },
+  {
+   "id": "FDC-1019097",
+   "upc": "036800315174",
+   "title": "NO SALT ADDED SLICED CARROTS",
+   "brand": "Topco Associates, Inc.",
+   "category": "Canned Vegetables",
+   "fdcId": "1019097"
+  },
+  {
+   "id": "FDC-1019225",
+   "upc": "011225547010",
+   "title": "ROMAN STYLE ARTICHOKE HEARTS, ROMAN STYLE",
+   "brand": "Kingston Marketing Co",
+   "category": "Canned Vegetables",
+   "fdcId": "1019225"
+  },
+  {
+   "id": "FDC-1019577",
+   "upc": "036800446380",
+   "title": "STONE GROUND DIJON MUSTARD, DIJON",
+   "brand": "Topco Associates, Inc.",
+   "category": "Ketchup, Mustard, BBQ & Cheese Sauce",
+   "fdcId": "1019577"
+  },
+  {
+   "id": "FDC-1019781",
+   "upc": "044734381523",
+   "title": "KRISPY FILLET, CAJUN",
+   "brand": "Eastman Outdoors, Inc.",
+   "category": "Bread & Muffin Mixes",
+   "fdcId": "1019781"
+  },
+  {
+   "id": "FDC-1019809",
+   "upc": "017077034128",
+   "title": "STRAWNANA STRAWBERRY BANANA ORGANIC KEFIR CULTURED WHOLE MILK, STRAWNANA",
+   "brand": "Lifeway Foods Inc.",
+   "category": "Yogurt",
+   "fdcId": "1019809"
+  },
+  {
+   "id": "FDC-1020219",
+   "upc": "046567010908",
+   "title": "RAISINS, PEANUTS, CHOCOLATE FLAVORED PIECES, ALMONDS & CASHEWS MOUNTAIN PEAKS TRAIL MIX, RAISINS, PEANUTS, CHOCOLATE",
+   "brand": "Raley's",
+   "category": "Confection & Snacks",
+   "fdcId": "1020219"
+  },
+  {
+   "id": "FDC-1020505",
+   "upc": "856063007124",
+   "title": "COFFEE ALMOND BUTTER, COFFEE",
+   "brand": "Nut Butter Concepts, LLC",
+   "category": "Coffee",
+   "fdcId": "1020505"
+  },
+  {
+   "id": "FDC-1020601",
+   "upc": "829364161390",
+   "title": "CHOCOLATE COVERED OREOS",
+   "brand": "RB. Confections, Lc.",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1020601"
+  },
+  {
+   "id": "FDC-1020703",
+   "upc": "074175483159",
+   "title": "OLD FASHIONED 100% WHOLE GRAIN OATS, OLD FASHIONED",
+   "brand": "Stater Bros. Markets Inc.",
+   "category": "Cereal",
+   "fdcId": "1020703"
+  },
+  {
+   "id": "FDC-1021053",
+   "upc": "020526046672",
+   "title": "LAKE SHORE TRAIL MIX",
+   "brand": "Bergin Nut Company, Inc.",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1021053"
+  },
+  {
+   "id": "FDC-1021689",
+   "upc": "070253296239",
+   "title": "CHOCOLATE PUDDING CUPS, CHOCOLATE",
+   "brand": "Nash Finch Company",
+   "category": "Puddings & Custards",
+   "fdcId": "1021689"
+  },
+  {
+   "id": "FDC-1021759",
+   "upc": "070253468377",
+   "title": "ENRICHED LONG GRAIN WHITE RICE",
+   "brand": "Nash Finch Company",
+   "category": "Rice",
+   "fdcId": "1021759"
+  },
+  {
+   "id": "FDC-1022213",
+   "upc": "708971931506",
+   "title": "FROSTED SUGAR COOKIES",
+   "brand": "Lofthouse Foods",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1022213"
+  },
+  {
+   "id": "FDC-1022655",
+   "upc": "818224010589",
+   "title": "P-NUT BRITTLE PEANUTS",
+   "brand": "R&J ALmonds",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1022655"
+  },
+  {
+   "id": "FDC-1023713",
+   "upc": "011225353970",
+   "title": "FROSTED SUGAR COOKIES WITH LEMON & ORANGE FLAVORED FROSTING, LEMON & ORANGE FLAVORED FROSTING",
+   "brand": "Kingston Marketing Co",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1023713"
+  },
+  {
+   "id": "FDC-1023759",
+   "upc": "845561003400",
+   "title": "TUNO IN SPRING WATER",
+   "brand": "Atlantic Natural Foods LLC",
+   "category": "Other Meats",
+   "fdcId": "1023759"
+  },
+  {
+   "id": "FDC-1023883",
+   "upc": "070022007271",
+   "title": "SWEET DOUGH",
+   "brand": "Rhodes International Inc.",
+   "category": "Frozen Bread & Dough",
+   "fdcId": "1023883"
+  },
+  {
+   "id": "FDC-1023941",
+   "upc": "072999405333",
+   "title": "BLACK PITTED LARGE CALIFORNIA RIPE OLIVES, BLACK PITTED",
+   "brand": "Musco Olive Products, Inc.",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1023941"
+  },
+  {
+   "id": "FDC-1023977",
+   "upc": "072431253881",
+   "title": "CHOCOLATE CENTER MINI ANGEL MINTS, CHOCOLATE",
+   "brand": "Lunds Inc",
+   "category": "Chocolate",
+   "fdcId": "1023977"
+  },
+  {
+   "id": "FDC-1023985",
+   "upc": "072030001562",
+   "title": "GUAVA CHEESE PUFFS, GUAVA CHEESE",
+   "brand": "Bimbo Bakeries USA, Inc.",
+   "category": "Croissants, Sweet Rolls, Muffins & Other Pastries",
+   "fdcId": "1023985"
+  },
+  {
+   "id": "FDC-1024041",
+   "upc": "072030001982",
+   "title": "HOT CROSS BUNS, HOT CROSS",
+   "brand": "Bimbo Bakeries USA, Inc.",
+   "category": "Croissants, Sweet Rolls, Muffins & Other Pastries",
+   "fdcId": "1024041"
+  },
+  {
+   "id": "FDC-1024289",
+   "upc": "070200202115",
+   "title": "SWEET & SOUR FAT FREE DRESSING, SWEET & SOUR",
+   "brand": "T. Marzetti Company",
+   "category": "Salad Dressing & Mayonnaise",
+   "fdcId": "1024289"
+  },
+  {
+   "id": "FDC-1024395",
+   "upc": "815294000151",
+   "title": "BLUE RASPBERRY ITALIAN ICE, BLUE RASPBERRY",
+   "brand": "Lindy's Homemade, LLC",
+   "category": "Ice Cream & Frozen Yogurt",
+   "fdcId": "1024395"
+  },
+  {
+   "id": "FDC-1024471",
+   "upc": "048700089642",
+   "title": "CLASSIC FANCY CURLY SLICED BEETS, CLASSIC",
+   "brand": "PNW Veg Co., LLC",
+   "category": "Canned Vegetables",
+   "fdcId": "1024471"
+  },
+  {
+   "id": "FDC-1024647",
+   "upc": "000020916909",
+   "title": "NUTS & PEANUT BUTTER WITH DARK CHOCOLATE FLAVORED COATING NUT BAR, NUTS & PEANUT BUTTER WITH DARK CHOCOLATE",
+   "brand": "NOT A BRANDED ITEM",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1024647"
+  },
+  {
+   "id": "FDC-1024829",
+   "upc": "883978301870",
+   "title": "FRENCH VANILLA GRANOLA WITH ALMONDS, FRENCH VANILLA",
+   "brand": "Post Consumer Brands, LLC",
+   "category": "Cereal",
+   "fdcId": "1024829"
+  },
+  {
+   "id": "FDC-1025051",
+   "upc": "079200776930",
+   "title": "HEARTS CANDY",
+   "brand": "Ferrara Candy Company",
+   "category": "Candy",
+   "fdcId": "1025051"
+  },
+  {
+   "id": "FDC-1025473",
+   "upc": "079927110215",
+   "title": "EXTRA DARK PRETZEL, EXTRA DARK",
+   "brand": "Unique Pretzel Bakery",
+   "category": "Chips, Pretzels & Snacks",
+   "fdcId": "1025473"
+  },
+  {
+   "id": "FDC-1025517",
+   "upc": "089125220203",
+   "title": "PLANT-BASED PROTEIN PASTA, CHICKPEA ELBOWS",
+   "brand": "Quinoa Corporation",
+   "category": "Pasta by Shape & Type",
+   "fdcId": "1025517"
+  },
+  {
+   "id": "FDC-1026065",
+   "upc": "079893120515",
+   "title": "PEANUT BUTTER & BLUEBERRY SANDWICH BARS, PEANUT BUTTER & BLUEBERRY",
+   "brand": "Glencourt Inc.",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1026065"
+  },
+  {
+   "id": "FDC-1026085",
+   "upc": "011225001406",
+   "title": "BLACK COFFEE COLD BREW UNSWEETENED 100% ARABICA COFFEE DRINK, BLACK COFFEE",
+   "brand": "Kingston Marketing Co",
+   "category": "Other Drinks",
+   "fdcId": "1026085"
+  },
+  {
+   "id": "FDC-1026297",
+   "upc": "041303013922",
+   "title": "REAL BACON BITS",
+   "brand": "Supervalu, Inc.",
+   "category": "Salad Dressing & Mayonnaise",
+   "fdcId": "1026297"
+  },
+  {
+   "id": "FDC-1026319",
+   "upc": "041420036224",
+   "title": "THE ORIGINAL CANDY-COATED PEANUTS BOSTON BAKED BEANS",
+   "brand": "Ferrara Candy Company",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1026319"
+  },
+  {
+   "id": "FDC-1026549",
+   "upc": "077260044266",
+   "title": "ASSORTED MILK & DARK CHOCOLATES, MILK CHOCOLATE CARAMEL, DARK CHOCOLATE NUT CARAMEL, MILK CHOCOLATE PECAN DELIGHT, DARK CHOCOLATE TRUFFLE, MILK CHOCOLATE, STRAWBERRY CREAM",
+   "brand": "Russell Stover Candies Inc.",
+   "category": "Chocolate",
+   "fdcId": "1026549"
+  },
+  {
+   "id": "FDC-1027083",
+   "upc": "044000057121",
+   "title": "BLUEBERRY BREAKFAST BISCUITS, BLUEBERRY",
+   "brand": "Nabisco Biscuit Company",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1027083"
+  },
+  {
+   "id": "FDC-1028519",
+   "upc": "858812007072",
+   "title": "TURMERIC GINGER PROBIOTIC SHOTS, TURMERIC GINGER",
+   "brand": "Ginger Shots, Inc.",
+   "category": "Other Drinks",
+   "fdcId": "1028519"
+  },
+  {
+   "id": "FDC-1029467",
+   "upc": "754011003924",
+   "title": "GREEN OLIVES IN BRINE",
+   "brand": "Conca D'Oro Importers Inc.",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1029467"
+  },
+  {
+   "id": "FDC-1030177",
+   "upc": "074175002329",
+   "title": "BEEF 50% LESS SODIUM BROTH, BEEF",
+   "brand": "Stater Bros. Markets Inc.",
+   "category": "Canned Soup",
+   "fdcId": "1030177"
+  },
+  {
+   "id": "FDC-1030291",
+   "upc": "041735048066",
+   "title": "WHOLESOME 16 BEAN SOUP MIX WITH HAM SEASONING, HAM SEASONING",
+   "brand": "Price Chopper Supermarkets",
+   "category": "Other Soups",
+   "fdcId": "1030291"
+  },
+  {
+   "id": "FDC-1030447",
+   "upc": "854016006071",
+   "title": "LEMON GINGER SPARKLING BEVERAGE, LEMON GINGER",
+   "brand": "Ablis",
+   "category": "Other Drinks",
+   "fdcId": "1030447"
+  },
+  {
+   "id": "FDC-1030769",
+   "upc": "850001775021",
+   "title": "ORIGINAL PEANUT BUTTER, ORIGINAL",
+   "brand": "Simkins Brothers' Sweets LLC.",
+   "category": "Nut & Seed Butters",
+   "fdcId": "1030769"
+  },
+  {
+   "id": "FDC-1031055",
+   "upc": "049200905548",
+   "title": "PREMIUM PURE CANE SUGAR PACKETS",
+   "brand": "Domino Foods, Inc.",
+   "category": "Granulated, Brown & Powdered Sugar",
+   "fdcId": "1031055"
+  },
+  {
+   "id": "FDC-1031339",
+   "upc": "080618416134",
+   "title": "UNCURED BACON & EGGS ARTISAN FLATBREAD BREAKFAST SANDWICH, UNCURED BACON & EGGS",
+   "brand": "Gabriel Investment Holdings, LLC",
+   "category": "Frozen Breakfast Sandwiches, Biscuits & Meals",
+   "fdcId": "1031339"
+  },
+  {
+   "id": "FDC-1031441",
+   "upc": "094368512305",
+   "title": "KELP PUREE, KELP",
+   "brand": "Pemberton's Foods Inc.",
+   "category": "Other Cooking Sauces",
+   "fdcId": "1031441"
+  },
+  {
+   "id": "FDC-1031519",
+   "upc": "083933250230",
+   "title": "GRAPE LOLLIPOPS VALENTINE CANDY CARD KIT, GRAPE",
+   "brand": "Hilco LLC",
+   "category": "Candy",
+   "fdcId": "1031519"
+  },
+  {
+   "id": "FDC-1032145",
+   "upc": "077890318539",
+   "title": "HUMMUS",
+   "brand": "Wegmans Food Markets, Inc. ",
+   "category": "Dips & Salsa",
+   "fdcId": "1032145"
+  },
+  {
+   "id": "FDC-1032377",
+   "upc": "842234007109",
+   "title": "GOLDEN FISHLESS FILETS",
+   "brand": "GARDEIN",
+   "category": "Vegetarian Frozen Meats",
+   "fdcId": "1032377"
+  },
+  {
+   "id": "FDC-1032503",
+   "upc": "033844004040",
+   "title": "LEMON JUICE, LEMON",
+   "brand": "Badia Spices Inc.",
+   "category": "Fruit & Vegetable Juice, Nectars & Fruit Drinks",
+   "fdcId": "1032503"
+  },
+  {
+   "id": "FDC-1032671",
+   "upc": "800093937142",
+   "title": "ORIGINAL CHOCOLATEY CANDIES, ORIGINAL",
+   "brand": "SweetWorks Confections, LLC",
+   "category": "Chocolate",
+   "fdcId": "1032671"
+  },
+  {
+   "id": "FDC-1033255",
+   "upc": "860000186322",
+   "title": "SALTY CARAMEL DAIRY FREE FROZEN DESSERT, SALTY CARAMEL",
+   "brand": "SJE Natural Foods",
+   "category": "Other Frozen Desserts",
+   "fdcId": "1033255"
+  },
+  {
+   "id": "FDC-1033535",
+   "upc": "041116262654",
+   "title": "SWEET STRAWBERRY GIANT POP, SWEET STRAWBERRY",
+   "brand": "The Topps Company, Inc.",
+   "category": "Candy",
+   "fdcId": "1033535"
+  },
+  {
+   "id": "FDC-1033669",
+   "upc": "041735091925",
+   "title": "PITTED KALAMATA OLIVES",
+   "brand": "Price Chopper Supermarkets",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1033669"
+  },
+  {
+   "id": "FDC-1034447",
+   "upc": "075119133017",
+   "title": "ORGANIC 5 GRAINS BREADS, 5 GRAINS",
+   "brand": "Ener-G Foods Inc",
+   "category": "Breads & Buns",
+   "fdcId": "1034447"
+  },
+  {
+   "id": "FDC-1035629",
+   "upc": "041167092255",
+   "title": "BUBBLE FRESH DRY MOUTH MOISTURIZING GUM WITH XYLITOL, BUBBLE FRESH",
+   "brand": "Chattem, Inc.",
+   "category": "Chewing Gum & Mints",
+   "fdcId": "1035629"
+  },
+  {
+   "id": "FDC-1035717",
+   "upc": "740312203002",
+   "title": "PINEAPPLE TIDBITS",
+   "brand": "Klein's Naturals",
+   "category": "Pre-Packaged Fruit & Vegetables",
+   "fdcId": "1035717"
+  },
+  {
+   "id": "FDC-1035897",
+   "upc": "064777817162",
+   "title": "VITALITY TRAIL MIX",
+   "brand": "Jo-Lee Food Products, Inc.",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1035897"
+  },
+  {
+   "id": "FDC-1036039",
+   "upc": "856809008019",
+   "title": "SPICY KOREAN HOT SAUCE, SPICY, KOREAN HOT",
+   "brand": "K-Mama Sauce, LLC",
+   "category": "Oriental, Mexican & Ethnic Sauces",
+   "fdcId": "1036039"
+  },
+  {
+   "id": "FDC-1036365",
+   "upc": "077890498019",
+   "title": "DRY ROASTED UNSALTED PISTACHIO KERNELS, DRY ROASTED UNSALTED",
+   "brand": "Wegmans Food Markets, Inc. ",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1036365"
+  },
+  {
+   "id": "FDC-1036707",
+   "upc": "688267192104",
+   "title": "ARGENTINIAN CHIMICHURRI SEASONING",
+   "brand": "Ahold USA, Inc. ",
+   "category": "Seasoning Mixes, Salts, Marinades & Tenderizers",
+   "fdcId": "1036707"
+  },
+  {
+   "id": "FDC-1036895",
+   "upc": "856281006572",
+   "title": "CHOCOLATEY CARAMEL GOODNESS POPCORN, CHOCOLATEY CARAMEL",
+   "brand": "Kathy Kaye Foods  ",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1036895"
+  },
+  {
+   "id": "FDC-1036915",
+   "upc": "860780000108",
+   "title": "MIMOSA ORANGE WINE-INFUSED ICE POPS, MIMOSA ORANGE",
+   "brand": "SocialIce Incorporated",
+   "category": "Ice Cream & Frozen Yogurt",
+   "fdcId": "1036915"
+  },
+  {
+   "id": "FDC-1037061",
+   "upc": "071441709753",
+   "title": "COOKIES'N CREAM FLAVORED VANILLA ICE CREAM SANDWICHES WITH CHOCOLATE COOKIE PIECES BETWEEN TWO CHOCOLATE WAFERS, COOKIES 'N CREAM",
+   "brand": "HP Hood LLC",
+   "category": "Ice Cream & Frozen Yogurt",
+   "fdcId": "1037061"
+  },
+  {
+   "id": "FDC-1037897",
+   "upc": "008346740635",
+   "title": "CREAMY MOCHA LATTE KETO MEAL REPLACEMENT SHAKE, CREAMY MOCHA LATTE",
+   "brand": "KSF Acquisition Corporation",
+   "category": "Weight Control",
+   "fdcId": "1037897"
+  },
+  {
+   "id": "FDC-1038329",
+   "upc": "731149331181",
+   "title": "COLD WATER LOBSTER SMART SEAFOOD",
+   "brand": "Aqua Star, Inc.",
+   "category": "Frozen Fish & Seafood",
+   "fdcId": "1038329"
+  },
+  {
+   "id": "FDC-1038707",
+   "upc": "020601409750",
+   "title": "UNSWEETENED VANILLA ALMONDMILK, UNSWEETENED VANILLA",
+   "brand": "Rafael Padilla & Cia S. En C.",
+   "category": "Plant Based Milk",
+   "fdcId": "1038707"
+  },
+  {
+   "id": "FDC-1038817",
+   "upc": "859480006480",
+   "title": "NO SALT ADDED WILD PACIFIC PINK SALMON",
+   "brand": "Safe Catch Inc.",
+   "category": "Canned Seafood",
+   "fdcId": "1038817"
+  },
+  {
+   "id": "FDC-1040335",
+   "upc": "688267527364",
+   "title": "ALL-PURPOSE SEASONING",
+   "brand": "Ahold USA, Inc. ",
+   "category": "Seasoning Mixes, Salts, Marinades & Tenderizers",
+   "fdcId": "1040335"
+  },
+  {
+   "id": "FDC-1041369",
+   "upc": "858087006305",
+   "title": "DOUBLE DARK CHOCOLATE COOKIE DOUGH KETO PROTEIN BAR, DOUBLE DARK CHOCOLATE COOKIE DOUGH",
+   "brand": "Laura's Original Boston Brownies, Inc. ",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1041369"
+  },
+  {
+   "id": "FDC-1041529",
+   "upc": "850687110505",
+   "title": "100% CALIFORNIA EXTRA VIRGIN OLIVE OIL",
+   "brand": "California Olive Ranch, Inc.",
+   "category": "Vegetable & Cooking Oils",
+   "fdcId": "1041529"
+  },
+  {
+   "id": "FDC-1041811",
+   "upc": "026400656807",
+   "title": "VANILLA 4.5% SHAKE MIX, VANILLA",
+   "brand": "Darigold, Inc. ",
+   "category": "Milk",
+   "fdcId": "1041811"
+  },
+  {
+   "id": "FDC-1042273",
+   "upc": "028435398899",
+   "title": "STRAWBERRY LEMONADE, STRAWBERRY",
+   "brand": "Wis-Pak, Inc.",
+   "category": "Other Drinks",
+   "fdcId": "1042273"
+  },
+  {
+   "id": "FDC-1042459",
+   "upc": "008346446698",
+   "title": "LEMON LIME SPARKLING NATURAL SPRING WATER, LEMON LIME",
+   "brand": "Twist N' Lock, Inc.",
+   "category": "Water",
+   "fdcId": "1042459"
+  },
+  {
+   "id": "FDC-1042713",
+   "upc": "708828981319",
+   "title": "GINGER + MANGO TURMERIC NEW ENGLAND STYLE GINGER BREW, GINGER + MANGO TURMERIC",
+   "brand": "Enteractive, Incorporated",
+   "category": "Other Drinks",
+   "fdcId": "1042713"
+  },
+  {
+   "id": "FDC-1042841",
+   "upc": "852059005150",
+   "title": "GREEN JASMINE KOMBUCHA TEA, GREEN JASMINE",
+   "brand": "Real McCoy Teas LLC",
+   "category": "Other Drinks",
+   "fdcId": "1042841"
+  },
+  {
+   "id": "FDC-1043251",
+   "upc": "858551007050",
+   "title": "CASSAVA STRIPS SEA SALT, SEA SALT",
+   "brand": "Artisan Tropic LLC ",
+   "category": "Chips, Pretzels & Snacks",
+   "fdcId": "1043251"
+  },
+  {
+   "id": "FDC-1043445",
+   "upc": "688267551130",
+   "title": "SALTED ROASTED CASHEWS, SALTED ROASTED",
+   "brand": "Ahold USA, Inc. ",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1043445"
+  },
+  {
+   "id": "FDC-1043489",
+   "upc": "070227500676",
+   "title": "GLUTEN FREE MATZO BALL & SOUP MIX, MATZO BALLS",
+   "brand": "Aron Streit Inc.",
+   "category": "Other Soups",
+   "fdcId": "1043489"
+  },
+  {
+   "id": "FDC-1043925",
+   "upc": "030900402345",
+   "title": "HOT PROCESS PEPPER JACK PASTEURIZED PROCESS MONTEREY JACK AND AMERICAN CHEESE WITH JALAPENO AND RED BELL PEPPERS, HOT PROCESS PEPPER JACK",
+   "brand": "Smithfield Packaged Meats Corp.",
+   "category": "Miscellanious",
+   "fdcId": "1043925"
+  },
+  {
+   "id": "FDC-1044039",
+   "upc": "072700000369",
+   "title": "MUFFIN MIX WITH REAL APPLES, APPLE CINNAMON",
+   "brand": "R.A.B. Food Group, LLC",
+   "category": "Bread & Muffin Mixes",
+   "fdcId": "1044039"
+  },
+  {
+   "id": "FDC-1044395",
+   "upc": "079893124599",
+   "title": "ORGANIC PIZZA SAUCE, ORGANIC",
+   "brand": "Glencourt Inc.",
+   "category": "Prepared Pasta & Pizza Sauces",
+   "fdcId": "1044395"
+  },
+  {
+   "id": "FDC-1044917",
+   "upc": "052548692544",
+   "title": "BLOOD ORANGE, STRAWBERRY DRAGON FRUIT, KILLER KIWI FLAVORED DRAGON GUMMIES GUMMY CANDY, BLOOD ORANGE, STRAWBERRY DRAGON FRUIT, KILLER KIWI",
+   "brand": "7-Eleven, Inc.",
+   "category": "Candy",
+   "fdcId": "1044917"
+  },
+  {
+   "id": "FDC-1045869",
+   "upc": "855433008235",
+   "title": "ORGANIC EDAMAME & SPIRULINA SPAGHETTI, EDAMAME & SPIRULINA",
+   "brand": "Ethical Foods SA",
+   "category": "Pasta by Shape & Type",
+   "fdcId": "1045869"
+  },
+  {
+   "id": "FDC-1046455",
+   "upc": "021130144730",
+   "title": "100% GROUND BEEF PATTIES, BEEF",
+   "brand": "Safeway, Inc.",
+   "category": "Frozen Patties and Burgers",
+   "fdcId": "1046455"
+  },
+  {
+   "id": "FDC-1046995",
+   "upc": "070221010867",
+   "title": "CREME FILLED CANDY WITH COOKIE PIECES, CREME",
+   "brand": "Kraft Foods Schweiz Holding GmbH",
+   "category": "Candy",
+   "fdcId": "1046995"
+  },
+  {
+   "id": "FDC-1047301",
+   "upc": "796853100232",
+   "title": "FULLY COOKED CHICKEN IN BROTH",
+   "brand": "Keystone Brand Meats Inc",
+   "category": "Canned Meat",
+   "fdcId": "1047301"
+  },
+  {
+   "id": "FDC-1047953",
+   "upc": "022000114884",
+   "title": "WINTERMINT SUGARFREE GUM, WINTERMINT",
+   "brand": "Wm. Wrigley Jr. Company",
+   "category": "Chewing Gum & Mints",
+   "fdcId": "1047953"
+  },
+  {
+   "id": "FDC-1049565",
+   "upc": "028435399339",
+   "title": "RASPBERRY CITRUS SPARKLING WATER, RASPBERRY CITRUS",
+   "brand": "Wis-Pak, Inc.",
+   "category": "Water",
+   "fdcId": "1049565"
+  },
+  {
+   "id": "FDC-1050125",
+   "upc": "028400179409",
+   "title": "CHEESE FLAVORED PUFFS SNACKS, CHEESE",
+   "brand": "Frito-Lay Company",
+   "category": "Other Snacks",
+   "fdcId": "1050125"
+  },
+  {
+   "id": "FDC-1051009",
+   "upc": "051500820292",
+   "title": "STRAWBERRY PRESERVES, STRAWBERRY",
+   "brand": "The J.M. Smucker Company",
+   "category": "Jam, Jelly & Fruit Spreads",
+   "fdcId": "1051009"
+  },
+  {
+   "id": "FDC-1051015",
+   "upc": "051500050538",
+   "title": "STRAWBERRY FLAVORED DESSERT TOPPING, STRAWBERRY",
+   "brand": "The J.M. Smucker Company",
+   "category": "Baking Decorations & Dessert Toppings",
+   "fdcId": "1051015"
+  },
+  {
+   "id": "FDC-1052415",
+   "upc": "051000271082",
+   "title": "TOMATO & SWEET BASIL STYLE BISQUE, TOMATO & SWEET BASIL STYLE",
+   "brand": "Campbell Soup Company",
+   "category": "Other Soups",
+   "fdcId": "1052415"
+  },
+  {
+   "id": "FDC-1053161",
+   "upc": "012000033148",
+   "title": "DIET SODA",
+   "brand": "Pepsi-Cola North America Inc.",
+   "category": "Soda",
+   "fdcId": "1053161"
+  },
+  {
+   "id": "FDC-1053287",
+   "upc": "072940747451",
+   "title": "ITALIAN STYLE IN PUREE WITH OLIVE OIL DICED TOMATOES, ITALIAN STYLE",
+   "brand": "Red Gold Inc.",
+   "category": "Tomatoes",
+   "fdcId": "1053287"
+  },
+  {
+   "id": "FDC-1054711",
+   "upc": "012000181276",
+   "title": "CHERRY LEMON LIME SODA, CHERRY",
+   "brand": "Pepsi-Cola North America Inc.",
+   "category": "Soda",
+   "fdcId": "1054711"
+  },
+  {
+   "id": "FDC-1055595",
+   "upc": "028800150107",
+   "title": "LARGE LIMA BUTTER BEANS IN SAUCE",
+   "brand": "Hanover Foods Corporation",
+   "category": "Canned & Bottled Beans",
+   "fdcId": "1055595"
+  },
+  {
+   "id": "FDC-1056099",
+   "upc": "698997809135",
+   "title": "CLASSIC HAMBURGER GLUTEN FREE BUNS, CLASSIC",
+   "brand": "Pinnacle Foods Group LLC",
+   "category": "Breads & Buns",
+   "fdcId": "1056099"
+  },
+  {
+   "id": "FDC-1056427",
+   "upc": "722648543236",
+   "title": "ENERGY MIX",
+   "brand": "Superior Nut/candy Distribut'G",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1056427"
+  },
+  {
+   "id": "FDC-1056583",
+   "upc": "089128842129",
+   "title": "SPARKLING SPRING WATER BEVERAGE, CHOCOLATE ALMOND FIZZ",
+   "brand": "Varni Brothers Corporation",
+   "category": "Water",
+   "fdcId": "1056583"
+  },
+  {
+   "id": "FDC-1057185",
+   "upc": "041303018606",
+   "title": "RAISINS",
+   "brand": "Supervalu, Inc.",
+   "category": "Wholesome Snacks",
+   "fdcId": "1057185"
+  },
+  {
+   "id": "FDC-1057415",
+   "upc": "858148003076",
+   "title": "VANILLA ORGANIC PROTEIN SUPER HERB ELIXIR WITH CINNAMON & MCTS, VANILLA",
+   "brand": "Rebbl, Inc.",
+   "category": "Energy, Protein & Muscle Recovery Drinks",
+   "fdcId": "1057415"
+  },
+  {
+   "id": "FDC-1057445",
+   "upc": "071100007077",
+   "title": "RANCH FAT FREE TOPPING & DRESSING, RANCH",
+   "brand": "The Hvr Company",
+   "category": "Salad Dressing & Mayonnaise",
+   "fdcId": "1057445"
+  },
+  {
+   "id": "FDC-1058649",
+   "upc": "070870000080",
+   "title": "CINNAMON SUGAR DONUTS, CINNAMON SUGAR",
+   "brand": "Bimbo Bakeries USA, Inc.",
+   "category": "Cakes, Cupcakes, Snack Cakes",
+   "fdcId": "1058649"
+  },
+  {
+   "id": "FDC-1059395",
+   "upc": "074826189065",
+   "title": "RED CHILE ADOBO FLAVOR CONCENTRATE, RED CHILE ADOBO",
+   "brand": "L. J. Minor Corp.",
+   "category": "Seasoning Mixes, Salts, Marinades & Tenderizers",
+   "fdcId": "1059395"
+  },
+  {
+   "id": "FDC-1059415",
+   "upc": "720379531294",
+   "title": "ORGANIC FRUIT & NUT SNACKS, POMEGRANATE GINGER",
+   "brand": "Made In Nature, Inc.",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1059415"
+  },
+  {
+   "id": "FDC-1059847",
+   "upc": "041420036453",
+   "title": "MELLOWCREME AUTUMN MIX CANDY, MELLOWCREME AUTUMN MIX",
+   "brand": "Ferrara Candy Company",
+   "category": "Candy",
+   "fdcId": "1059847"
+  },
+  {
+   "id": "FDC-1059895",
+   "upc": "022014240326",
+   "title": "GALA APPLE SAUCE, GALA",
+   "brand": "Manzana Products Co Inc",
+   "category": "Wholesome Snacks",
+   "fdcId": "1059895"
+  },
+  {
+   "id": "FDC-1060181",
+   "upc": "752830028180",
+   "title": "100% WATERMELON, CUCUMBER, GREEN APPLE. GINGER & LIME COLD-PRESSED JUICE, WATERMELON, CUCUMBER, GREEN APPLE. GINGER & LIME",
+   "brand": "Walbak International Marketing Ltd.",
+   "category": "Fruit & Vegetable Juice, Nectars & Fruit Drinks",
+   "fdcId": "1060181"
+  },
+  {
+   "id": "FDC-1060431",
+   "upc": "034500202022",
+   "title": "VANILLA CALM FRENCH STYLE DESSERT, VANILLA",
+   "brand": "Land O'Lakes, Inc.",
+   "category": "Cream",
+   "fdcId": "1060431"
+  },
+  {
+   "id": "FDC-1060441",
+   "upc": "041458550822",
+   "title": "ORIGINAL WHIPPED CHEESECAKE, ORIGINAL WHIPPED",
+   "brand": "The Schwan Food Company",
+   "category": "Other Frozen Desserts",
+   "fdcId": "1060441"
+  },
+  {
+   "id": "FDC-1060581",
+   "upc": "856108008352",
+   "title": "DUCK L'ORANGE TRAIL MIX SQUARE WHOLE EARTH SNACKS, DUCK L'ORANGE",
+   "brand": "UNION",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1060581"
+  },
+  {
+   "id": "FDC-1060915",
+   "upc": "856923007899",
+   "title": "GHOST PEPPER HIGH-FAT CHEESE KETO CRISPS, GHOST PEPPER",
+   "brand": "Ketologic, LLC",
+   "category": "Other Snacks",
+   "fdcId": "1060915"
+  },
+  {
+   "id": "FDC-1061409",
+   "upc": "818290017031",
+   "title": "PLAIN EXTRA CREAMY OAT DRINK, PLAIN EXTRA CREAMY",
+   "brand": "Chobani, Inc.",
+   "category": "Plant Based Milk",
+   "fdcId": "1061409"
+  },
+  {
+   "id": "FDC-1061887",
+   "upc": "018944000567",
+   "title": "ORIGINAL MILKED OATS, ORIGINAL",
+   "brand": "ELMHURST",
+   "category": "Plant Based Milk",
+   "fdcId": "1061887"
+  },
+  {
+   "id": "FDC-1062291",
+   "upc": "035493893143",
+   "title": "SOUTHERN STYLE BUFFALO SPICED BREADED WILD ALASKA POLLOCK, SOUTHERN STYLE BUFFALO SPICED",
+   "brand": "High Liner Foods (USA) Incorporated",
+   "category": "Frozen Appetizers & Hors D'oeuvres",
+   "fdcId": "1062291"
+  },
+  {
+   "id": "FDC-1062357",
+   "upc": "817142020274",
+   "title": "PORTOBELLO MUSHROOM RISOTTO-STYLE RICED CAULIFLOWER WITH PORTOBELLO MUSHROOMS AND GARLIC, PORTOBELLO MUSHROOM",
+   "brand": "Buzzard Products, Inc.",
+   "category": "Pre-Packaged Fruit & Vegetables",
+   "fdcId": "1062357"
+  },
+  {
+   "id": "FDC-1063255",
+   "upc": "850010288048",
+   "title": "MEDITERRANEAN HERBS CHICKPEA CHIPS, MEDITERRANEAN HERBS",
+   "brand": "Kibo Foods LLC",
+   "category": "Chips, Pretzels & Snacks",
+   "fdcId": "1063255"
+  },
+  {
+   "id": "FDC-1063671",
+   "upc": "850002251081",
+   "title": "ROASTED ALMONDS 65% COCOA DARK CHOCOLATE KETOGENIC BARS, ROASTED ALMONDS",
+   "brand": "Kiss My Keto LLC",
+   "category": "Chocolate",
+   "fdcId": "1063671"
+  },
+  {
+   "id": "FDC-1063713",
+   "upc": "000011782285",
+   "title": "CILANTRO LIME CHICKEN, CILANTRO LIME",
+   "brand": "KEVIN'S NATURAL FOODS",
+   "category": "Cooked & Prepared",
+   "fdcId": "1063713"
+  },
+  {
+   "id": "FDC-1064157",
+   "upc": "852975008105",
+   "title": "PINK GRAPEFRUIT FLAVORED SPARKLING WATER, PINK GRAPEFRUIT",
+   "brand": "Ugly Brands Inc.",
+   "category": "Water",
+   "fdcId": "1064157"
+  },
+  {
+   "id": "FDC-1064219",
+   "upc": "719283961570",
+   "title": "TURKEY AND MUENSTER ON MARBLE RYE BREAD SANDWICH, TURKEY AND MUENSTER",
+   "brand": "Meijer, Inc.",
+   "category": "Prepared Subs & Sandwiches",
+   "fdcId": "1064219"
+  },
+  {
+   "id": "FDC-1064329",
+   "upc": "810165019409",
+   "title": "GREEN APPLE LEMON ORANGE STRAWBERRY GRAPE ORGANIC SOUR CHEWY CANDY BITES, GREEN APPLE LEMON ORANGE STRAWBERRY GRAPE",
+   "brand": "YummyEarth Inc.",
+   "category": "Candy",
+   "fdcId": "1064329"
+  },
+  {
+   "id": "FDC-1064331",
+   "upc": "4796012760075",
+   "title": "ORGANIC COCONUT WATER",
+   "brand": "MAL",
+   "category": "Plant Based Water",
+   "fdcId": "1064331"
+  },
+  {
+   "id": "FDC-1064983",
+   "upc": "844911007174",
+   "title": "GUMMY BEARS",
+   "brand": "Project 7 Inc.",
+   "category": "Candy",
+   "fdcId": "1064983"
+  },
+  {
+   "id": "FDC-1065335",
+   "upc": "4099100140255",
+   "title": "CHERRY PIE FILLING AND TOPPING, CHERRY",
+   "brand": "BAKER'S CORNER",
+   "category": "Pastry Shells & Fillings",
+   "fdcId": "1065335"
+  },
+  {
+   "id": "FDC-1065351",
+   "upc": "731149351813",
+   "title": "COOKED & PEELED COCKTAIL SHRIMP",
+   "brand": "Aqua Star, Inc.",
+   "category": "Frozen Appetizers & Hors D'oeuvres",
+   "fdcId": "1065351"
+  },
+  {
+   "id": "FDC-1066065",
+   "upc": "014500016935",
+   "title": "WHITE MEAT CHICKEN WITH PASTA IN AN ALFREDO CHEESE SAUCE WITH BROCCOLI, CARROTS AND GARDEN PEAS, ALFREDO CHICKEN",
+   "brand": "Pinnacle Foods Group LLC",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1066065"
+  },
+  {
+   "id": "FDC-1066291",
+   "upc": "041190576760",
+   "title": "LIGHT HOTDOG SLICED ROLLS",
+   "brand": "Wakefern Food Corporation",
+   "category": "Breads & Buns",
+   "fdcId": "1066291"
+  },
+  {
+   "id": "FDC-1067245",
+   "upc": "711575005030",
+   "title": "VEGETARIAN MEATLESS CHICK'N MOROCCAN STEW RICED VEGGIE CUISINE, CHICK'N MOROCCAN STEW",
+   "brand": "SEAPOINT FARMS",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1067245"
+  },
+  {
+   "id": "FDC-1067345",
+   "upc": "051000212245",
+   "title": "CAMPBELL'S PASTA SPAGHETTIOS",
+   "brand": "CAMPBELL SOUP COMPANY",
+   "category": "Dough Based Products / Meals",
+   "fdcId": "1067345"
+  },
+  {
+   "id": "FDC-1067353",
+   "upc": "014100045656",
+   "title": "PEPPERIDGE FARM COOKIES SAUSALITO",
+   "brand": "PEPPERIDGE FARM",
+   "category": "Biscuits/Cookies",
+   "fdcId": "1067353"
+  },
+  {
+   "id": "FDC-1067703",
+   "upc": "072400011054",
+   "title": "MIXED BERRY WITH ALMONDS INSTANT TO-GO HOT CEREAL, MIXED BERRY WITH ALMONDS",
+   "brand": "B&G Foods North America, Inc. ",
+   "category": "Cereal",
+   "fdcId": "1067703"
+  },
+  {
+   "id": "FDC-1067843",
+   "upc": "037466015842",
+   "title": "MILK CHOCOLATE TRUFFLES, MILK CHOCOLATE",
+   "brand": "Lindt & Sprungli (Schweiz) AG",
+   "category": "Chocolate",
+   "fdcId": "1067843"
+  },
+  {
+   "id": "FDC-1067889",
+   "upc": "041190008780",
+   "title": "TOMATO SAUCE, TOMATO",
+   "brand": "Wakefern Food Corporation",
+   "category": "Tomatoes",
+   "fdcId": "1067889"
+  },
+  {
+   "id": "FDC-1068309",
+   "upc": "028500102253",
+   "title": "LITE CHERRY FRUIT FILLING & TOPPING, LITE CHERRY",
+   "brand": "Knouse Foods Inc.",
+   "category": "Pastry Shells & Fillings",
+   "fdcId": "1068309"
+  },
+  {
+   "id": "FDC-1069253",
+   "upc": "025600005217",
+   "title": "PECAN SWIRLS ROLLS, PECAN",
+   "brand": "Tasty Baking Company",
+   "category": "Croissants, Sweet Rolls, Muffins & Other Pastries",
+   "fdcId": "1069253"
+  },
+  {
+   "id": "FDC-1069909",
+   "upc": "030034021962",
+   "title": "TROPICAL FRUITION SPARKLING WATER, TROPICAL",
+   "brand": "Giant Eagle, Inc.",
+   "category": "Water",
+   "fdcId": "1069909"
+  },
+  {
+   "id": "FDC-1070115",
+   "upc": "844527031990",
+   "title": "CRAFTY COOKING KITS, PUDDING AND CAKE CUPS KIT",
+   "brand": "Brand Castle, LLC",
+   "category": "Cake, Cookie & Cupcake Mixes",
+   "fdcId": "1070115"
+  },
+  {
+   "id": "FDC-1070723",
+   "upc": "025600002810",
+   "title": "ICED CREME FILLED CAKES WITH HOLIDAY SPRINKLES SANTA SNACKS, ICED CREME",
+   "brand": "Tasty Baking Company",
+   "category": "Cakes, Cupcakes, Snack Cakes",
+   "fdcId": "1070723"
+  },
+  {
+   "id": "FDC-1070923",
+   "upc": "070505900099",
+   "title": "COUNTRY SAUSAGE & BISCUITS, COUNTRY SAUSAGE",
+   "brand": "F.B. Purnell Sausage Co., Inc.",
+   "category": "Frozen Breakfast Sandwiches, Biscuits & Meals",
+   "fdcId": "1070923"
+  },
+  {
+   "id": "FDC-1071505",
+   "upc": "044000046026",
+   "title": "DARK CHOCOLATE CREME SANDWICH BREAKFAST BISCUITS, DARK CHOCOLATE CREME",
+   "brand": "Nabisco Biscuit Company",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1071505"
+  },
+  {
+   "id": "FDC-1072605",
+   "upc": "736798902577",
+   "title": "AVOCADO SALSA, AVOCADO",
+   "brand": "Good Foods Group, LLC",
+   "category": "Dips & Salsa",
+   "fdcId": "1072605"
+  },
+  {
+   "id": "FDC-1073103",
+   "upc": "041271009743",
+   "title": "CARAMEL MACCHIATO CREAMER SINGLES, CARAMEL MACCHIATO",
+   "brand": "Dean Foods Company",
+   "category": "Milk Additives",
+   "fdcId": "1073103"
+  },
+  {
+   "id": "FDC-1073983",
+   "upc": "818290011381",
+   "title": "PLAIN WHOLE MILK SQUEEZABLE GREEK YOGURT, PLAIN",
+   "brand": "Chobani, Inc.",
+   "category": "Yogurt",
+   "fdcId": "1073983"
+  },
+  {
+   "id": "FDC-1074015",
+   "upc": "764218655734",
+   "title": "PARMESAN POPCORN, PARMESAN",
+   "brand": "Dishaka, LLC",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1074015"
+  },
+  {
+   "id": "FDC-1074359",
+   "upc": "079606020903",
+   "title": "EGG, SAUSAGE & CHEDDAR CHEESE HANDCRAFTED BREAKFAST BURRITO, EGG, SAUSAGE & CHEDDAR CHEESE",
+   "brand": "Camino Real Foods, Inc.",
+   "category": "Frozen Breakfast Sandwiches, Biscuits & Meals",
+   "fdcId": "1074359"
+  },
+  {
+   "id": "FDC-1074665",
+   "upc": "009300128148",
+   "title": "THIN DILL CHIPS, THIN DILL",
+   "brand": "Mount Olive Pickle Company Inc.",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1074665"
+  },
+  {
+   "id": "FDC-1075243",
+   "upc": "728119198707",
+   "title": "PUTTANESCA TOMATO & SLICED OLIVES ITALIAN PASTA SAUCE, PUTTANESCA",
+   "brand": "International Delicacies Inc.",
+   "category": "Prepared Pasta & Pizza Sauces",
+   "fdcId": "1075243"
+  },
+  {
+   "id": "FDC-1075603",
+   "upc": "029000027336",
+   "title": "HEART HEALTH POWER SQUARES CASHEWS, BROWN RICE CRISPS, BLUEBERRIES, ALMONDS NUT CLUSTERS, HEART HEALTH POWER SQUARES",
+   "brand": "Nabisco Food Company",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1075603"
+  },
+  {
+   "id": "FDC-1075715",
+   "upc": "849429001379",
+   "title": "ORANGE CREAM SPARKLING DRINK, ORANGE CREAM",
+   "brand": "ZEVIA LLC",
+   "category": "Other Drinks",
+   "fdcId": "1075715"
+  },
+  {
+   "id": "FDC-1076187",
+   "upc": "879890001967",
+   "title": "ROSEMARY & OLIVE OIL MULTI-SEED CRACKERS WITH SESAME, QUINOA, FLAX, AMARANTH SEEDS, ROSEMARY AND OLIVE OIL FOR A MEDITERRANEAN TASTE, ROSEMARY & OLIVE OIL",
+   "brand": "TH Foods, Inc.",
+   "category": "Crackers & Biscotti",
+   "fdcId": "1076187"
+  },
+  {
+   "id": "FDC-1076371",
+   "upc": "029000026841",
+   "title": "CHOCOLATE & NUT BARK MILK CHOCOLATE & PEANUT WITH SEA SALT, CHOCOLATE & NUT BARK",
+   "brand": "Nabisco Food Company",
+   "category": "Chocolate",
+   "fdcId": "1076371"
+  },
+  {
+   "id": "FDC-1077627",
+   "upc": "013400322078",
+   "title": "ENRICHED LONG GRAIN RICE",
+   "brand": "Riviana Foods Inc.",
+   "category": "Rice",
+   "fdcId": "1077627"
+  },
+  {
+   "id": "FDC-1077795",
+   "upc": "070560976633",
+   "title": "BROCCOLI FLORETS, RED POTATOES & CARROTS WITH OLIVE OIL, SEA SALT & CRACKED PEPPER VEGETABLES FOR GRILLING, BROCCOLI FLORETS, RED POTATOES & CARROTS",
+   "brand": "The Pictsweet Company",
+   "category": "Frozen Vegetables",
+   "fdcId": "1077795"
+  },
+  {
+   "id": "FDC-1077799",
+   "upc": "070560976657",
+   "title": "ASPARAGUS, SWEET PEPPERS & ONIONS WITH OLIVE OIL, SEA SALT & CRACKED PEPPER VEGETABLES FOR GRILLING, ASPARAGUS, SWEET PEPPERS & ONIONS",
+   "brand": "The Pictsweet Company",
+   "category": "Frozen Vegetables",
+   "fdcId": "1077799"
+  },
+  {
+   "id": "FDC-1079215",
+   "upc": "072180566195",
+   "title": "FIVE CHEESE MOZZARELLA, PROVOLONE, FONTINA, WHITE CHEDDAR & PARMESAN CHEESE THIN CRUST PIZZA, FIVE CHEESE",
+   "brand": "The Schwan Food Company",
+   "category": "Pizza",
+   "fdcId": "1079215"
+  },
+  {
+   "id": "FDC-1080539",
+   "upc": "749289000157",
+   "title": "SWEET PLANTAIN CHIPS, SWEET",
+   "brand": "Fyffes North America Inc.",
+   "category": "Wholesome Snacks",
+   "fdcId": "1080539"
+  },
+  {
+   "id": "FDC-1080755",
+   "upc": "071279407401",
+   "title": "CRANBERRY WALNUT SPRING MIX BLEND, RADICCHIO, FETA CHEESE CRUMBLES, CANDIED WALNUTS, DRIED CRANBERRIES, FLATBREAD CHIPS, WITH RASPBERRY VINAIGRETTE DRESSING, CRANBERRY WALNUT",
+   "brand": "Fresh Express Incorporated",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1080755"
+  },
+  {
+   "id": "FDC-1081135",
+   "upc": "033828070160",
+   "title": "WHOLE KERNEL CORN",
+   "brand": "Lakeside Foods, Inc.",
+   "category": "Canned Vegetables",
+   "fdcId": "1081135"
+  },
+  {
+   "id": "FDC-1081259",
+   "upc": "857886006806",
+   "title": "HERBAL LEMON BALANCE HEMP BLEND DIETARY SUPPLEMENT, HERBAL LEMON",
+   "brand": "LIFEAID",
+   "category": "Herbal Supplements",
+   "fdcId": "1081259"
+  },
+  {
+   "id": "FDC-1081581",
+   "upc": "064777848579",
+   "title": "SWEET GUMMI PEACH RINGS FLAVORED CANDY, SWEET GUMMI PEACH RINGS",
+   "brand": "Jo-Lee Food Products, Inc.",
+   "category": "Candy",
+   "fdcId": "1081581"
+  },
+  {
+   "id": "FDC-1081623",
+   "upc": "000000000000",
+   "title": "ORGANIC BANANA, MANGO & SPINACH WITH VITAMIN D & PROBIOTICS WHOLE MILK YOGURT, BANANA, MANGO & SPINACH",
+   "brand": "NOT A BRANDED ITEM",
+   "category": "Yogurt",
+   "fdcId": "1081623"
+  },
+  {
+   "id": "FDC-1081731",
+   "upc": "705016354207",
+   "title": "FRUITY PEBBLES 100% WHEY ISOLATE PROTEIN POWDER, FRUITY PEBBLES",
+   "brand": "Dymatize Enterprises, LLC",
+   "category": "Energy, Protein & Muscle Recovery Drinks",
+   "fdcId": "1081731"
+  },
+  {
+   "id": "FDC-1081783",
+   "upc": "727766001743",
+   "title": "EMPIRE PEPPER JACK NEW YORK STATE CHEESE, EMPIRE PEPPER JACK",
+   "brand": "Agri-Mark, Inc.",
+   "category": "Cheese",
+   "fdcId": "1081783"
+  },
+  {
+   "id": "FDC-1082063",
+   "upc": "857536005951",
+   "title": "TILAPIA FILLETS",
+   "brand": "GROBEST GLOBAL SERVICE, INC.",
+   "category": "Frozen Fish & Seafood",
+   "fdcId": "1082063"
+  },
+  {
+   "id": "FDC-1082411",
+   "upc": "041190409877",
+   "title": "PISTACHIO ALMOND RICH & CREAMY ICE CREAM, PISTACHIO ALMOND",
+   "brand": "Wakefern Food Corporation",
+   "category": "Ice Cream & Frozen Yogurt",
+   "fdcId": "1082411"
+  },
+  {
+   "id": "FDC-1082457",
+   "upc": "812988021065",
+   "title": "ANDEAN SOUP, ANDEAN",
+   "brand": "Christopher Bean Coffee",
+   "category": "Other Soups",
+   "fdcId": "1082457"
+  },
+  {
+   "id": "FDC-1082579",
+   "upc": "077890494417",
+   "title": "AUSTRALIAN STRAWBERRY LICORICE CANDY, AUSTRALIAN STRAWBERRY LICORICE",
+   "brand": "Wegmans Food Markets, Inc. ",
+   "category": "Candy",
+   "fdcId": "1082579"
+  },
+  {
+   "id": "FDC-1082701",
+   "upc": "824150401612",
+   "title": "100% POMEGRANATE JUICE FROM CONCENTRATE, POMEGRANATE",
+   "brand": "Pom Wonderful, LLC",
+   "category": "Fruit & Vegetable Juice, Nectars & Fruit Drinks",
+   "fdcId": "1082701"
+  },
+  {
+   "id": "FDC-1082819",
+   "upc": "764218655970",
+   "title": "POPCORN, PARMESAN CHEESE",
+   "brand": "Dishaka, LLC",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1082819"
+  },
+  {
+   "id": "FDC-1082853",
+   "upc": "051000167804",
+   "title": "CAMPBELL'S CHUNKY SOUP VEGETABLE",
+   "brand": "CAMPBELL SOUP COMPANY",
+   "category": "Prepared Soups",
+   "fdcId": "1082853"
+  },
+  {
+   "id": "FDC-1082977",
+   "upc": "051000267627",
+   "title": "CAMPBELL'S WELL YES SOUP SWEET POTATO CORN CHOWDER",
+   "brand": "CAMPBELL SOUP COMPANY",
+   "category": "Prepared Soups",
+   "fdcId": "1082977"
+  },
+  {
+   "id": "FDC-1083037",
+   "upc": "014100048091",
+   "title": "PEPPERIDGE FARM CRACKERS",
+   "brand": "PEPPERIDGE FARM",
+   "category": "Biscuits/Cookies",
+   "fdcId": "1083037"
+  },
+  {
+   "id": "FDC-1083173",
+   "upc": "042222216401",
+   "title": "85% LEAN 15% FAT TURKEY BREAKFAST SAUSAGE, TURKEY",
+   "brand": "Jennie-O Turkey Store, Inc.",
+   "category": "Poultry, Chicken & Turkey",
+   "fdcId": "1083173"
+  },
+  {
+   "id": "FDC-1083205",
+   "upc": "698997809326",
+   "title": "CLASSIC HOT DOG BUNS, CLASSIC HOT DOG",
+   "brand": "Pinnacle Foods Group LLC",
+   "category": "Breads & Buns",
+   "fdcId": "1083205"
+  },
+  {
+   "id": "FDC-1083235",
+   "upc": "078895131154",
+   "title": "SAUCE FOR ORANGE CHICKEN, ORANGE CHICKEN",
+   "brand": "Lee Kum Kee Co. Ltd.",
+   "category": "Oriental, Mexican & Ethnic Sauces",
+   "fdcId": "1083235"
+  },
+  {
+   "id": "FDC-1083271",
+   "upc": "041387323023",
+   "title": "LIGHT GREEN TEA WITH HONEY ICED TEA MIX, LIGHT GREEN TEA WITH HONEY",
+   "brand": "4C Foods Corp.",
+   "category": "Powdered Drinks",
+   "fdcId": "1083271"
+  },
+  {
+   "id": "FDC-1083369",
+   "upc": "078902675589",
+   "title": "LEMON ROSEMARY HUMMUS, LEMON ROSEMARY",
+   "brand": "Tribe Mediterranean Foods, Inc.",
+   "category": "Dips & Salsa",
+   "fdcId": "1083369"
+  },
+  {
+   "id": "FDC-1083449",
+   "upc": "037600235457",
+   "title": "MILD THICK & CHUNKY SALSA, MILD THICK & CHUNKY",
+   "brand": "Hormel Foods Corporation ",
+   "category": "Dips & Salsa",
+   "fdcId": "1083449"
+  },
+  {
+   "id": "FDC-1084225",
+   "upc": "717854105989",
+   "title": "SPICY CHICKEN ALFREDO PASTA WITH A SPICY ALFREDO SAUCE & WHITE CHICKEN, SPICY CHICKEN ALFREDO",
+   "brand": "Bellisio Foods Inc",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1084225"
+  },
+  {
+   "id": "FDC-1084701",
+   "upc": "075186012055",
+   "title": "PECAN CARAMEL CLUSTERS, PECAN CARAMEL",
+   "brand": "Zachary Confections Inc",
+   "category": "Chocolate",
+   "fdcId": "1084701"
+  },
+  {
+   "id": "FDC-1084781",
+   "upc": "181945000161",
+   "title": "CASHEW CARAMEL PROTEIN PARADISE MACROBAR, CASHEW CARAMEL",
+   "brand": "GO MACRO LLC",
+   "category": "Snack, Energy & Granola Bars",
+   "fdcId": "1084781"
+  },
+  {
+   "id": "FDC-1085243",
+   "upc": "849429002079",
+   "title": "ZEVIA, ZERO CALORIE MIXER, TONIC WATER, TONIC WATER",
+   "brand": "ZEVIA LLC",
+   "category": "Alcohol",
+   "fdcId": "1085243"
+  },
+  {
+   "id": "FDC-1085303",
+   "upc": "025600009697",
+   "title": "CHERRY PIE GLAZED, CHERRY PIE",
+   "brand": "Tasty Baking Company",
+   "category": "Cakes, Cupcakes, Snack Cakes",
+   "fdcId": "1085303"
+  },
+  {
+   "id": "FDC-1085327",
+   "upc": "070690270694",
+   "title": "BUTTER TOFFEE PEANUTS, BUTTER TOFFEE",
+   "brand": "John B. Sanfilippo & Son, Inc.",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1085327"
+  },
+  {
+   "id": "FDC-1087455",
+   "upc": "041500853994",
+   "title": "CLASSIC YELLOW MUSTARD, CLASSIC YELLOW",
+   "brand": "McCormick & Company, Inc.",
+   "category": "Ketchup, Mustard, BBQ & Cheese Sauce",
+   "fdcId": "1087455"
+  },
+  {
+   "id": "FDC-1087775",
+   "upc": "041318570649",
+   "title": "CINNAMON RAISIN BAGELS, CINNAMON RAISIN",
+   "brand": "Schnuck Markets, Inc.",
+   "category": "Breads & Buns",
+   "fdcId": "1087775"
+  },
+  {
+   "id": "FDC-1087915",
+   "upc": "072655001800",
+   "title": "CHICKEN FETA & FARRO PULLED ALL NATURAL CHICKEN BREAST WITH CHICKPEAS AND VEGETABLES SERVED ON TOP OF FARRO WITH A GARLIC OREGANO SAUCE TOPPED WITH FETA CHEESE, CHICKEN FETA & FARRO",
+   "brand": "Conagra Brands, Inc.",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1087915"
+  },
+  {
+   "id": "FDC-1088001",
+   "upc": "039978039521",
+   "title": "OLD FASHIONED ROLLED OATS WHOLE GRAIN, OLD FASHIONED ROLLED OATS",
+   "brand": "Bob's Red Mill Natural Foods, Inc.",
+   "category": "Cereal",
+   "fdcId": "1088001"
+  },
+  {
+   "id": "FDC-1089243",
+   "upc": "023923401105",
+   "title": "APPLE ORANGE ORGANIC ELECTROLYTE SOLUTION, APPLE ORANGE",
+   "brand": "The Hain Celestial Group, Inc.",
+   "category": "Health Care",
+   "fdcId": "1089243"
+  },
+  {
+   "id": "FDC-1089553",
+   "upc": "021131000387",
+   "title": "COUNTRY FRIED CHICKEN AND GRAVY BREADED WHITE MEAT CHICKEN PATTY WITH CREAMY MASHED POTATOES & HOME-STYLE GRAVY, COUNTRY FRIED CHICKEN AND GRAVY",
+   "brand": "Marie Callender's Retail Foods",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1089553"
+  },
+  {
+   "id": "FDC-1089591",
+   "upc": "021131301538",
+   "title": "CHICKEN POT PIE TENDER WHITE MEAT CHICKEN, CHICKEN",
+   "brand": "Marie Callender's Retail Foods",
+   "category": "Frozen Dinners & Entrees",
+   "fdcId": "1089591"
+  },
+  {
+   "id": "FDC-1091005",
+   "upc": "070551157478",
+   "title": "ORIGINAL CREAM CHEESE SPREAD, ORIGINAL",
+   "brand": "Zausner Foods Corp",
+   "category": "Cheese",
+   "fdcId": "1091005"
+  },
+  {
+   "id": "FDC-1091575",
+   "upc": "864084000215",
+   "title": "DRAGON FRUIT CHIPS, DRAGON FRUIT",
+   "brand": "Pocas International Corp.",
+   "category": "Chips, Pretzels & Snacks",
+   "fdcId": "1091575"
+  },
+  {
+   "id": "FDC-1091721",
+   "upc": "041318120653",
+   "title": "FRY SAUCE, FRY",
+   "brand": "Schnuck Markets, Inc.",
+   "category": "Ketchup, Mustard, BBQ & Cheese Sauce",
+   "fdcId": "1091721"
+  },
+  {
+   "id": "FDC-1091871",
+   "upc": "049800171916",
+   "title": "CHOCOLATE CHIP SANDWICH COOKIES FILLED WITH VANILLA FLAVORED ICING AND CHOCOLATE CHIPS, CHOCOLATE CHIP",
+   "brand": "Rich Products Corporation",
+   "category": "Cookies & Biscuits",
+   "fdcId": "1091871"
+  },
+  {
+   "id": "FDC-1092053",
+   "upc": "628250179019",
+   "title": "PLANT-BASED UNBUNS",
+   "brand": "UNBUN",
+   "category": "Frozen Bread & Dough",
+   "fdcId": "1092053"
+  },
+  {
+   "id": "FDC-1092473",
+   "upc": "020601414921",
+   "title": "ORGANIC CAGE FREE HARD BOILED EGGS",
+   "brand": "Rafael Padilla & Cia S. En C.",
+   "category": "Eggs & Egg Substitutes",
+   "fdcId": "1092473"
+  },
+  {
+   "id": "FDC-1093323",
+   "upc": "072714006623",
+   "title": "QUICK COOK CRINKLE CUT FRENCH FRIED POTATOES",
+   "brand": "McCain Foods USA, Inc.",
+   "category": "French Fries, Potatoes & Onion Rings",
+   "fdcId": "1093323"
+  },
+  {
+   "id": "FDC-1093377",
+   "upc": "039677377108",
+   "title": "BROWN BREAD WHEAT SANDWICH LOAF, BROWN BREAD",
+   "brand": "Wholesome Harvest Baking, LLC",
+   "category": "Breads & Buns",
+   "fdcId": "1093377"
+  },
+  {
+   "id": "FDC-1093595",
+   "upc": "740699001727",
+   "title": "WHOLE RYE BREAD, WHOLE RYE",
+   "brand": "Meierbaer Spezialbrot",
+   "category": "Breads & Buns",
+   "fdcId": "1093595"
+  },
+  {
+   "id": "FDC-1093719",
+   "upc": "892458001612",
+   "title": "LENINADE SODA, LENINADE",
+   "brand": "Real Soda in Real Bottles, Ltd",
+   "category": "Soda",
+   "fdcId": "1093719"
+  },
+  {
+   "id": "FDC-1094259",
+   "upc": "853398005023",
+   "title": "HOT GREEN CHILE, HOT",
+   "brand": "Lyndy's Foods, LLC",
+   "category": "Oriental, Mexican & Ethnic Sauces",
+   "fdcId": "1094259"
+  },
+  {
+   "id": "FDC-1094561",
+   "upc": "030034092023",
+   "title": "CRUNCHY PEANUT BUTTER, CRUNCHY",
+   "brand": "Giant Eagle, Inc.",
+   "category": "Nut & Seed Butters",
+   "fdcId": "1094561"
+  },
+  {
+   "id": "FDC-1094953",
+   "upc": "616112849958",
+   "title": "MILD ORGANIC CLASSIC GUACAMOLE, MILD",
+   "brand": "Avomex, Inc.",
+   "category": "Dips & Salsa",
+   "fdcId": "1094953"
+  },
+  {
+   "id": "FDC-1095779",
+   "upc": "050700004488",
+   "title": "MACARONI PRODUCT, SPAGHETTI",
+   "brand": "The Federated Group, Inc.",
+   "category": "Pasta by Shape & Type",
+   "fdcId": "1095779"
+  },
+  {
+   "id": "FDC-1095993",
+   "upc": "075925307329",
+   "title": "ONION & CHIVE TRIPLE CREAM CHEESE SPREAD, ONION & CHIVE",
+   "brand": "Milton G. Waldbaum Company",
+   "category": "Cheese",
+   "fdcId": "1095993"
+  },
+  {
+   "id": "FDC-1096197",
+   "upc": "048176994938",
+   "title": "CHOLESTEROL FREE 100% PURE RICE OIL",
+   "brand": "Fratelli Mantova Fu Vincenzo",
+   "category": "Vegetable & Cooking Oils",
+   "fdcId": "1096197"
+  },
+  {
+   "id": "FDC-1096499",
+   "upc": "041318095203",
+   "title": "BUFFALO STYLE CHICKEN TAKE & BAKE PIZZA, BUFFALO STYLE CHICKEN",
+   "brand": "Schnuck Markets, Inc.",
+   "category": "Other Deli",
+   "fdcId": "1096499"
+  },
+  {
+   "id": "FDC-1096737",
+   "upc": "790429263208",
+   "title": "DOUBLE DIPPED PEANUTS",
+   "brand": "International Foodsource",
+   "category": "Popcorn, Peanuts, Seeds & Related Snacks",
+   "fdcId": "1096737"
+  },
+  {
+   "id": "FDC-1096791",
+   "upc": "725439802291",
+   "title": "CHICKEN SALAD, CHICKEN",
+   "brand": "Delhaize America, Inc.",
+   "category": "Deli Salads",
+   "fdcId": "1096791"
+  },
+  {
+   "id": "FDC-1096867",
+   "upc": "806795025231",
+   "title": "DICED TOMATOES IN JUICE, DICED TOMATOES",
+   "brand": "Performance Food Group",
+   "category": "Tomatoes",
+   "fdcId": "1096867"
+  },
+  {
+   "id": "FDC-1097403",
+   "upc": "8410525119019",
+   "title": "FINI, GUMMY CANDY",
+   "brand": "FINI GOLOSINAS ESPANA, S.L.U.",
+   "category": "Candy",
+   "fdcId": "1097403"
+  },
+  {
+   "id": "FDC-1106150",
+   "upc": "041188046831",
+   "title": "BASIL, GARLIC & OREGANO CHUNKY CRUSHED TOMATOES, BASIL, GARLIC & OREGANO",
+   "brand": "Furman Foods, Inc.",
+   "category": "Tomatoes",
+   "fdcId": "1106150"
+  },
+  {
+   "id": "FDC-1106649",
+   "upc": "031500004724",
+   "title": "HOT JALAPENO PEPPERS SLICED, HOT JALAPENO",
+   "brand": "B&G Foods, Inc.",
+   "category": "Pickles, Olives, Peppers & Relishes",
+   "fdcId": "1106649"
+  }
+ ]
+}
