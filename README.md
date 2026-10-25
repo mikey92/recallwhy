@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml/badge.svg)](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml) **Live site, no install:** https://mikey92.github.io/recallwhy/ (replay a live run, open the reports)
 
-**Demo video (3:58):** https://iframe.mediadelivery.net/embed/778121/ae977b1c-6488-42f2-a74e-16879d227df6 · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
+**Demo video (3:52):** https://iframe.mediadelivery.net/embed/778121/e5a6cb64-c2e7-4468-9f69-4c2d0988611f · **Slides:** [deck/RecallWhy-deck.pdf](deck/RecallWhy-deck.pdf)
 
 **Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence.** RecallWhy helps a retailer's product-safety manager answer, for every new federal recall, *is it on our shelves, which lots, which stores, who bought it*, by discovering and reconciling four sources that disagree (two live federal feeds, the ERP and the supplier portal) through Zetaris. When the sources disagree, both sides are recorded as World Model facts with the query behind them, and the agents either prove a rule that reconciles them or send the case to a person. **The food items in the retailer's catalog are real products** — real titles, barcodes and brand owners from USDA FoodData Central and Open Food Facts, including every product whose barcode an FDA notice prints; only stock, sales and ship notices are synthetic. And the answer ends in work the safety team can hand on: a pull list per store and lot, a supplier request and a customer notice, drafted for approval and never sent on their own.
 
