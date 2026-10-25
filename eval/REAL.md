@@ -40,35 +40,43 @@ the product's barcode path gets on the same items.
 
 Run: `npx tsx scripts/build-real-catalog.ts --fdc <FDC csv folder>`, then `npx tsx eval/real-items.ts`.
 
-## Result (`eval/results/real-items-nvidia_nemotron-3-ultra-550b-a55b.json`, 2026-10-25)
+## Result (`eval/results/real-items-nvidia_nemotron-3-ultra-550b-a55b.json`, 2026-10-25, second run)
 
-249 pairs (97 positive, 92 other-notice, 60 same-brand), 298 model calls, 0 failed after retries, 77 min.
-Prompts and checks are the ones in `src` at this commit; nothing was tuned on these pairs.
+249 pairs (97 positive, 92 other-notice, 60 same-brand), 298 model calls, 0 failed after retries, 79 min.
 
-**Barcode path** (how the product actually finds these items): 93 of 97 positives are settled by the
-UPC rule without a model; the Auditor's digit re-check agrees on 88 (the other 5 are 11-digit prints
-whose check digit the Scout adds, so the 12-digit UPC is not literally in the notice and the pair
-goes to a reviewer). 4 positives are not barcode candidates at all and fall to text: one GTIN-14
-with two leading zeros (`feeds.findUpcs` accepts 11–13 digits), two EAN-13 (Lidl), one GTIN-8. No
-negative is matched by barcode (0 of 152).
+**Barcode path** (how the product actually finds these items): **97 of 97** positives are settled by
+the UPC rule without a model, and the Auditor's re-check finds the barcode in the notice for all 97.
+No negative is matched by barcode (**0 of 152**).
 
 **Text path, barcode hidden** (the fallback when a feed or item master has no usable barcode):
 
 | | caught | wrongly dismissed | false alarms | sent to human |
 |---|---|---|---|---|
-| judge, first answer | 61 / 97 | 36 | 1 / 152 | 0 |
-| after the Auditor (final) | 53 / 97 | 29 | 2 / 152 | 20 (15 positives) |
+| judge, first answer | 69 / 97 | 28 | 3 / 152 | 1 |
+| after the Auditor (final) | 55 / 97 | **11** | 2 / 152 | 64 (31 positives) |
 
-Final, counting only pairs the agents decided: recall 65% (53/82), precision 96% (53/55). By source:
-FDC titles 14/31 caught, OFF titles 39/66. The Auditor revised 29 pairs; its checks fired as
-`item-word-missing` 35, `dismissal-names-our-item` 31, `size-not-in-notice` 3.
+Final, counting only pairs the agents decided: recall 83% (55/66), precision 96% (55/57). By source:
+FDC titles 14/31 caught (6 dismissed), OFF titles 41/66 (5 dismissed). The Auditor revised 69 pairs;
+its checks fired as `item-word-missing` 44, `dismissal-same-line` 43, `dismissal-names-our-item` 22,
+`size-not-in-notice` 3.
 
-What the text path misses: FDC descriptions that are long ingredient-style labels ("CLASSIC ICEBERG
-LETTUCE, CARROTS, RED CABBAGE SALAD" vs "MARKETSIDE ICEBERG SALAD"), FDC records whose description is
-an older name for the barcode, OFF names that are empty or wrong ("Chocolate", "Pico"), other pack
-sizes of the same line (the judge prompt treats a different package size as a different product),
-and per-egg quantities ("Large Eggs 50 g"). On real titles, a barcode is what makes the match; the
-text judge is a safety net that errs toward dismissing and hands doubtful pairs to a person.
+**What changed since the first run, and why this is not an independent test.** The first run
+(same pairs, same model) settled 93/97 by barcode, re-checked 88, and on the text path caught 53,
+dismissed 29 and sent 20 to a person. Reading its misses led to two changes, so the second run's
+numbers are measured on the pairs that motivated them:
+- Barcodes: `feeds.findUpcs` now reads EAN-13 (Lidl, imports), GTIN-14 with two leading zeros, and
+  an 11-digit print that is a UPC missing its leading zero (it keeps both readings); the Auditor's
+  live-notice re-check accepts a UPC printed without its check digit or its leading zero
+  (`printedForms` in `scripts/upc.ts`).
+- Dismissals: most misses were the same brand's line in another size, count or variety (18 eggs
+  vs a notice for 12, a pounded-yam flour vs the recalled instant mix). The Auditor now sends a
+  dismissal to a person when the recalled product the judge quotes names at least half of our
+  item's product words (`dismissal-same-line`). It never turns a dismissal into a match; it trades
+  dismissals for reviewer work: 29 → 11 missed, 20 → 64 to a person (31 of them real positives).
+
+What the text path still misses: FDC descriptions that are long ingredient-style labels, FDC records
+whose description is an older name for the barcode, and OFF names that are empty or wrong. On real
+titles, a barcode is what makes the match; the text judge is a safety net.
 
 ## Limits (read before quoting any number above)
 
