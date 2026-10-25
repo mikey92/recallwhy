@@ -29,7 +29,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="foot"><span>Mike Kim · solo</span><span>github.com/mikey92/recallwhy</span></div></section>
 
 <section class="s"><div class="k">1 · Problem and users</div>
-<h2>517 federal recall notices since July.<br>Each one is a manual cross-check.</h2>
+<h2>515 federal recall notices since July.<br>Each one is a manual cross-check.</h2>
 <div class="grid g2" style="margin-top:20px"><div>
 <p>A regional retailer's <b>product-safety / QA manager</b> reads every CPSC and FDA notice and must answer:</p>
 <ul><li>Do we sell this — or something that only looks like it?</li><li>Which lots? Which stores still hold them?</li><li>How many customers bought it since the recall began?</li><li>Who supplied it?</li></ul>
@@ -68,7 +68,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <tr><td>Retailer data</td><td>Postgres 16 in Docker — food items are real products (USDA FoodData Central, Open Food Facts: 95 recalled, 86 same-brand, 260 more); stock, sales and ship notices synthetic</td></tr>
 <tr><td>Entry points</td><td><code>POST /run</code> · <code>POST /approve</code> API · Dockerfile · CLI · live trace viewer · review screen</td></tr>
 <tr><td>No-credential mode</td><td><code>SAMPLE_MODE=true</code>: same agents and SQL on an in-process DuckDB stand-in, labelled SAMPLE</td></tr>
-<tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 71 tests incl. Meterless engine tests</td></tr></table>
+<tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 77 tests incl. Meterless engine tests</td></tr></table>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s dark"><div class="k">5 · How Zetaris and Meterless are used</div><h2>Load-bearing, not bolted on.</h2>
@@ -77,7 +77,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">6 · What's unique</div><h2>Map the fragments first. Then trust no one — including the model.</h2>
-<ul><li><b>The map is a hypothesis the Auditor can send back.</b> Rows the key can't reach go to the Cartographer, which learns the supplier's rule (padding, dropped check digit) and proves it on all that supplier's ship notices.</li><li><b>The model proposes, SQL proves.</b> For a format the code has no rule for (a 10-digit core), Nemotron 3 Ultra proposes a transform from sampled pairs in a fixed op set; it is adopted only if it holds on every one of the supplier's rows (269 of 269), then written back into Zetaris as a view, read back, and checked by Zetaris's own lineage and data-quality rule (every row valid). Judge off: <b>22</b> of 194 caught with known rules, <b>103</b> with proposals, <b>11</b> without the Cartographer.</li><li><b>Re-derives every number in Zetaris</b> with differently written SQL; a mismatch blocks the brief.</li>
+<ul><li><b>The map is a hypothesis the Auditor can send back.</b> Rows the key can't reach go to the Cartographer, which learns the supplier's rule (padding, dropped check digit) and proves it on all that supplier's ship notices.</li><li><b>The model proposes, SQL proves.</b> For a format the code has no rule for (a 10-digit core), Nemotron 3 Ultra proposes a transform from sampled pairs in a fixed op set; it is adopted only if it holds on every one of the supplier's rows (193 to 390 rows, four suppliers), then written back into Zetaris as a view, read back, and checked by Zetaris's own lineage and data-quality rule (every row valid). Judge off: <b>22</b> of 194 caught with known rules, <b>103</b> with proposals, <b>11</b> without the Cartographer.</li><li><b>Re-derives every number in Zetaris</b> with differently written SQL; a mismatch blocks the brief.</li>
 <li><b>Re-reads the live notice</b> (REST table) to confirm a UPC match, instead of trusting the parser.</li>
 <li><b>"Cheese ≠ pepperoni"</b>: a quote can be copied from the notice and still describe another variety — every product word of our item must appear in the notice. Live run: blocked, re-judged, ruled <i>not ours</i>.</li>
 <li><b>Lot codes the model reads must appear verbatim</b> in <code>code_info</code>; invented lots are dropped.</li>
@@ -96,18 +96,17 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div><img class="shot" src="packets.png" style="height:620px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Review screen: drafts from the latest run, approved with a name and a time. Nothing is sent. Plus <code>digest.md</code>: what needs the manager first, read through Markovian.</p></div></div>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
-<section class="s"><div class="k">8 · Results</div><h2>187 of 194 recalled items caught. On text matches the Auditor cuts missed recalls 10 → 3.</h2>
-<table class="tight" style="margin-bottom:14px"><tr><th>Setup (440 recall/SKU pairs)</th><th>Caught (of 194)</th><th>Wrongly dismissed</th><th>False alarms (of 246)</th><th>To human</th></tr>
-<tr><td>No Cartographer — rules only</td><td>11</td><td>0</td><td>0</td><td>429</td></tr>
-<tr><td>Cartographer, known rules only</td><td>22</td><td>0</td><td>0</td><td>418</td></tr>
-<tr><td>Cartographer + model-proposed transforms (no judge)</td><td>103</td><td>0</td><td>0</td><td>337</td></tr>
-<tr><td>+ Nemotron 3.5 Lightning 30B via Nightshift</td><td>139</td><td>10</td><td>2</td><td>66</td></tr>
-<tr style="font-weight:700"><td>+ NVIDIA Nemotron 3 Ultra via Nightshift</td><td>187</td><td>3</td><td>6</td><td>23</td></tr></table>
-<table class="tight" style="margin-bottom:14px"><tr><th>Text matches (90 covered of 336)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
-<tr><td>Ultra: judge's first answer</td><td>80</td><td style="color:#c0392b">10</td><td>10</td><td>0</td></tr>
-<tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>85</td><td>3</td><td>6</td><td>21</td></tr></table>
-<p style="font-size:26px"><b>417 of 440 pairs (95%) settled without a person, 408 correctly; 23 go to a reviewer with the reason.</b> The Auditor checks dismissals too. 0 of 538 model calls failed.</p>
-<p class="mute" style="font-size:22px">Real Investigator ⇄ Auditor loop on every candidate pair from 517 recalls (sample-mode data). Covered = SKU generated from that recall, or its UPC printed in the notice. Retailer data is synthetic. Details: eval/EVAL.md.</p>
+<section class="s"><div class="k">8 · Results</div><h2>134 of 146 recalled items caught, 1 missed, 1 false alarm — on real products.</h2>
+<table class="tight" style="margin-bottom:14px"><tr><th>Setup (322 recall/SKU pairs)</th><th>Caught (of 146)</th><th>Wrongly dismissed</th><th>False alarms (of 176)</th><th>To human</th></tr>
+<tr><td>No Cartographer — rules only</td><td>53</td><td>0</td><td>0</td><td>269</td></tr>
+<tr><td>Cartographer, known rules only</td><td>89</td><td>0</td><td>0</td><td>233</td></tr>
+<tr><td>Cartographer + model-proposed transforms (no judge)</td><td>99</td><td>0</td><td>0</td><td>223</td></tr>
+<tr style="font-weight:700"><td>+ NVIDIA Nemotron 3 Ultra via Nightshift</td><td>134</td><td>1</td><td>1</td><td>30</td></tr></table>
+<table class="tight" style="margin-bottom:14px"><tr><th>Text matches (47 covered of 223)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
+<tr><td>Ultra: judge's first answer</td><td>43</td><td style="color:#c0392b">4</td><td>2</td><td>0</td></tr>
+<tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>45</td><td>1</td><td>1</td><td>20</td></tr></table>
+<p style="font-size:26px"><b>292 of 322 pairs (91%) settled without a person, 290 correctly; 30 go to a reviewer with the reason.</b> 0 of 392 model calls failed. Real products, barcodes hidden: {R_DECK}.</p>
+<p class="mute" style="font-size:22px">Real Investigator ⇄ Auditor loop on every candidate pair from 515 recalls (sample-mode data). Food items are real products (USDA FoodData Central, Open Food Facts); stock, sales and ship notices are synthetic. Details: eval/EVAL.md, eval/REAL.md.</p>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">9 · Next</div><h2>From demo to a safety desk.</h2>

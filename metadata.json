@@ -1,6 +1,6 @@
 {
   "name": "RecallWhy",
-  "tagline": "Agents that tell a retailer which recalled products are on its shelves — and why they believe it.",
+  "tagline": "Agents that tell a retailer which recalled products are on its shelves — which lots, which stores, who to tell — why they believe it, and the pull list to act on.",
   "track": "Track 1: Solving Fragmented Intelligence",
   "team": [
     "Mike Kim"
@@ -13,8 +13,9 @@
     "sample_mode": "SAMPLE_MODE=true npm run agents",
     "decide": "npm run decide -- <recall-id> <sku> same|not-this --note \"...\"",
     "eval": "npx tsx eval/run.ts --provider meterless --model nvidia/nemotron-3-ultra-550b-a55b",
-    "api": "npm run api  →  POST /run {since, only?, limit?}",
-    "docker": "docker build -t recallwhy . && docker run --rm -p 8000:8000 recallwhy"
+    "api": "npm run api  →  POST /run {since, only?, limit?}, GET /packets, POST /approve",
+    "docker": "docker build -t recallwhy . && docker run --rm -p 8000:8000 recallwhy",
+    "approve": "npm run approve -- <run-id> <case-id>  (records approval of an action packet; nothing is sent)"
   },
   "agents": [
     {
@@ -35,13 +36,13 @@
     },
     {
       "name": "Briefer",
-      "role": "Writes the action brief only from the World Model context builder, citing evidence ids."
+      "role": "Writes the action brief only from the World Model context builder, citing evidence ids; with the Orchestrator, drafts the action packet (pull list per store and lot that must add up to the Auditor's on-hand, supplier request citing ship notices, customer notice) and the weekly digest through the Meterless Markovian engine."
     }
   ],
   "sponsor_technologies": {
     "zetaris": {
       "used": true,
-      "how": "All agent data access is Zetaris Lightning SQL over its REST API. Two live Lightning REST tables (saferproducts.gov CPSC recalls, a top-level JSON array; api.fda.gov food enforcement) flattened into schemastore views, and two JDBC datasources (synthetic ERP and supplier-portal Postgres databases). Agents run federated queries joining live REST feeds with JDBC tables and the two databases with each other; the Auditor re-queries Zetaris independently to verify numbers. The Cartographer agent maps the sources through Zetaris's catalog statements (SHOW DATASOURCES, SHOW DATASOURCE TABLES, DESCRIBE DATASOURCE TABLE, SHOW LIGHTNING DATABASES, SHOW TABLES IN, DESCRIBE) and tests cross-source barcode joins with federated SQL; it finds that a third of the suppliers send GTIN-14 barcodes (6,697 of 14,180 ship notices join as written, 11,626 without leading zeros) and leaves the other 2,554 open. When the Auditor sends back ship-notice rows its key cannot reach, the Cartographer diagnoses that supplier's barcodes with federated SQL, tests the transform on every ship notice from the supplier, and corrects the map (e.g. suppliers that drop the UPC check digit). For a barcode format it has no rule for, it samples pairs with SQL, asks Nemotron 3 Ultra for a transform in a fixed op set (no free SQL), and adopts it only if SQL proves it on every ship notice of that supplier. The corrected map is written back into Zetaris as the schemastore view reconciled.ship_notice_item_keys and read back per supplier before it counts; Zetaris's INFER SQLTABLE gives its lineage and a data-quality rule on a USL table built from it (RUN DQ barcode_names_the_notice_sku) reports every row valid.",
+      "how": "All agent data access is Zetaris Lightning SQL over its REST API. Two live Lightning REST tables (saferproducts.gov CPSC recalls, a top-level JSON array; api.fda.gov food enforcement) flattened into schemastore views, and two JDBC datasources (synthetic ERP and supplier-portal Postgres databases). Agents run federated queries joining live REST feeds with JDBC tables and the two databases with each other; the Auditor re-queries Zetaris independently to verify numbers. The Cartographer agent maps the sources through Zetaris's catalog statements (SHOW DATASOURCES, SHOW DATASOURCE TABLES, DESCRIBE DATASOURCE TABLE, SHOW LIGHTNING DATABASES, SHOW TABLES IN, DESCRIBE) and tests cross-source barcode joins with federated SQL; it finds that a third of the suppliers send GTIN-14 barcodes (6,810 of 14,244 ship notices join as written, 11,512 without leading zeros) and leaves the other 2,732 open. When the Auditor sends back ship-notice rows its key cannot reach, the Cartographer diagnoses that supplier's barcodes with federated SQL, tests the transform on every ship notice from the supplier, and corrects the map (e.g. suppliers that drop the UPC check digit). For a barcode format it has no rule for, it samples pairs with SQL, asks Nemotron 3 Ultra for a transform in a fixed op set (no free SQL), and adopts it only if SQL proves it on every ship notice of that supplier. The corrected map is written back into Zetaris as the schemastore view reconciled.ship_notice_item_keys and read back per supplier before it counts; Zetaris's INFER SQLTABLE gives its lineage and a data-quality rule on a USL table built from it (RUN DQ barcode_names_the_notice_sku) reports every row valid. The action packet's pull list and supplier request are federated queries too (inventory × stores × item master; ship notices × suppliers).",
       "files": [
         "sql/01_feeds.sql",
         "sql/02_retail_sources.sql",
@@ -52,7 +53,7 @@
     },
     "meterless": {
       "used": true,
-      "how": "Two Meterless agent engines mounted from github.com/Meterless/Meterless (Apache-2.0 reference implementations): H-MEM stores every adjudication (agent, medium trust) and every human decision (high trust) and is read before each judgement; World Model holds source maps, recall, case and finding facts with provenance (which SQL, which agent, which model call), and its context builder is the only input the Briefer sees. Tests: test/engines.test.ts (a human decision from session 1 changes the session-2 decision after a restart; World Model ids converge across agents and facts keep their query ids). Meterless Nightshift is the primary AI provider: every model call goes to its OpenAI-compatible Runtime API (127.0.0.1:8088/v1, meterless-app/meterless-scope headers), and the trace records the receipt id and routed model of each call.",
+      "how": "Three Meterless agent engines mounted from github.com/Meterless/Meterless (Apache-2.0 reference implementations): H-MEM stores every adjudication (agent, medium trust) and every human decision (high trust) and is read before each judgement; World Model holds source maps, recall, case and finding facts with provenance (which SQL, which agent, which model call), and its context builder is the only input the Briefer sees; Markovian reads every case of a run in bounded chunks with a compressed carryover to write the safety manager's weekly digest (totals in code, model lines checked for numbers by the Auditor). Tests: test/engines.test.ts (a human decision from session 1 changes the session-2 decision after a restart; World Model ids converge across agents and facts keep their query ids). Meterless Nightshift is the primary AI provider: every model call goes to its OpenAI-compatible Runtime API (127.0.0.1:8088/v1, meterless-app/meterless-scope headers), and the trace records the receipt id and routed model of each call.",
       "files": [
         "src/engines/hmem/",
         "src/engines/world-model/",
@@ -60,7 +61,10 @@
         "src/world.ts",
         "src/llm.ts",
         "test/engines.test.ts",
-        "test/llm.test.ts"
+        "test/llm.test.ts",
+        "src/engines/markovian/",
+        "src/digest.ts",
+        "test/actions.test.ts"
       ]
     },
     "cursor": {
@@ -72,10 +76,10 @@
       "how": "NVIDIA Nemotron 3 Ultra 550B-A55B, called through Meterless Nightshift (the NVIDIA key is in Nightshift's provider store), is the default model behind the single injected generator: it judges text matches between a recall notice and an item-master line (and must quote the notice), reads lot codes out of messy code_info text, and writes the why-paragraph that the Auditor checks. Each call's routed model is recorded in the trace and shown in the viewer and report.",
       "models": [
         "nvidia/nemotron-3-ultra-550b-a55b (via Nightshift, default)",
-        "nvidia/nemotron-3.5-lightning-30b-a3b (via Nightshift)",
+        "nvidia/nemotron-3.5-lightning-30b-a3b (via Nightshift, earlier item master)",
         "nemotron-3-nano:latest and :4b (via Ollama, earlier evaluation)"
       ],
-      "evaluation": "eval/EVAL.md: Nemotron 3 Ultra through Nightshift catches 187/194 covered pairs over 440 (rules alone: 22; Cartographer with model-proposed transforms and no judge: 103), 3 wrongly dismissed, 6 false alarms, 23 to a human, 0 of 538 model calls failed; on text matches the Auditor cuts the judge's first-answer dismissals 10 → 3 and false alarms 10 → 6"
+      "evaluation": "eval/EVAL.md: on an item master whose food lines are real products, Nemotron 3 Ultra through Nightshift catches 134/146 covered pairs over 322 (rules alone: 89; Cartographer with model-proposed transforms and no judge: 99), 1 wrongly dismissed, 1 false alarm, 30 to a human, 0 of 392 model calls failed; on text matches the Auditor cuts the judge's first-answer dismissals 4 → 1 and false alarms 2 → 1"
     }
   },
   "data": {
@@ -83,17 +87,18 @@
       "CPSC SaferProducts Recall API (U.S. government, public domain)",
       "openFDA food enforcement API (public domain, CC0 per open.fda.gov/license)"
     ],
-    "real_products": "eval/REAL.md: 95 real products from USDA FoodData Central (CC0) and Open Food Facts (ODbL) whose barcodes FDA notices print; 97 positives and 152 real hard negatives. Barcode path: 93/97 settled by the UPC rule with no model call, 0/152 negatives matched. Barcode hidden: 53/97 caught, 2/152 false alarms, 20 to a person.",
-    "synthetic": "Northwind Mercantile retailer: stores, item master, inventory lots, weekly sales, supplier ship notices — generated by scripts/gen-synthetic.ts (seeded). About 120 SKUs are deliberately derived from real recall notices so the catalog overlaps the feeds; ground truth for evaluation is kept in data/synthetic/eval/ and never read by the agents. No personal data.",
+    "real_products": "eval/REAL.md: 95 real products from USDA FoodData Central (CC0) and Open Food Facts (ODbL) whose barcodes FDA notices print; 97 positives and 152 real hard negatives. Barcode path: {R_BC}/97 settled by the UPC rule with no model call, {R_AG} re-checked, 0/152 negatives matched. Barcode hidden: {R_C}/97 caught, {R_D} dismissed, {R_F}/152 false alarms, {R_H} to a person.",
+    "synthetic": "Northwind Mercantile retailer: stores, inventory lots, weekly sales, supplier ship notices — generated by scripts/gen-synthetic.ts (seeded). Its food item master is real products (data/real: USDA FoodData Central CC0, Open Food Facts ODbL): the 95 products whose barcodes FDA notices print, 86 same-brand products, 260 more from FoodData Central; non-food items are built from CPSC notices or invented. Ground truth for evaluation is kept in data/synthetic/eval/ and never read by the agents. No personal data.",
     "sample_snapshots": "sample/ holds feed snapshots captured on the date in sample/CAPTURED_AT for SAMPLE_MODE."
   },
-  "pre_existing_work": "Matching ideas (brand gate, product-kind overlap, model-number conflicts, grounded quotes) were adapted from the author's Recall Sloth project (github.com/mikey92/recall-sloth, committed 21 Oct 2026). Code in this repository was written during the build window. Third-party code: src/engines/hmem and src/engines/world-model are the Meterless reference implementations (Apache-2.0), mounted with the changes listed in each CHANGES.md.",
+  "pre_existing_work": "Matching ideas (brand gate, product-kind overlap, model-number conflicts, grounded quotes) were adapted from the author's Recall Sloth project (github.com/mikey92/recall-sloth, committed 21 Oct 2026). Code in this repository was written during the build window. Third-party code: src/engines/hmem, src/engines/world-model and src/engines/markovian are the Meterless reference implementations (Apache-2.0), mounted with the changes listed in each CHANGES.md.",
   "sample_mode": "SAMPLE_MODE=true (or no Zetaris credentials) runs the same agents and SQL against an in-process DuckDB stand-in over the sample snapshots and synthetic CSVs; output is labelled SAMPLE and Zetaris is not used.",
   "meterless_engines": [
     "Nightshift (primary AI provider)",
     "H-MEM",
-    "World Model"
+    "World Model",
+    "Markovian"
   ],
-  "tests": "npm test (71 tests; Meterless engine tests in test/engines.test.ts)",
+  "tests": "npm test (77 tests; Meterless engine tests in test/engines.test.ts, Markovian digest in test/actions.test.ts)",
   "track_statement": "Track 1, Solving Fragmented Intelligence: agents that discover and reconcile two live federal recall feeds, an ERP and a supplier portal through Zetaris, and prove each reconciliation rule with SQL before using it."
 }

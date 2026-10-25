@@ -8,7 +8,7 @@
 
 Retailers get this wrong today. In December 2025 the FDA sent warning letters to Kroger, Albertsons, Target and Walmart: recalled ByHeart infant formula was still on shelves in over 175 locations across 36 states, in one case for more than three weeks. Store associates cited not knowing about the recall, "confusion regarding which specific lots were affected", and not removing all the affected product ([FDA](https://content.govdelivery.com/accounts/USFDA/bulletins/4000713), [Food Safety News](https://www.foodsafetynews.com/2025/12/fda-warns-retailers-who-failed-to-pull-recalled-byheart-formula/)).
 
-**What RecallWhy changes:** over 440 recall/SKU pairs from 517 notices, the agents settle 417 (95%) without a person, 408 of them correctly, and send 23 to a reviewer with the reason; 187 of 194 recalled items are caught (rules alone: 22). See [Evaluation](#evaluation).
+**What RecallWhy changes:** over 322 recall/SKU pairs from 515 notices, on an item master whose food lines are real products, the agents settle 292 (91%) without a person, 290 of them correctly, and send 30 to a reviewer with the reason; 134 of 146 recalled items are caught, with 1 missed and 1 false alarm (rules alone: 89). See [Evaluation](#evaluation).
 
 **See it without running anything:** the five agents working live (the Auditor sends back ship-notice rows the barcode map cannot reach, and the Cartographer proves a supplier rule and corrects the map), and finished reports from real runs with live Zetaris and Nemotron 3 Ultra in [`examples/output/`](examples/output/) (open `report.html` in a browser, or [view one on the live site](https://mikey92.github.io/recallwhy/examples/example_3_after_human_decision/report.html), or [replay its trace](https://mikey92.github.io/recallwhy/replay.html?run=example_3_after_human_decision)).
 
@@ -166,38 +166,37 @@ curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since"
 
 ## Evaluation
 
-**Cartographer ablation** (the judge is off, so no model reads a notice; same 440 pairs):
+`eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample-mode data, model calls through Nightshift) on every candidate pair since 2026-07-01: 515 recalls scanned, 184 cases, 322 recall/SKU pairs, 146 of them covered. A pair counts as covered if our item is the product the notice recalls: for food, the real product whose barcode the notice prints (97 pairs); for non-food, the SKU built from that CPSC notice (49). The 176 others are mostly real products of the same brand owners (another flavour, size or line of the recalling firm), the hard negatives a real item master is full of.
 
-| Setup | Covered caught (of 194) | Sent to human | Cartographer corrections |
-|---|---|---|---|
-| No Cartographer: barcodes join as written, no loop | 11 | 429 | — |
-| Map only on demand: no upfront map, the Auditor sends every mismatch back | 22 | 418 | 11 rules from cases (7 padding, 4 check digit); 3 suppliers left unexplained |
-| Upfront map + loop, known transforms only | 22 | 418 | padding found upfront, 4 check-digit rules from cases; 3 suppliers left unexplained |
-| **Upfront map + loop, model proposes, SQL proves** (default) | **103** | 337 | the 4 check-digit rules, plus 3 transforms Nemotron 3 Ultra proposed and SQL proved on every ship notice of the supplier (269, 276, 299 rows) |
-
-Four suppliers send a 10-digit core (no leading digit, no check digit), a format the code has no rule for; the evaluation's cases reach three of them, so three are learned (the fourth, SUP037, stays unmapped until a case needs it). The Cartographer samples six barcode pairs from the supplier with SQL and asks the model for a transform in a small DSL (`digits_only`, `strip_leading_zeros`, `drop_first:N`, `drop_last:N`, `take_first:N`, `take_last:N`; nothing else is accepted, no free SQL). The prompt also carries where one code's digits sit inside the other's, computed by the code. The proposal is compiled to SQL and adopted only if it holds for every ship notice from that supplier; if SQL rejects it, the model is shown the rows where it failed and gets one more try; the World Model fact keeps the ops, the model and the SQL id. Ultra proposed `take_last:10` for theirs and `drop_first:1 → drop_last:1` for ours, and it held on all rows. Without the Cartographer, every GTIN-14, check-digit or 10-digit supplier looks like a lot that was never shipped, so the Auditor blocks real matches. Files: `eval/results/none-none*.json` (`none-none-map-…` is the row with model proposals: judge off, Cartographer on Ultra).
-
-
-`eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample-mode data, model calls through Nightshift) on every candidate pair since 2026-07-01: 517 recalls scanned, 225 cases, 440 SKU pairs. A pair counts as covered if the SKU was generated from that recall or its UPC is printed in the notice. Caveat: a covered SKU's title is built from the notice's own product text (upper-cased, cut to 48 characters, size or model appended), so text matches are easier than with a real item master; the hard part measured here is the barcode and lot reconciliation and the dismissals, not abbreviation.
-
-| Judge model | Covered caught (of 194) | Wrongly dismissed | False alarms (of 246) | Sent to human | Model calls failed after retries |
+| Judge model | Covered caught (of 146) | Wrongly dismissed | False alarms (of 176) | Sent to human | Model calls failed after retries |
 |---|---|---|---|---|---|
-| none (rules only) | 22 | 0 | 0 | 418 | — |
-| NVIDIA Nemotron 3.5 Lightning 30B, through Meterless Nightshift | 139 | 10 | 2 | 66 | 0 of 652 |
-| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** (default) | **187** | **3** | **6** | 23 | 0 of 538 |
+| none (rules only) | 89 | 0 | 0 | 233 | — |
+| {L_ROW_NAME} | {L_ROW} |
+| **NVIDIA Nemotron 3 Ultra 550B, through Meterless Nightshift** (default) | **134** | **1** | **1** | 30 | 0 of 392 |
 
-**What the Auditor adds** (text matches only, 336 pairs, 90 covered; "first answer" is the judge's first reply in the same trace):
+With Ultra the agents settle **292 of 322 pairs (91%) without a person, 290 of them correctly**, and send 30 to a reviewer with the reason. Every food recall whose barcode we carry is caught by the UPC rule, re-checked against the live notice by the Auditor; the judge's work is the 223 text pairs: CPSC items without barcodes, and same-brand products that are not the recalled one.
+
+**What the Auditor adds** (text matches only, 223 pairs, 47 covered; "first answer" is the judge's first reply in the same trace):
 
 | | Caught | Wrongly dismissed | False alarms | Sent to human |
 |---|---|---|---|---|
-| Ultra, judge's first answer | 80 | 10 | 10 | 0 |
-| Ultra, after the Auditor loop | 85 | **3** | **6** | 21 |
-| Lightning, judge's first answer | 14 | 76 | 1 | 0 |
-| Lightning, after the Auditor loop | 37 | 10 | 2 | 64 |
+| Ultra, judge's first answer | 43 | 4 | 2 | 0 |
+| Ultra, after the Auditor loop | 45 | **1** | **1** | 20 |
+{L_TEXT_ROWS}
+A dismissed recall is the dangerous error: recalled stock stays on the shelf. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back to the judge, and one whose quoted recalled product differs from ours only in size, count or description (`dismissal-same-line`: "Pico" against "Pico De Gallo Mild", 18 eggs against a notice for 12) goes to a person; another flavour of the same brand stays dismissed. Details and caveats: [`eval/EVAL.md`](eval/EVAL.md).
 
-A dismissed recall is the dangerous error: recalled stock stays on the shelf. The smaller Lightning model dismisses 76 of 90 covered text matches on its first answer; the Auditor wins back 66 of them. The Auditor checks dismissals as well as matches: a dismissal whose own quote names every product word of our item is sent back, and if the judge holds to it the pair goes to a human. Details, the earlier Ollama runs and caveats (strict labels: some "false alarms" are the same product in a second notice): [`eval/EVAL.md`](eval/EVAL.md).
+**Cartographer ablation** (the judge is off, so no model reads a notice; same 322 pairs):
 
-**Real public products** ([`eval/REAL.md`](eval/REAL.md)): every barcode printed in the FDA food snapshot was looked up in USDA FoodData Central (CC0) and Open Food Facts (ODbL), giving 95 real products and 97 recall–product pairs, plus 152 real hard negatives (the closest other notice, and other products of the same brand owner). On the barcode path, the one the product uses, the Scout and Investigator settle **93 of 97 by the UPC rule with no model call, and match 0 of 152 negatives**; the other 4 are GTIN-8, EAN-13 or two-zero GTIN-14 prints. With every barcode hidden, the text judge plus Auditor catches 53 of 97, raises 2 false alarms in 152, and sends 20 to a person: real titles are noisier than synthetic ones, so the text path is a safety net, not the main road.
+| Setup | Covered caught (of 146) | Sent to human | Cartographer corrections |
+|---|---|---|---|
+| No Cartographer: barcodes join as written, no loop | 53 | 269 | — |
+| Map only on demand: no upfront map, the Auditor sends every mismatch back | 89 | 233 | 15 rules from cases (11 padding, 4 check digit); the four 10-digit suppliers left unexplained |
+| Upfront map + loop, known transforms only | 89 | 233 | padding found upfront, 4 check-digit rules from cases; the four 10-digit suppliers left unexplained |
+| **Upfront map + loop, model proposes, SQL proves** (default) | **99** | 223 | the 4 check-digit rules, plus 4 transforms Nemotron 3 Ultra proposed and SQL proved on every ship notice of the supplier (193, 339, 373, 390 rows) |
+
+Four suppliers send a 10-digit core (no leading digit, no check digit), a format the code has no rule for. The Cartographer samples six barcode pairs from the supplier with SQL and asks the model for a transform in a small DSL (`digits_only`, `strip_leading_zeros`, `drop_first:N`, `drop_last:N`, `take_first:N`, `take_last:N`; nothing else is accepted, no free SQL). The prompt also carries where one code's digits sit inside the other's, computed by the code. The proposal is compiled to SQL and adopted only if it holds for every ship notice from that supplier; if SQL rejects it, the model is shown the rows where it failed and gets one more try; the World Model fact keeps the ops, the model and the SQL id. Ultra proposed `take_last:10` for theirs and `drop_first:1 → drop_last:1` for ours, and it held on all rows. Without the Cartographer, every GTIN-14, check-digit or 10-digit supplier looks like a lot that was never shipped, so the Auditor blocks real matches. Files: `eval/results/none-none*.json` (`none-none-map-…` is the row with model proposals: judge off, Cartographer on Ultra).
+
+**Real products, text only** ([`eval/REAL.md`](eval/REAL.md)): the same 95 real products and 97 recall pairs, plus 152 real hard negatives (the closest other notice, and other products of the same brand owner). On the barcode path the Scout and Investigator settle **{R_BC} of 97 by the UPC rule with no model call**, the Auditor's re-check finds the barcode in the notice for {R_AG}, and **0 of 152 negatives** are matched. With every barcode hidden, the text judge plus Auditor catches {R_C} of 97, misses {R_D}, raises {R_F} false alarms in 152 and sends {R_H} to a person: the text path is a safety net, not the main road.
 
 ## Data
 
