@@ -4,7 +4,7 @@
 // POST /run {since, only?, limit?} → JSON: verdict per case, briefs, trace path. One run at a time.
 // GET /runs/<runId>/trace → the run's JSONL trace; GET /runs/<runId>/report → its HTML report.
 // GET /queue → cases escalated to a human; POST /decide {recall, sku, verdict, note?} → store a reviewer's decision.
-import { createServer } from "node:http";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
 import { loadConfig } from "./config.ts";
 import { decide, inQueue, reviewQueue, runOnce } from "./app.ts";
@@ -22,7 +22,7 @@ async function body(req: AsyncIterable<unknown>): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-createServer(async (req, res) => {
+async function handle(req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? "/", "http://x");
   const send = (code: number, body: unknown) => { res.writeHead(code, { "Content-Type": "application/json" }); res.end(JSON.stringify(body, null, 2)); };
   if (req.method === "GET" && url.pathname === "/health") return send(200, { ok: true, busy });
@@ -72,4 +72,7 @@ createServer(async (req, res) => {
   } finally {
     busy = false;
   }
-}).listen(PORT, HOST, () => console.log(`RecallWhy API on http://${HOST}:${PORT}  (POST /run, GET /health)`));
+}
+
+// A bad request or a half-written file must not take the server down.
+createServer((req, res) => { handle(req, res).catch((e) => { console.error(e); if (!res.headersSent) res.writeHead(500); res.end(); }); }).listen(PORT, HOST, () => console.log(`RecallWhy API on http://${HOST}:${PORT}  (POST /run, GET /health)`));

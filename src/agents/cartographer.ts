@@ -209,7 +209,7 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
       [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
       if (hit === tot) break;
       notes.push(`${supplier}: "${label}" holds for only ${hit}/${tot} of its ship notices; not adopted`);
-      if (transform !== "proposed" || !proposal) break;
+      if (transform !== "proposed" || !proposal || attempt === attempts) break;
       const miss = await run(
         `SELECT a.upc AS supplier_barcode, s.upc AS our_upc, ${applyOps("a.upc", proposal.ops.supplier)} AS theirs_after, ${applyOps("s.upc", proposal.ops.ours)} AS ours_after
        FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> '' AND NOT (${keyEq("proposed", "a", "s", proposal.ops)}) LIMIT 3`,

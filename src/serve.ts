@@ -3,16 +3,16 @@
 //   npm run view   →  http://127.0.0.1:8899   (review: /review)
 // It never runs agents or changes results; the only thing it writes is a reviewer's decision to
 // H-MEM, which the next run follows. It listens on 127.0.0.1 only.
-import { createServer } from "node:http";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, normalize } from "node:path";
 import { decide, humanDecisions, inQueue, reviewQueue } from "./app.ts";
 
 const PORT = Number(process.env.VIEW_PORT ?? 8899);
-const runs = () => readdirSync("logs").filter((f) => /^trace-.*\.jsonl$/.test(f)).map((f) => f.slice(6, -6))
+const runs = () => (existsSync("logs") ? readdirSync("logs") : []).filter((f) => /^trace-.*\.jsonl$/.test(f)).map((f) => f.slice(6, -6))
   .sort((a, b) => statSync(`logs/trace-${b}.jsonl`).mtimeMs - statSync(`logs/trace-${a}.jsonl`).mtimeMs);
 
-createServer(async (req, res) => {
+async function handle(req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? "/", "http://x");
   if (url.pathname === "/api/queue") return json(res, { queue: reviewQueue(), decided: humanDecisions() });
   if (url.pathname === "/api/decide" && req.method === "POST") {
@@ -35,7 +35,7 @@ createServer(async (req, res) => {
     const after = Number(url.searchParams.get("after") ?? 0);
     const f = `logs/trace-${run}.jsonl`;
     if (!run || !/^[\w-]+$/.test(run) || !existsSync(f)) return json(res, { run, events: [] });
-    const events = readFileSync(f, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)).filter((e) => e.seq > after)
+    const events = readFileSync(f, "utf8").trim().split("\n").filter(Boolean).flatMap((l) => { try { return [JSON.parse(l)]; } catch { return []; } }).filter((e) => e.seq > after)
       .map(({ prompt, sql, ...e }) => ({ ...e, sql: typeof sql === "string" ? sql.replace(/\s+/g, " ").slice(0, 400) : undefined }));
     return json(res, { run, events, done: events.some((e) => e.kind === "run.end"), report: existsSync(`out/${run}/report.html`) });
   }
@@ -47,7 +47,10 @@ createServer(async (req, res) => {
   }
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
   res.end(PAGE);
-}).listen(PORT, "127.0.0.1", () => console.log(`RecallWhy viewer on http://127.0.0.1:${PORT}`));
+}
+
+// A bad request or a half-written file must not take the server down.
+createServer((req, res) => { handle(req, res).catch((e) => { console.error(e); if (!res.headersSent) res.writeHead(500); res.end(); }); }).listen(PORT, "127.0.0.1", () => console.log(`RecallWhy viewer on http://127.0.0.1:${PORT}`));
 
 function json(res: import("node:http").ServerResponse, v: unknown) { res.writeHead(200, { "Content-Type": "application/json" }); res.end(JSON.stringify(v)); }
 
