@@ -1,6 +1,7 @@
 // Renders out/<run>/report.html from the run's own files: result.json, briefs/*.md
 // and the trace. Nothing here computes or changes a verdict; it only displays.
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { storeMapSection, storePoints, loadStores, caseStates, loadStatePaths } from "./store-map.ts";
 
 interface Ev { seq: number; kind: string; agent: string; to?: string; text?: string; caseId?: string; code?: string; detail?: string; sqlId?: string; purpose?: string; engine?: string; rows?: number; ms?: number; model?: string; served_model?: string; output?: string; finding?: unknown; checks?: string[]; learned?: Learned[]; since?: string }
 interface Learned { supplier?: string; transform?: string; rows?: number; sqlId?: string; proposedBy?: string }
@@ -183,6 +184,11 @@ blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--line);color
 .map{background:var(--card);border:1px solid var(--line);border-left:6px solid #0e7490;border-radius:10px;padding:12px 22px}.map h2{font-size:18px;margin:6px 0}.map li{margin:4px 0}
 .ev{padding:3px 0;border-bottom:1px dashed var(--line)}.crit{color:#b91c1c}.sql{color:var(--mute)}.llm{color:#15803d}.mem{color:#7c3aed}
 code{font-size:12px}ul{margin:4px 0;padding-left:20px}
+.storemap{border-left-color:#b91c1c}.pulls{width:100%;border-collapse:collapse;font-size:13px}.pulls th,.pulls td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:top}.pulls .n{text-align:right;font-variant-numeric:tabular-nums}.out{color:#b45309;font-size:12px}
+.usmap{width:100%;height:auto;max-height:440px;margin:6px 0}.usmap .st{fill:var(--line);stroke:var(--card);stroke-width:1}.usmap .st-named{fill:#fca5a5;stroke:var(--card);stroke-width:1}
+.usmap circle{stroke:#fff;stroke-width:1.5;fill-opacity:.85}.usmap .d-in{fill:#b91c1c}.usmap .d-out{fill:#d97706}
+.k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.k-in{background:#b91c1c}.k-out{background:#d97706}.pick{display:block;margin:8px 0 0;font-size:13px;color:var(--mute)}
+@media (prefers-color-scheme:dark){.usmap .st-named{fill:#7f1d1d}}
 /* "What the agents did": chips across the top of a case card, one per highlight read from that case's trace. */
 .did{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 22px;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
 .did-h{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;margin-right:4px}
@@ -205,7 +211,8 @@ ${summary()}
 <div class="sub">${existsSync(`${outDir}/digest.md`) ? `<a href="digest.md">Weekly digest</a>` : ""}${existsSync(`${outDir}/actions`) ? ` · Action packets (drafts, not sent): ${readdirSync(`${outDir}/actions`).length} — pull lists, supplier requests and customer notices in <a href="actions/">actions/</a>` : ""}</div>
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
 ${sourceMap(evs)}
-${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief">${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
+${storeMapSection(storePoints(outDir, cases, evs, loadStores()), caseStates(cases, evs), loadStatePaths())}
+${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief"><a id="${esc(c.id)}"></a>${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
 <div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
 </main>
 <script>/* count-up: the final number is in the HTML; this only animates it from 0 */

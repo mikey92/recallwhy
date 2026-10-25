@@ -24,7 +24,7 @@ export interface Recall {
   classification?: string;
 }
 
-const US: Record<string, string> = {
+export const US: Record<string, string> = {
   alabama: "AL", alaska: "AK", arizona: "AZ", arkansas: "AR", california: "CA", colorado: "CO",
   connecticut: "CT", delaware: "DE", "district of columbia": "DC", florida: "FL", georgia: "GA",
   hawaii: "HI", idaho: "ID", illinois: "IL", indiana: "IN", iowa: "IA", kansas: "KS",
