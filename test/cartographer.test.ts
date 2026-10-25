@@ -219,11 +219,12 @@ test("writing the corrected map back is idempotent: a second publish replaces th
     } };
     const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
     const map = await chart({ ...ctx, sql: duck } as unknown as AgentContext);
-    const rule = { supplier: "SUP007", transform: "no-check-digit" as const, rows: 484, learnedFrom: "case-test", sqlId: "q-test" };
+    const n = Number((await duck.run("SELECT COUNT(*) AS n FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP007' AND upc <> ''", { agent: "test", purpose: "count" })).rows[0]?.n);
+    const rule = { supplier: "SUP007", transform: "no-check-digit" as const, rows: n, learnedFrom: "case-test", sqlId: "q-test" };
     (map.joins.find((j) => j.left === "supplier_portal.ship_notices")!.rules ??= []).push(rule);
     const first = await publish(ctx, map, [rule]), second = await publish(ctx, map, [rule]);
     assert.equal(creates, 2);
-    assert.deepEqual(first.readBack.map((p) => [p.supplier, p.read]), [["SUP007", 484]]);
+    assert.deepEqual(first.readBack.map((p) => [p.supplier, p.read]), [["SUP007", n]]);
     assert.deepEqual(second.readBack.map((p) => [p.supplier, p.read]), first.readBack.map((p) => [p.supplier, p.read]));
   } finally {
     await duck.close();

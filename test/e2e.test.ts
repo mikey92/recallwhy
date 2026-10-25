@@ -12,19 +12,19 @@ test("sample mode end to end: a case goes to review, a reviewer decides, the nex
   process.chdir(mkdtempSync(join(tmpdir(), "rw-e2e-")));
   try {
     const env = { SAMPLE_MODE: "true", LLM_PROVIDER: "none" };
-    const opts = { since: "2026-07-01", only: ["H-0021-2027"] };
+    const opts = { since: "2026-07-01", only: ["H-1184-2026"] };
 
     const r1 = await runOnce(env, opts, new Trace({ quiet: true }));
     assert.equal(r1.engine, "duckdb-sample");
     assert.deepEqual(r1.cases.map((c) => c.verdict), ["needs-human"], "without a model the text match is left to a person");
     assert.equal(reviewQueue().length, 1);
-    assert.ok(inQueue("H-0021-2027", "NW-100117"));
-    assert.equal(inQueue("H-0021-2027", "NW-999999"), false, "decisions are only taken for pairs in the queue");
+    assert.ok(inQueue("H-1184-2026", "NW-100134"));
+    assert.equal(inQueue("H-1184-2026", "NW-999999"), false, "decisions are only taken for pairs in the queue");
 
-    decide("H-0021-2027", "NW-100117", "not-this", "ours is cheese; the notice is pepperoni");
+    decide("H-1184-2026", "NW-100134", "not-this", "ours is imitation crab sticks; the notice is crab flakes");
     const r2 = await runOnce(env, opts, new Trace({ quiet: true }));
     assert.equal(r2.cases[0].verdict, "not-ours");
-    assert.match(r2.briefs[r2.cases[0].id], /a reviewer decided it is not this product: ours is cheese/);
+    assert.match(r2.briefs[r2.cases[0].id], /a reviewer decided it is not this product: ours is imitation crab sticks/);
     assert.equal(reviewQueue().length, 0, "a settled case leaves the queue");
   } finally {
     process.chdir(cwd);

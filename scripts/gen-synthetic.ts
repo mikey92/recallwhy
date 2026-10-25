@@ -7,6 +7,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { gtin12CheckDigit, isValidUpc } from "./upc.ts";
+import type { RealCatalog } from "./build-real-catalog.ts";
+import type { Shelf } from "./build-real-shelf.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "data", "synthetic");
@@ -22,6 +24,8 @@ const OUT = path.join(ROOT, "data", "synthetic");
 export function asnBarcode(supplierId: string, upc: string): string {
   const n = Number(supplierId.replace(/\D/g, ""));
   if (!upc) return upc;
+  // An EAN-13 has no shorter legacy form; GTIN-14 suppliers pad it with one zero.
+  if (upc.length === 13) return n % 3 === 0 ? `0${upc}` : upc;
   if (n % 3 === 0) return `00${upc}`;
   if (n % 7 === 0) return upc.slice(0, 11);
   return n % 9 === 1 ? upc.slice(1, 11) : upc;
@@ -63,6 +67,18 @@ const DEPARTMENTS: Record<string, string[]> = {
   Sporting: ["balls", "weights", "helmets", "gloves", "nets", "rackets"],
   Electronics: ["cables", "chargers", "earbuds", "speakers", "adapters", "keyboards"],
 };
+
+/** Food aisles hold real products (data/real/); invented lines are only for the other departments. */
+const FOOD = new Set(["Grocery", "Produce"]);
+const NON_FOOD = Object.keys(DEPARTMENTS).filter((d) => !FOOD.has(d));
+
+/** Department for a real food product from its FoodData Central category (or its title). */
+export function realDepartment(category: string | undefined, title: string): string {
+  const t = `${category ?? ""} ${title}`;
+  if (/\b(baby|infant|toddler)\b/i.test(t)) return "Baby";
+  if (/\b(pre-packaged fruit|vegetables?|salads?|lettuce|sprouts?|produce|berries|fresh fruit)\b/i.test(t) && !/\b(chips?|dressing|juice|bars?|sauce|soup)\b/i.test(t)) return "Produce";
+  return "Grocery";
+}
 
 const SYLLABLES_A = ["Nor", "Bel", "Cal", "Dor", "Fen", "Glen", "Har", "Jun", "Kel", "Lum", "Mer", "Oak", "Pax", "Quin", "Riv", "Sol", "Tor", "Vex", "Wil", "Zen"];
 const SYLLABLES_B = ["wood", "field", "stone", "brook", "vale", "crest", "ridge", "haven", "dale", "ford"];
@@ -460,8 +476,8 @@ function decoyDepartmentAndKind(
   rng: () => number,
   avoidDept: string,
 ): { department: string; kind: string } {
-  const depts = Object.keys(DEPARTMENTS).filter((d) => d !== avoidDept);
-  const department = pick(rng, depts.length ? depts : Object.keys(DEPARTMENTS));
+  const depts = NON_FOOD.filter((d) => d !== avoidDept);
+  const department = pick(rng, depts.length ? depts : NON_FOOD);
   const kind = pick(rng, DEPARTMENTS[department]!);
   return { department, kind };
 }
@@ -521,29 +537,42 @@ async function main(): Promise<void> {
     return `NW-${skuSeq}`;
   };
 
-  const fdaPicked = sampleN(rng, fda, 70);
   const cpscPicked = sampleN(rng, cpsc, 50);
 
-  for (const r of fdaPicked) {
-    const brand = brandFromFdaFirm(r.recalling_firm);
-    const title = fdaRetailerTitle(r.product_description, brand);
-    let upc = extractUpcFromText(r.product_description, rng) ?? "";
-    if (!upc) {
-      upc = rng() < 0.5 ? "" : randomValidUpc(rng);
-    }
+  // Food aisles are real products (data/real/): every product whose barcode an FDA notice in
+  // sample/ prints (USDA FoodData Central or Open Food Facts), other products of the same brand
+  // owners, and a seeded FoodData Central sample for the rest of the shelf. Title, barcode and
+  // vendor (brand owner) are the catalog's; only stock, sales and ship notices are synthetic.
+  const catalog = JSON.parse(await readFile(path.join(ROOT, "data", "real", "catalog.json"), "utf8")) as RealCatalog;
+  const shelf = JSON.parse(await readFile(path.join(ROOT, "data", "real", "shelf.json"), "utf8")) as Shelf;
+  const fdaByNumber = new Map(fda.map((r) => [r.recall_number, r] as const));
+  // One item-master line per barcode. An EAN-13 comes from a supplier that sends barcodes as written.
+  const usedUpc = new Set<string>();
+  const plainSuppliers = suppliers.filter((x) => asnBarcode(x.supplier_id, "012345678905") === "012345678905");
+  const supplierFor = (upc: string) => pick(rng, upc.length === 13 ? plainSuppliers : suppliers).supplier_id;
+  for (const item of catalog.items) {
+    const notices = item.recall_numbers.map((n) => fdaByNumber.get(n)).filter((r): r is FdaRecall => !!r);
     // Same deterministic reader the agents use as their baseline (src/feeds.ts).
-    const lots = lotsFromCodeInfo([r.code_info, r.more_code_info].filter(Boolean).join(" "));
+    const lots = [...new Set(notices.flatMap((r) => lotsFromCodeInfo([r.code_info, r.more_code_info].filter(Boolean).join(" "))))];
     skus.push({
-      sku: nextSku(),
-      upc,
-      title,
-      brand,
-      department: fdaDepartment(r.product_description),
-      supplier_id: pick(rng, suppliers).supplier_id,
-      origin: "from_recall",
-      sourceRecall: r.recall_number,
-      recallLots: lots,
+      sku: nextSku(), upc: item.upc, title: item.title, brand: item.brand,
+      department: realDepartment(item.category, item.title),
+      supplier_id: supplierFor(item.upc),
+      origin: "from_recall", sourceRecall: item.recall_numbers.join("|"), recallLots: lots,
     });
+  }
+  for (const item of catalog.items) usedUpc.add(item.upc);
+  for (const n of catalog.negatives) {
+    if (usedUpc.has(n.upc)) continue;
+    usedUpc.add(n.upc);
+    skus.push({ sku: nextSku(), upc: n.upc, title: n.title, brand: n.brand, department: realDepartment(n.category, n.title),
+      supplier_id: supplierFor(n.upc), origin: "decoy", sourceRecall: "" });
+  }
+  for (const b of shelf.items) {
+    if (usedUpc.has(b.upc)) continue;
+    usedUpc.add(b.upc);
+    skus.push({ sku: nextSku(), upc: b.upc, title: b.title, brand: b.brand, department: realDepartment(b.category, b.title),
+      supplier_id: supplierFor(b.upc), origin: "background", sourceRecall: "" });
   }
 
   for (const r of cpscPicked) {
@@ -575,7 +604,7 @@ async function main(): Promise<void> {
   }
 
   // ~40 decoys: same brand as a recall SKU, kind from a different department
-  const recallSkus = skus.filter((s) => s.origin === "from_recall");
+  const recallSkus = skus.filter((s) => s.origin === "from_recall" && !FOOD.has(s.department));
   const decoyCount = 40;
   for (let i = 0; i < decoyCount; i++) {
     const base = pick(rng, recallSkus);
@@ -595,7 +624,7 @@ async function main(): Promise<void> {
   // Background SKUs to reach ~900 total
   const targetTotal = 900;
   while (skus.length < targetTotal) {
-    const dept = pick(rng, Object.keys(DEPARTMENTS));
+    const dept = pick(rng, NON_FOOD);
     const kind = pick(rng, DEPARTMENTS[dept]!);
     const brand = generatedBrand(rng);
     skus.push({
@@ -829,14 +858,19 @@ Inputs (public recall snapshots under \`sample/\`, captured per \`sample/CAPTURE
 Ground-truth columns \`origin\` and \`source_recall\` are **not** loaded into the ERP the agents query.
 They exist solely for offline evaluation of match quality.
 
-- **from_recall** — built from ~70 FDA + ~50 CPSC notices so the catalog overlaps the feeds
-  (UPCs/lots where parseable; CPSC titles append Products[0].Model ~70% when short and usable).
-  \`source_recall\` holds the FDA recall_number or CPSC RecallNumber used to build the row.
-- **decoy** — same brand string as a recall SKU, product kind from a *different* department
-  (hard negative for text match). \`source_recall\` empty.
-- **background** — invented brand × department product kinds with random valid UPCs.
+**Food lines are real products** (titles, barcodes and brand owners from \`data/real/\`; licences in
+\`data/real/README.md\`). Stock, sales, lots and ship notices for them are synthetic.
 
-Lot codes on FDA from_recall inventory rows use a parsed \`code_info\` lot with probability 0.5;
+- **from_recall** — food: every real product (USDA FoodData Central or Open Food Facts) whose
+  barcode an FDA notice in the snapshot prints, \`source_recall\` = those recall numbers
+  (\`|\`-separated). Non-food: built from ~50 CPSC notices (no public product catalog with
+  barcodes exists for consumer products), titles from the notice, Products[0].Model ~70%.
+- **decoy** — food: other real FoodData Central products of the same brand owners. Non-food:
+  same brand string as a CPSC SKU, an invented product kind from a *different* department.
+- **background** — food: a seeded FoodData Central sample (\`data/real/shelf.json\`) that no notice
+  prints and no recalling firm makes. Non-food: invented brand × kind with random valid UPCs.
+
+Lot codes on recalled food inventory rows use a parsed \`code_info\` lot with probability 0.5;
 otherwise a random \`L24-####\` style code. Best By / Use By dates are never treated as lots.
 
 Regenerate with: \`npm run gen -- --seed ${seed}\`

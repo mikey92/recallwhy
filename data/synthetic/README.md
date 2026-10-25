@@ -19,9 +19,9 @@ Inputs (public recall snapshots under `sample/`, captured per `sample/CAPTURED_A
 | stores.csv | 24 | Fictional Northwind stores across 12 US states |
 | suppliers.csv | 40 | Fictional suppliers; contact_role only |
 | skus.csv | 900 | Item master only (no origin / source_recall) |
-| inventory.csv | 15031 | ~35% of SKUs per store; 1–3 lots |
+| inventory.csv | 14982 | ~35% of SKUs per store; 1–3 lots |
 | sales.csv | 58000 | Weekly sampled sales through 2026-10-18 |
-| ship_notices.csv | 14875 | One ASN per (sku, lot) to a DC state |
+| ship_notices.csv | 14705 | One ASN per (sku, lot) to a DC state |
 | eval/ground_truth.csv | 900 | Evaluation labels only — agents must never read this |
 
 ### SKU origins (in eval/ground_truth.csv only)
@@ -29,14 +29,19 @@ Inputs (public recall snapshots under `sample/`, captured per `sample/CAPTURED_A
 Ground-truth columns `origin` and `source_recall` are **not** loaded into the ERP the agents query.
 They exist solely for offline evaluation of match quality.
 
-- **from_recall** — built from ~70 FDA + ~50 CPSC notices so the catalog overlaps the feeds
-  (UPCs/lots where parseable; CPSC titles append Products[0].Model ~70% when short and usable).
-  `source_recall` holds the FDA recall_number or CPSC RecallNumber used to build the row.
-- **decoy** — same brand string as a recall SKU, product kind from a *different* department
-  (hard negative for text match). `source_recall` empty.
-- **background** — invented brand × department product kinds with random valid UPCs.
+**Food lines are real products** (titles, barcodes and brand owners from `data/real/`; licences in
+`data/real/README.md`). Stock, sales, lots and ship notices for them are synthetic.
 
-Lot codes on FDA from_recall inventory rows use a parsed `code_info` lot with probability 0.5;
+- **from_recall** — food: every real product (USDA FoodData Central or Open Food Facts) whose
+  barcode an FDA notice in the snapshot prints, `source_recall` = those recall numbers
+  (`|`-separated). Non-food: built from ~50 CPSC notices (no public product catalog with
+  barcodes exists for consumer products), titles from the notice, Products[0].Model ~70%.
+- **decoy** — food: other real FoodData Central products of the same brand owners. Non-food:
+  same brand string as a CPSC SKU, an invented product kind from a *different* department.
+- **background** — food: a seeded FoodData Central sample (`data/real/shelf.json`) that no notice
+  prints and no recalling firm makes. Non-food: invented brand × kind with random valid UPCs.
+
+Lot codes on recalled food inventory rows use a parsed `code_info` lot with probability 0.5;
 otherwise a random `L24-####` style code. Best By / Use By dates are never treated as lots.
 
 Regenerate with: `npm run gen -- --seed 7`

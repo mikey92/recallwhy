@@ -51,7 +51,7 @@ for (const k of cases) {
   const { finding, open, openSkus } = await adjudicate(ctx, k);
   for (const d of finding.decisions) {
     const cand = k.candidates.find((c) => c.sku.sku === d.sku)!;
-    const label = gt.get(d.sku) === k.recall.number || (cand.sku.upc && k.recall.upcs.includes(cand.sku.upc)) ? "same" : "not-this";
+    const label = (gt.get(d.sku) ?? "").split("|").includes(k.recall.number) || (cand.sku.upc && k.recall.upcs.includes(cand.sku.upc)) ? "same" : "not-this";
     // An escalated case goes to a reviewer: its "same" calls and any pair still under objection are theirs.
     rows.push({ recall: k.recall.id, sku: d.sku, basis: d.basis, label, final: open.length && (d.verdict === "same" || openSkus.includes(d.sku)) ? "unsure" : d.verdict, rounds: finding.round });
   }
