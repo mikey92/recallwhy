@@ -1,5 +1,5 @@
 // Programmatic entry point for judges and scripts.
-//   npm run api            → http://0.0.0.0:8000
+//   npm run api            → http://127.0.0.1:8000 (HOST=0.0.0.0 in the container)
 //   curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d @examples/input/example_1.json
 // POST /run {since, only?, limit?} → JSON: verdict per case, briefs, trace path. One run at a time.
 // GET /runs/<runId>/trace → the run's JSONL trace; GET /runs/<runId>/report → its HTML report.
@@ -10,11 +10,15 @@ import { loadConfig } from "./config.ts";
 import { decide, inQueue, reviewQueue, runOnce } from "./app.ts";
 
 const PORT = Number(process.env.PORT ?? 8000);
+// Local by default; the container sets HOST=0.0.0.0. With API_TOKEN set, every POST needs "Authorization: Bearer <token>".
+const HOST = process.env.HOST ?? "127.0.0.1";
+const TOKEN = process.env.API_TOKEN;
+const MAX_BODY = 64 * 1024;
 let busy = false;
 
 async function body(req: AsyncIterable<unknown>): Promise<string> {
-  const chunks: Buffer[] = [];
-  for await (const c of req) chunks.push(c as Buffer);
+  const chunks: Buffer[] = []; let n = 0;
+  for await (const c of req) { n += (c as Buffer).length; if (n > MAX_BODY) throw new Error("too large"); chunks.push(c as Buffer); }
   return Buffer.concat(chunks).toString("utf8");
 }
 
@@ -32,13 +36,19 @@ createServer(async (req, res) => {
     return void res.end(readFileSync(path));
   }
   if (req.method === "GET" && url.pathname === "/queue") return send(200, reviewQueue());
+  if (req.method === "POST") {
+    if (TOKEN && req.headers.authorization !== `Bearer ${TOKEN}`) return send(401, { error: "missing or wrong API token" });
+    if (!/^application\/json\b/i.test(req.headers["content-type"] ?? "")) return send(415, { error: "send Content-Type: application/json" });
+    if (Number(req.headers["content-length"] ?? 0) > MAX_BODY) return send(413, { error: "body too large" });
+  }
   if (req.method === "POST" && url.pathname === "/decide") {
-    let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown; force?: unknown };
-    try { d = JSON.parse(await body(req) || "{}"); } catch { return send(400, { error: "body must be JSON" }); }
+    let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown };
+    try { d = JSON.parse(await body(req) || "{}"); } catch (e) { return (e as Error).message === "too large" ? send(413, { error: "body too large" }) : send(400, { error: "body must be JSON" }); }
     if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this"))
       return send(400, { error: 'body must be {"recall": "H-1407-2026", "sku": "NW-100005", "verdict": "same" | "not-this", "note"?: "..."}' });
-    if (!inQueue(d.recall, d.sku) && d.force !== true) return send(409, { error: `${d.sku} for ${d.recall} is not in the review queue (GET /queue); send "force": true to record it anyway` });
-    return send(200, { stored: true, ...decide(d.recall, d.sku, d.verdict, typeof d.note === "string" ? d.note : undefined), usedOn: "the next POST /run" });
+    // Only pairs the agents escalated can be decided here, so the API cannot plant decisions on arbitrary recalls.
+    if (!inQueue(d.recall, d.sku)) return send(409, { error: `${d.sku} for ${d.recall} is not in the review queue (GET /queue)` });
+    return send(200, { stored: true, ...decide(d.recall, d.sku, d.verdict, typeof d.note === "string" ? d.note.slice(0, 300) : undefined), usedOn: "the next POST /run" });
   }
   if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report, GET /queue, POST /decide or GET /health" });
   if (busy) return send(409, { error: "a run is already in progress; try again when it finishes" });
@@ -46,7 +56,8 @@ createServer(async (req, res) => {
   try {
     const text = await body(req);
     input = text ? JSON.parse(text) : {};
-  } catch {
+  } catch (e) {
+    if ((e as Error).message === "too large") return send(413, { error: "body too large" });
     return send(400, { error: "body must be JSON like {\"since\":\"2026-09-15\",\"limit\":5}" });
   }
   if (input.since && !/^\d{4}-\d{2}-\d{2}$/.test(input.since)) return send(400, { error: "since must be YYYY-MM-DD" });
@@ -61,4 +72,4 @@ createServer(async (req, res) => {
   } finally {
     busy = false;
   }
-}).listen(PORT, "0.0.0.0", () => console.log(`RecallWhy API on http://0.0.0.0:${PORT}  (POST /run, GET /health)`));
+}).listen(PORT, HOST, () => console.log(`RecallWhy API on http://${HOST}:${PORT}  (POST /run, GET /health)`));

@@ -25,7 +25,9 @@ export async function scout(ctx: AgentContext, opts: { since: string; only?: str
     `SELECT recall_number, recall_date, last_publish, title, description, product_names, models, upcs, firms, hazard, url
      FROM recallfeeds.cpsc_recalls WHERE recall_date >= ${lit(opts.since)}`,
     { agent: "Scout", purpose: "CPSC recalls since " + opts.since }));
-  let recalls = [...fda.rows.map((r) => fromFda(r as unknown as FdaRow)), ...cpsc.rows.map((r) => fromCpsc(r as unknown as CpscRow))];
+  // A recall number becomes part of SQL literals and file names: keep only well-formed ones.
+  let recalls = [...fda.rows.map((r) => fromFda(r as unknown as FdaRow)), ...cpsc.rows.map((r) => fromCpsc(r as unknown as CpscRow))]
+    .filter((r) => /^[A-Za-z0-9-]{1,40}$/.test(String(r.number)));
   if (opts.only?.length) recalls = recalls.filter((r) => opts.only!.includes(r.number) || opts.only!.includes(r.id));
 
   const cat = await ctx.sql.run(`SELECT sku, upc, title, brand, department, supplier_id FROM erp.skus`, { agent: "Scout", purpose: "item master (ERP)" });

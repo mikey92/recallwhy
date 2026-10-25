@@ -16,13 +16,17 @@ createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   if (url.pathname === "/api/queue") return json(res, { queue: reviewQueue(), decided: humanDecisions() });
   if (url.pathname === "/api/decide" && req.method === "POST") {
-    const chunks: Buffer[] = [];
-    for await (const c of req) chunks.push(c as Buffer);
+    // Only this page may record a decision: JSON from the same origin (no cross-site form or text/plain posts).
+    const origin = req.headers.origin;
+    if (origin && origin !== `http://${req.headers.host}`) { res.writeHead(403); return res.end("cross-origin request refused"); }
+    if (!/^application\/json\b/i.test(req.headers["content-type"] ?? "")) { res.writeHead(415); return res.end("send Content-Type: application/json"); }
+    const chunks: Buffer[] = []; let n = 0;
+    for await (const c of req) { n += (c as Buffer).length; if (n > 64 * 1024) { res.writeHead(413); return res.end("body too large"); } chunks.push(c as Buffer); }
     let d: { recall?: unknown; sku?: unknown; verdict?: unknown; note?: unknown } = {};
     try { d = JSON.parse(Buffer.concat(chunks).toString("utf8")); } catch { /* answered below */ }
     if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this")) { res.writeHead(400); return res.end("recall, sku and verdict (same | not-this) are required"); }
     if (!inQueue(d.recall, d.sku)) { res.writeHead(409); return res.end("This case is no longer in the review queue. Reload the page."); }
-    return json(res, decide(d.recall, d.sku, d.verdict, typeof d.note === "string" && d.note.trim() ? d.note.trim() : undefined));
+    return json(res, decide(d.recall, d.sku, d.verdict, typeof d.note === "string" && d.note.trim() ? d.note.trim().slice(0, 300) : undefined));
   }
   if (url.pathname === "/review") { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }); return res.end(readFileSync(new URL("./review.html", import.meta.url))); }
   if (url.pathname === "/api/runs") return json(res, runs().slice(0, 30).map((r) => ({ run: r, report: existsSync(`out/${r}/report.html`) })));

@@ -11,5 +11,8 @@ COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
 ENV PORT=8000
+# The API listens on 127.0.0.1 unless told otherwise; inside the container it must answer the published port.
+# Set API_TOKEN to require "Authorization: Bearer <token>" on POST /run and /decide.
+ENV HOST=0.0.0.0
 EXPOSE 8000
 CMD ["npx", "tsx", "src/api.ts"]

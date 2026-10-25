@@ -25,6 +25,7 @@ export function say(ctx: AgentContext, from: AgentName, to: AgentName | "Human",
   ctx.trace.emit("msg", from, { to, text, ...data });
 }
 
-/** SQL string literal. Values come from feeds and our own catalog, still always escaped. */
-export const lit = (s: string) => `'${String(s).replace(/'/g, "''")}'`;
+/** SQL string literal. Values come from feeds and our own catalog, still always escaped. Backslashes are
+ * dropped: Spark SQL (Zetaris) reads them as escapes, DuckDB does not, and no identifier we quote needs one. */
+export const lit = (s: string) => `'${String(s).replace(/\\/g, "").replace(/'/g, "''")}'`;
 export const inList = (xs: string[]) => (xs.length ? xs.map(lit).join(", ") : "''");
