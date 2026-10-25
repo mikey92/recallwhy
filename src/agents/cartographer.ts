@@ -282,14 +282,23 @@ async function profileFeeds(ctx: AgentContext, map: SourceMap): Promise<FeedProf
  * supplier and accept only the safe ops above. The caller proves the proposal with SQL on every
  * ship notice from the supplier before anything changes.
  */
+// Evidence for the model, computed not guessed: where one code's digits sit inside the other's.
+function where(theirs: string, ours: string): string {
+  const t = theirs.replace(/\D/g, ""), o = ours.replace(/\D/g, "");
+  const i = o.indexOf(t), j = t.indexOf(o);
+  if (t && i >= 0) return `   (supplier digits = our characters ${i + 1}–${i + t.length} of ${o.length})`;
+  if (o && j >= 0) return `   (our digits = supplier characters ${j + 1}–${j + o.length} of ${t.length})`;
+  return "";
+}
+
 async function propose(ctx: AgentContext, supplier: string, theirs: string, ours: string, feedback = ""): Promise<{ ops: ProposedOps; why: string; by: string }> {
   const pairs = await ctx.sql.run(
-    `SELECT a.upc AS supplier_barcode, s.upc AS our_upc FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku
+    `SELECT DISTINCT a.upc AS supplier_barcode, s.upc AS our_upc FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku
      WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> '' AND s.upc <> '' LIMIT 6`,
     { agent: "Cartographer", purpose: `sample barcode pairs from ${supplier} for a transform proposal` });
   const out = await (ctx.mapGen ?? ctx.gen)([
     `Two systems write the same product's barcode differently. Supplier ${supplier} sends ${theirs} codes; our item master has ${ours} UPCs. Real pairs for the same SKU:`,
-    ...pairs.rows.map((r) => `  supplier ${r.supplier_barcode}   ours ${r.our_upc}`),
+    ...pairs.rows.map((r) => `  supplier ${r.supplier_barcode}   ours ${r.our_upc}${where(String(r.supplier_barcode), String(r.our_upc))}`),
     "", "Give the steps that make both sides equal, using only these operations:",
     "digits_only, strip_leading_zeros, drop_first:N, drop_last:N, take_first:N, take_last:N",
     'Reply with JSON only: {"supplier": [steps for the supplier code], "ours": [steps for our UPC], "why": "one short sentence"}',
