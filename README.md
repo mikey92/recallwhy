@@ -79,7 +79,7 @@ Other AI coding assistants were also used; every change was reviewed by me.
 
 ## Run it
 
-**Quickest look, no credentials (about 5 seconds):** `npm ci && npm run demo`, then open the `out/<run>/report.html` it prints. Same agents and SQL on the DuckDB stand-in, no model, so text matches go to the review queue. The live runs are on the [site](https://mikey92.github.io/recallwhy/).
+**Quickest look, no credentials (about 5 seconds):** `npm ci && npm run demo`, then open `report.html` in the `out/<run>/` folder it prints. Same agents and SQL on the DuckDB stand-in, no model, so text matches go to the review queue. The live runs are on the [site](https://mikey92.github.io/recallwhy/).
 
 Requirements: Node 22+, Docker, Meterless Nightshift with an NVIDIA provider key (or Ollama / any OpenAI-compatible endpoint), and a Zetaris instance for live mode.
 
