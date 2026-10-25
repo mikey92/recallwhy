@@ -10,6 +10,7 @@
     "agents": "tsx src/cli.ts run",
     "decide": "tsx src/cli.ts decide",
     "queue": "tsx src/cli.ts queue",
+    "approve": "tsx src/cli.ts approve",
     "eval": "tsx eval/run.ts",
     "setup:zetaris": "tsx scripts/setup-zetaris.ts",
     "view": "tsx src/serve.ts",

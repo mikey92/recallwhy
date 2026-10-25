@@ -15,6 +15,8 @@ h1{font-size:22px;margin:0;font-weight:700}
 header p{margin:0;color:var(--mute);font-size:15px}
 header a{margin-left:auto;color:var(--focus);font-size:15px;padding:11px 0}
 main{max-width:880px;margin:0 auto;padding:24px}
+.sec{font-size:20px;margin:8px 0 4px}
+.files a{color:var(--focus);font-size:15px;margin-right:14px;display:inline-block;padding:10px 0}
 .empty{color:var(--mute);text-align:center;padding:60px 0}
 .case{background:var(--card);border-radius:14px;padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .case h2{font-size:19px;margin:0 0 2px}
@@ -44,7 +46,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 </head>
 <body>
 <header><h1>Review queue</h1><p id="sum" role="status" aria-live="polite"></p><a href="/">Live view</a></header>
-<main id="list" class="intro"></main>
+<main><h2 class="sec">Action packets</h2><p class="meta">Drafts from the latest run: what to pull, what to ask the supplier, what to tell customers. Approving records who and when; nothing is sent.</p><div id="packets"></div><h2 class="sec">Matches to decide</h2><div id="list" class="intro"></div></main>
 <script>
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const label = { "same": "Same product", "not-this": "Not this product", "unsure": "Undecided" };
@@ -99,7 +101,27 @@ document.getElementById("list").addEventListener("click", async (e) => {
   document.querySelector(`.row[data-recall="${CSS.escape(row.dataset.recall)}"][data-sku="${CSS.escape(row.dataset.sku)}"]`)?.closest(".done")?.classList.add("new");
   document.getElementById("sum").textContent = `Recorded “${what}” for ${row.dataset.sku}. ` + document.getElementById("sum").textContent;
 });
+async function loadPackets() {
+  const { runId, packets } = await (await fetch("/api/packets")).json();
+  document.getElementById("packets").innerHTML = packets.length ? packets.map((p) => `<section class="case"><h2>${esc(p.firm || p.recall)}</h2><p class="meta">${esc(p.recall)} · ${esc(p.product || "")}</p>
+    <p class="meta">${p.status === "draft" ? `Pull <b>${p.pullUnits}</b> unit(s) in <b>${p.stores}</b> store(s) · ${p.shipNotices} supplier ship notice(s) cited${p.customers ? ` · notice for at most ${p.customers} customer(s)` : ""} · totals match the Auditor's numbers` : `Withheld: ${esc(p.reason)}`}</p>
+    <p class="files">${p.files.map((f) => `<a href="/out/${esc(runId)}/actions/${esc(p.caseId)}/${esc(f)}" target="_blank">${esc(f)}</a>`).join("")}</p>
+    ${p.approval ? `<p class="done">Approved by ${esc(p.approval.by)} at ${esc(p.approval.at.slice(0, 16).replace("T", " "))}. Not sent.</p>`
+      : p.status === "draft" ? `<div class="row" data-run="${esc(runId)}" data-case="${esc(p.caseId)}"><label class="sr" for="by-${esc(p.caseId)}">Your name</label><input type="text" id="by-${esc(p.caseId)}" placeholder="Your name"><button class="same" data-approve="1">Approve packet</button></div>` : ""}
+    </section>`).join("") : `<p class="empty">No action packets yet. A run drafts one for every recall with our stock or sales.</p>`;
+}
+document.getElementById("packets").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-approve]");
+  if (!b) return;
+  const row = b.closest(".row");
+  if (!confirm(`Approve the action packet for ${row.dataset.case}?\n\nThis records your approval. Nothing is sent.`)) return;
+  b.disabled = true;
+  const r = await fetch("/api/approve", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ run: row.dataset.run, caseId: row.dataset.case, by: row.querySelector("input").value }) });
+  if (!r.ok) { b.disabled = false; alert(await r.text()); return; }
+  await loadPackets();
+});
 load();
+loadPackets();
 </script>
 </body>
 </html>

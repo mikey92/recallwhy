@@ -7,6 +7,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, normalize } from "node:path";
 import { decide, humanDecisions, inQueue, reviewQueue } from "./app.ts";
+import { approvePacket, listPackets } from "./actions.ts";
 
 const PORT = Number(process.env.VIEW_PORT ?? 8899);
 const runs = () => (existsSync("logs") ? readdirSync("logs") : []).filter((f) => /^trace-.*\.jsonl$/.test(f)).map((f) => f.slice(6, -6))
@@ -27,6 +28,20 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this")) { res.writeHead(400); return res.end("recall, sku and verdict (same | not-this) are required"); }
     if (!inQueue(d.recall, d.sku)) { res.writeHead(409); return res.end("This case is no longer in the review queue. Reload the page."); }
     return json(res, decide(d.recall, d.sku, d.verdict, typeof d.note === "string" && d.note.trim() ? d.note.trim().slice(0, 300) : undefined));
+  }
+  if (url.pathname === "/api/packets") return json(res, listPackets());
+  if (url.pathname === "/api/approve" && req.method === "POST") {
+    const origin = req.headers.origin;
+    if (origin && origin !== `http://${req.headers.host}`) { res.writeHead(403); return res.end("cross-origin request refused"); }
+    if (!/^application\/json\b/i.test(req.headers["content-type"] ?? "")) { res.writeHead(415); return res.end("send Content-Type: application/json"); }
+    const chunks: Buffer[] = []; let n = 0;
+    for await (const c of req) { n += (c as Buffer).length; if (n > 16 * 1024) { res.writeHead(413); return res.end("body too large"); } chunks.push(c as Buffer); }
+    let d: { run?: unknown; caseId?: unknown; by?: unknown; note?: unknown } = {};
+    try { d = JSON.parse(Buffer.concat(chunks).toString("utf8")); } catch { /* answered below */ }
+    if (typeof d.run !== "string" || typeof d.caseId !== "string") { res.writeHead(400); return res.end("run and caseId are required"); }
+    const r = approvePacket(d.run, d.caseId, typeof d.by === "string" && d.by.trim() ? d.by.trim() : "reviewer", typeof d.note === "string" ? d.note : "");
+    if (!r.ok) { res.writeHead(409); return res.end(r.reason); }
+    return json(res, r);
   }
   if (url.pathname === "/review") { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }); return res.end(readFileSync(new URL("./review.html", import.meta.url))); }
   if (url.pathname === "/api/runs") return json(res, runs().slice(0, 30).map((r) => ({ run: r, report: existsSync(`out/${r}/report.html`) })));

@@ -10,10 +10,11 @@ import { investigate, revise, type Finding } from "./agents/investigator.ts";
 import { scout, type Case } from "./agents/scout.ts";
 import { chart } from "./agents/cartographer.ts";
 import { renderReport } from "./report-html.ts";
+import { actionPacket, type Packet } from "./actions.ts";
 
 const MAX_REVISIONS = 2;
 
-export interface RunResult { runId: string; scanned: number; cases: { id: string; recall: string; verdict: Finding["verdict"]; rounds: number; whyBy: string }[]; outDir: string }
+export interface RunResult { runId: string; scanned: number; cases: { id: string; recall: string; verdict: Finding["verdict"]; rounds: number; whyBy: string; packet?: { status: Packet["status"]; stores: number; units: number; files: string[] } }[]; outDir: string }
 
 export async function run(ctx: AgentContext, opts: { since: string; only?: string[]; limit?: number }): Promise<RunResult> {
   ctx.trace.emit("run.start", "Orchestrator", { since: opts.since, only: opts.only, engine: ctx.sql.engine, model: ctx.model });
@@ -30,9 +31,13 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
     if (finding.verdict !== "needs-human") unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
     const entities = await record(ctx, k, finding);
     const b = await brief(ctx, k, finding, entities, open);
-    writeFileSync(`${outDir}/briefs/${k.id}.md`, b.markdown);
+    const p = await actionPacket(ctx, k, finding, outDir);
+    const packetNote = p ? (p.status === "draft"
+      ? `\n## Action packet (drafts, not sent)\n${p.files.map((f) => `- [${f}](../actions/${k.id}/${f})`).join("\n")}\n- Pull ${p.pullUnits} unit(s) in ${p.stores} store(s); the total equals the Auditor's re-derived on-hand. Approve with \`npm run approve -- ${ctx.trace.runId} ${k.id}\`.\n`
+      : `\n## Action packet withheld\n- ${p.reason}\n`) : "";
+    writeFileSync(`${outDir}/briefs/${k.id}.md`, b.markdown + packetNote);
     briefs.push(b);
-    results.push({ id: k.id, recall: k.recall.id, verdict: finding.verdict, rounds: finding.round, whyBy: b.whyBy });
+    results.push({ id: k.id, recall: k.recall.id, verdict: finding.verdict, rounds: finding.round, whyBy: b.whyBy, ...(p ? { packet: { status: p.status, stores: p.stores, units: p.pullUnits, files: p.files } } : {}) });
   }
   writeFileSync(`${outDir}/report.md`, report(ctx, opts.since, scanned, results));
   writeFileSync(`${outDir}/result.json`, JSON.stringify({ runId: ctx.trace.runId, engine: ctx.sql.engine, model: ctx.model, since: opts.since, scanned, cases: results }, null, 2));
@@ -112,7 +117,7 @@ function report(ctx: AgentContext, since: string, scanned: number, rs: RunResult
   return [`# RecallWhy run ${ctx.trace.runId}`, "",
     `Engine: **${ctx.sql.engine}**${ctx.sql.engine === "duckdb-sample" ? " (SAMPLE MODE — local stand-in, Zetaris not used)" : ""} · Model: **${ctx.model}** · Recalls since ${since}: **${scanned}** scanned, **${rs.length}** touch our catalog`, "",
     "| Verdict | Count |", "|---|---|", ...Object.entries(count(rs.map((r) => r.verdict))).map(([k, v]) => `| ${k} | ${v} |`), "",
-    "| Case | Recall | Verdict | Audit rounds | Why written by |", "|---|---|---|---|---|",
-    ...sorted.map((r) => `| [${r.id}](briefs/${r.id}.md) | ${r.recall} | ${r.verdict} | ${r.rounds} | ${r.whyBy} |`), "",
+    "| Case | Recall | Verdict | Audit rounds | Why written by | Action packet |", "|---|---|---|---|---|---|",
+    ...sorted.map((r) => `| [${r.id}](briefs/${r.id}.md) | ${r.recall} | ${r.verdict} | ${r.rounds} | ${r.whyBy} | ${r.packet ? (r.packet.status === "draft" ? `[pull ${r.packet.units} in ${r.packet.stores} store(s)](actions/${r.id}/)` : "withheld") : ""} |`), "",
     `Trace: \`${ctx.trace.file}\``].join("\n");
 }

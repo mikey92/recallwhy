@@ -4,10 +4,12 @@
 // POST /run {since, only?, limit?} → JSON: verdict per case, briefs, trace path. One run at a time.
 // GET /runs/<runId>/trace → the run's JSONL trace; GET /runs/<runId>/report → its HTML report.
 // GET /queue → cases escalated to a human; POST /decide {recall, sku, verdict, note?} → store a reviewer's decision.
+// GET /packets → action packets of the latest run; POST /approve {run, caseId, by?, note?} → record an approval (nothing is sent).
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
 import { loadConfig } from "./config.ts";
 import { decide, inQueue, reviewQueue, runOnce } from "./app.ts";
+import { approvePacket, listPackets } from "./actions.ts";
 
 const PORT = Number(process.env.PORT ?? 8000);
 // Local by default; the container sets HOST=0.0.0.0. With API_TOKEN set, every POST needs "Authorization: Bearer <token>".
@@ -36,6 +38,14 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     return void res.end(readFileSync(path));
   }
   if (req.method === "GET" && url.pathname === "/queue") return send(200, reviewQueue());
+  if (req.method === "GET" && url.pathname === "/packets") return send(200, listPackets());
+  const packetFile = url.pathname.match(/^\/runs\/([\w-]+)\/actions\/([\w.:-]+)\/([\w.-]+\.(?:csv|md|json))$/);
+  if (req.method === "GET" && packetFile) {
+    const path = `out/${packetFile[1]}/actions/${packetFile[2]}/${packetFile[3]}`;
+    if (!existsSync(path)) return send(404, { error: "no such packet file" });
+    res.writeHead(200, { "Content-Type": path.endsWith(".csv") ? "text/csv; charset=utf-8" : path.endsWith(".json") ? "application/json" : "text/markdown; charset=utf-8" });
+    return void res.end(readFileSync(path));
+  }
   if (req.method === "POST") {
     if (TOKEN && req.headers.authorization !== `Bearer ${TOKEN}`) return send(401, { error: "missing or wrong API token" });
     if (!/^application\/json\b/i.test(req.headers["content-type"] ?? "")) return send(415, { error: "send Content-Type: application/json" });
@@ -50,7 +60,14 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     if (!inQueue(d.recall, d.sku)) return send(409, { error: `${d.sku} for ${d.recall} is not in the review queue (GET /queue)` });
     return send(200, { stored: true, ...decide(d.recall, d.sku, d.verdict, typeof d.note === "string" ? d.note.slice(0, 300) : undefined), usedOn: "the next POST /run" });
   }
-  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report, GET /queue, POST /decide or GET /health" });
+  if (req.method === "POST" && url.pathname === "/approve") {
+    let d: { run?: unknown; caseId?: unknown; by?: unknown; note?: unknown };
+    try { d = JSON.parse(await body(req) || "{}"); } catch (e) { return (e as Error).message === "too large" ? send(413, { error: "body too large" }) : send(400, { error: "body must be JSON" }); }
+    if (typeof d.run !== "string" || typeof d.caseId !== "string") return send(400, { error: 'body must be {"run": "<runId>", "caseId": "case-fda-H-1095-2026", "by"?: "name", "note"?: "..."}' });
+    const r = approvePacket(d.run, d.caseId, typeof d.by === "string" ? d.by : "api", typeof d.note === "string" ? d.note : "");
+    return r.ok ? send(200, { approved: true, file: r.file, sent: false }) : send(409, { error: r.reason });
+  }
+  if (req.method !== "POST" || url.pathname !== "/run") return send(404, { error: "use POST /run, GET /runs/<runId>/trace, GET /runs/<runId>/report, GET /runs/<runId>/actions/<case>/<file>, GET /queue, GET /packets, POST /decide, POST /approve or GET /health" });
   if (busy) return send(409, { error: "a run is already in progress; try again when it finishes" });
   let input: { since?: string; only?: string[]; limit?: number };
   try {

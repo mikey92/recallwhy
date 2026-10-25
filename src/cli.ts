@@ -2,8 +2,10 @@
 // recallwhy run [--since YYYY-MM-DD] [--only H-1361-2026,27024] [--limit N]
 // recallwhy decide <recall-id> <sku> same|not-this [--note "..."]
 // recallwhy queue
+// recallwhy approve <run-id> <case-id> [--by "name"] [--note "..."]   (records approval of an action packet; sends nothing)
 import { loadConfig } from "./config.ts";
 import { decide, reviewQueue, runOnce } from "./app.ts";
+import { approvePacket } from "./actions.ts";
 
 const args = process.argv.slice(2);
 const flag = (name: string) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : undefined; };
@@ -16,6 +18,14 @@ async function main() {
     if (!recallId || !sku || !["same", "not-this"].includes(verdict)) throw new Error('usage: decide <recall-id> <sku> same|not-this [--note "..."]');
     const { recall } = decide(recallId, sku, verdict as "same" | "not-this", flag("note"));
     console.log(`stored: ${sku} ${verdict} for ${recall} (high trust; used on the next run)`);
+    return;
+  }
+  if (cmd === "approve") {
+    const [, runId, caseId] = args;
+    if (!runId || !caseId) throw new Error('usage: approve <run-id> <case-id> [--by "name"] [--note "..."]');
+    const r = approvePacket(runId, caseId, flag("by") ?? process.env.USER ?? "reviewer", flag("note"));
+    if (!r.ok) throw new Error(`not approved: ${r.reason}`);
+    console.log(`approved: ${r.file} (nothing was sent)`);
     return;
   }
   if (cmd === "queue") {
