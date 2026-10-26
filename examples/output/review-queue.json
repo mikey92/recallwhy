@@ -5,7 +5,7 @@
     "firm": "Taylor Fresh Foods Inc",
     "date": "2026-08-07",
     "notice": "Tomato Salsa Fresca. Ingredients: Tomatoes, Yellow Onion, Red Onion, Cilantro, Jalapeno Pepper, Garlic, Salt, Ground Cumin, Lemon Juice. Net Wt: 4 lbs. Keep Refrigerated.",
-    "runId": "2026-10-26T02-59-25-c0e79b",
+    "runId": "2026-10-26T15-27-45-f8d2c3",
     "skus": [
       {
         "sku": "NW-100119",
@@ -35,7 +35,7 @@
     "open": [
       "NW-100119 undecided: Auditor: dismissed, but the quoted recalled product \"Tomato Salsa Fresca. Ingredients: Tomatoes, Yellow Onion, Red Onion, Cilantro, Jalapeno Pepper, Garlic, Salt, Ground Cum\" names every product word of our item \"Salsa Fresca Medium 12 oz\" and differs only in size, count or description; a reviewer checks the package"
     ],
-    "at": "2026-10-26T02:59:56.588Z"
+    "at": "2026-10-26T15:28:00.304Z"
   },
   {
     "caseId": "case-fda-H-1099-2026",
@@ -43,7 +43,7 @@
     "firm": "Spring & Mulberry Inc.",
     "date": "2026-01-09",
     "notice": "Spring & Mulberry Lavender Rose Date-Sweetened Chocolate, Net Wt. 2.1 oz. (60g), individually packaged in a light blue box, UPC 850055470019, Dist. By Spring & Mulberry Raleigh, NC 27606. Wholesale product packed 48 bars (caddied)/56 bars (uncaddied) per case. Retail product sold individually or as a 3-pk, 6-pk, or 12-pk (Amazon only).",
-    "runId": "2026-10-26T03-06-27-8ae727",
+    "runId": "2026-10-26T15-34-49-ca7f1a",
     "skus": [
       {
         "sku": "NW-100125",
@@ -89,6 +89,6 @@
     "open": [
       "dismissed, but the quoted recalled product \"Spring & Mulberry Lavender Rose Date-Sweetened Chocolate\" contains every product word of our item \"Date-sweetened chocolate\""
     ],
-    "at": "2026-10-26T03:07:30.104Z"
+    "at": "2026-10-26T15:36:17.599Z"
   }
 ]

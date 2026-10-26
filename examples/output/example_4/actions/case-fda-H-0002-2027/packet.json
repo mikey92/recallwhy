@@ -4,7 +4,7 @@
   "firm": "LEASA  Industries Co., Inc.",
   "product": "LEASA Living Alfalfa Sprouts; packaged in plastic clamshell containers; KEEP REFRIGERATED; NET WT. 4 OZ. (113g); Grown…",
   "verdict": "act-now",
-  "dir": "out/2026-10-26T03-08-13-32ec70/actions/case-fda-H-0002-2027",
+  "dir": "out/2026-10-26T15-36-33-e8c9ee/actions/case-fda-H-0002-2027",
   "status": "draft",
   "stores": 6,
   "pullUnits": 355,
@@ -19,5 +19,8 @@
     "pull-list.csv",
     "supplier-request.md",
     "customer-notice.md"
+  ],
+  "items": [
+    "Living Alfalfa Sprouts"
   ]
 }

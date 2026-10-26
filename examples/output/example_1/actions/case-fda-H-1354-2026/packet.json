@@ -4,7 +4,7 @@
   "firm": "Taylor Fresh Foods Inc",
   "product": "Pineapple Mango Salsa Mild. Ingredients: Mango, Pineapple, Pasteurized Lime Juice, Pasteurized Lemon Juice, Jalapeno…",
   "verdict": "act-now",
-  "dir": "out/2026-10-26T02-59-25-c0e79b/actions/case-fda-H-1354-2026",
+  "dir": "out/2026-10-26T15-27-45-f8d2c3/actions/case-fda-H-1354-2026",
   "status": "draft",
   "stores": 9,
   "pullUnits": 406,
@@ -19,5 +19,8 @@
     "pull-list.csv",
     "supplier-request.md",
     "customer-notice.md"
+  ],
+  "items": [
+    "Pineapple Mango Salsa Mild 10 oz"
   ]
 }
