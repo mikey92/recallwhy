@@ -11,6 +11,7 @@ import { scout, type Case } from "./agents/scout.ts";
 import { chart } from "./agents/cartographer.ts";
 import { renderReport } from "./report-html.ts";
 import { actionPacket, type Packet } from "./actions.ts";
+import { priorVerdicts, publishVerdicts, type VerdictRow } from "./zetaris-usl.ts";
 import { digest, type DigestCase } from "./digest.ts";
 
 const MAX_REVISIONS = 2;
@@ -28,8 +29,16 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   const results: RunResult["cases"] = [];
   const briefs: Brief[] = [];
   const forDigest: DigestCase[] = [];
+  // Verdicts the previous run wrote back to Zetaris (reconciled.case_verdicts): a verdict that changes is flagged.
+  const prior = await priorVerdicts(ctx);
+  const verdicts: VerdictRow[] = [];
   for (const k of todo) {
     const { finding, open } = await adjudicate(ctx, k);
+    for (const d of finding.decisions) {
+      verdicts.push({ recall_id: k.recall.id, sku: d.sku, verdict: d.verdict, basis: d.basis, decided_by: d.decidedBy === "human-memory" ? "person" : "agent" });
+      const was = prior.get(`${k.recall.id} ${d.sku}`);
+      if (was && was.verdict !== d.verdict) say(ctx, "Orchestrator", "Human", `${k.id}: ${d.sku} was "${was.verdict}" in run ${was.run_id} (${was.decided_by}, read from Zetaris) and is "${d.verdict}" now (${d.decidedBy})`);
+    }
     if (finding.verdict !== "needs-human" && !finding.decisions.some((d) => d.verdict === "unsure")) unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
     const entities = await record(ctx, k, finding);
     const b = await brief(ctx, k, finding, entities, open);
@@ -43,6 +52,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
     const n = finding.numbers;
     forDigest.push({ id: k.id, recall: k.recall.id, firm: k.recall.firm, product: k.recall.title, verdict: finding.verdict, onHand: n?.onHandUnits ?? 0, stores: n?.storesWithStock ?? 0, sold: n?.unitsSoldSince ?? 0, customers: n?.loyaltyCustomers ?? 0, packet: p?.status });
   }
+  await publishVerdicts(ctx, verdicts).catch((e) => ctx.trace.emit("note", "Orchestrator", { text: `verdicts not written back to Zetaris: ${(e as Error).message.slice(0, 160)}` }));
   await digest(ctx, { runId: ctx.trace.runId, scanned }, forDigest, outDir).catch((e) => ctx.trace.emit("note", "Briefer", { text: `digest not written: ${(e as Error).message}` }));
   writeFileSync(`${outDir}/report.md`, report(ctx, opts.since, scanned, results));
   writeFileSync(`${outDir}/result.json`, JSON.stringify({ runId: ctx.trace.runId, engine: ctx.sql.engine, model: ctx.model, since: opts.since, scanned, cases: results }, null, 2));

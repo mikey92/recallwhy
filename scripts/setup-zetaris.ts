@@ -13,7 +13,7 @@ const trace = new Trace({ dir: "logs/setup", quiet: true });
 const z = new ZetarisRunner({ baseUrl: env.ZETARIS_BASE_URL!, username: env.ZETARIS_USERNAME!, password: env.ZETARIS_PASSWORD!, orgId: env.ZETARIS_ORG_ID, trace });
 
 const fill = (sql: string) => sql.replace(/\$\{(\w+)\}/g, (_, k) => { if (!env[k]) throw new Error(`${k} is not set (.env)`); return env[k]!; });
-for (const file of ["sql/01_feeds.sql", "sql/02_retail_sources.sql", "sql/03_writeback.sql"]) {
+for (const file of ["sql/01_feeds.sql", "sql/02_retail_sources.sql", "sql/03_writeback.sql", "sql/04_usl.sql"]) {
   const stmts = splitSql(readFileSync(file, "utf8"));
   for (const stmt of stmts) {
     const label = stmt.replace(/\s+/g, " ").slice(0, 80);
