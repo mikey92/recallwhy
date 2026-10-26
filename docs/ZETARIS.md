@@ -2,9 +2,8 @@
 
 Zetaris Lightning 2.4.3.1 (local Docker). Every agent reads data only through it; the agents also write
 back to it. Each row below names the object, the statement that creates or uses it, the independent check,
-and what that check returned on a live run (timings from the run's own trace; run
-`2026-10-26T01-11-08-21d3f8`, request `examples/input/example_2.json` from empty agent state, 0 Zetaris
-errors, 1 min 46 s end to end including Nemotron calls).
+and what that check returned on the live example runs of 26 Oct (`examples/README.md`; timings from each
+run's own trace, 0 failed statements in any run; `example_2` took 2 min 3 s end to end including the Nemotron calls).
 
 ## Sources
 
@@ -23,14 +22,15 @@ suppliers ⋈ item master; exposure by store and lot; units sold since the recal
 
 | Object | Written by | When | Checked by | Live result |
 |---|---|---|---|---|
-| `reconciled.ship_notice_item_keys` (schemastore view): ship notices joined to our items under the barcode rules proven so far | Cartographer, `publish()` in `src/agents/cartographer.ts` | after it proves a supplier's rule on every one of that supplier's ship notices | read back per supplier (`SELECT COUNT(*) … WHERE supplier_id = …`); Zetaris lineage `INFER SQLTABLE SOURCES SPEC` (87 ms: `supplier_portal`, `erp`) | SUP010 193/193 read back |
-| USL `recall_keys.notice_item` + DQ rule `barcode_names_the_notice_sku` (`item_sku = notice_sku`) | `sql/03_writeback.sql`; re-bound by `ACTIVATE USL TABLE` in `publish()` | same | `RUN DQ` (24.5 s) | every row valid, 0 invalid |
-| `reconciled.case_verdicts` (schemastore view over `VALUES`): every verdict of the run | Orchestrator, `publishVerdicts()` in `src/zetaris-usl.ts` | end of every live run | read back from the USL table `decision`; 3 DQ rules (below) | 4/4 read back |
+| `reconciled.ship_notice_item_keys` (schemastore view): ship notices joined to our items under the barcode rules proven so far | Cartographer, `publish()` in `src/agents/cartographer.ts` | after it proves a supplier's rule on every one of that supplier's ship notices | read back per supplier (`SELECT COUNT(*) … WHERE supplier_id = …`); Zetaris lineage `INFER SQLTABLE SOURCES SPEC` (87 ms: `supplier_portal`, `erp`) | SUP028 391/391, SUP010 193/193, SUP007 458/458 read back |
+| USL `recall_keys.notice_item` + DQ rule `barcode_names_the_notice_sku` (`item_sku = notice_sku`) | `sql/03_writeback.sql`; re-bound by `ACTIVATE USL TABLE` in `publish()` | same | `RUN DQ` (14–26 s) | every row valid, 0 invalid, in every example run |
+| `reconciled.supplier_rules` (schemastore view over `VALUES`): every barcode rule proven so far | Cartographer, `publish()`; read by `remember()` at the start of the next run | with the map | each saved rule is re-proven on all of its supplier's ship notices before it is used; one that no longer holds is dropped | 1, 2, then 3 rules remembered across the example runs, each re-proven in full |
+| `reconciled.case_verdicts` (schemastore view over `VALUES`): every verdict so far, one row per recall and item | Orchestrator, `publishVerdicts()` in `src/zetaris-usl.ts` | end of every live run | read back from the USL table `decision`; 3 DQ rules (below) | 12, 4, 5, 6, 5 written and read back in full; 27 rows at the end, 27/27 valid |
 
 Every write runs under a signed, single-use execution contract (Meterless Scout Intent, `src/contract.ts`):
 the contract names the exact views and USL tables it may change, is verified before each statement, and
-expires after 5 minutes. The trace carries `contract.issued` / `contract.verified` events (3 issued, 5
-verified in the run above: the map write-back, the USL re-bind, the verdict write-back). The signing key is
+expires after 5 minutes. The trace carries `contract.issued` / `contract.verified` events (3 issued, 6
+verified in `example_2`: the map and rule write-back, the USL re-bind, the verdict write-back). The signing key is
 `RECALLWHY_CONTRACT_SECRET` or `state/contract-secret` (mode 600, gitignored), so a recorded approval can be
 verified again later (`signatureValid`). It is an integrity check inside one deployment, as the Scout Intent
 spec says, not a multi-party signature.
@@ -52,7 +52,7 @@ spec says, not a multi-party signature.
 | `inventory_lot` | `erp.inventory` | PK `(store_id, sku, lot_code)`, FK `store_id → store`, FK `sku → item` | 14,982 |
 | `ship_notice` | `supplier_portal.ship_notices` ⟕ `reconciled.ship_notice_item_keys` | PK `asn_id`, FK `supplier_id → supplier`, FK `notice_sku → item`, **FK `matched_sku → item`** | 14,244 |
 | `recall_notice` | `recallfeeds.fda_food` ∪ `recallfeeds.cpsc_recalls` (live) | PK `recall_id` | 333 + 189 |
-| `decision` | `reconciled.case_verdicts` | PK `(run_id, recall_id, sku)`, FK `recall_id → recall_notice`, FK `sku → item` | one row per verdict of the latest run |
+| `decision` | `reconciled.case_verdicts` | PK `(run_id, recall_id, sku)`, FK `recall_id → recall_notice`, FK `sku → item` | one row per recall and item decided so far (27 after the examples) |
 
 18 data-quality rules (`LIST DQ USL`): the keys above plus three custom rules — `on_hand_not_negative`,
 `ships_units` (`units > 0`), `known_verdict` (`verdict IN ('same', 'not-this', 'unsure')`).
@@ -66,16 +66,19 @@ size; `SHOW DQ INVALID RECORD` is capped by the row limit and is used in `sql/04
 
 | State of the map | `RUN DQ matched_sku` (valid / total) | Unreached, by supplier |
 |---|---|---|
-| Fresh run, after SUP010's rule (proposed by Nemotron, proven 193/193) | 11,705 / 14,244 (24.2 s) | 2,539: SUP007 458, SUP028 391, SUP001 390, SUP037 373, SUP019 339, SUP014 307, … |
-| After the live runs of 26 Oct (SUP007 and SUP028 proven too) | 12,361 / 14,244 (16.7 s) | 1,883: SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281, SUP010 193 |
+| `example_1`, from empty state, after SUP028's rule (proven 391/391) | 11,903 / 14,244 (14.4 s) | 2,341: SUP007 458, SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281, SUP010 193 |
+| `example_2`, SUP028 remembered, after SUP010's rule (proposed by Nemotron, proven 193/193) | 12,096 / 14,244 (25.3 s) | 2,148: SUP007 458, SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281 |
+| `example_4`, two rules remembered, after SUP007's rule (proven 458/458) | 12,554 / 14,244 (27.2 s) | 1,690: SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281 |
 
 Every other key holds: `item.supplier_id` 900/900, `inventory_lot.store_id` and `.sku` 14,982/14,982,
 `ship_notice.notice_sku` 14,244/14,244, `on_hand_not_negative` 14,982/14,982, `ships_units` 14,244/14,244
-(`sql/04_usl_check.sql`, 26 Oct). On the decision table after the run above: `recall_id` 4/4, `sku` 4/4,
-`known_verdict` 4/4 — every verdict points at a notice in the live feeds and an item we carry.
+(`sql/04_usl_check.sql`, 26 Oct). On the decision table after the last example run: `recall_id` 27/27,
+`sku` 27/27, `known_verdict` 27/27 — every verdict points at a notice in the live feeds and an item we carry.
 
-**Closing the loop.** The next run reads `reconciled.case_verdicts` before it decides (302 ms) and says so
-when a verdict on the same recall and item changed since then (`src/orchestrator.ts`).
+**Closing the loop.** The next run reads `reconciled.case_verdicts` before it decides (about 0.3 s) and says so
+when a verdict on the same recall and item changed since then (`src/orchestrator.ts`). A pair the Auditor
+escalated is written as `unsure` (basis `escalated`), so in `example_3_after_human_decision` the Orchestrator
+reports: NW-100165 was `unsure` in the earlier run and is `not-this` now, decided by a person.
 
 ## What we learned on 2.4.3.1
 
