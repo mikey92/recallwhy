@@ -3,13 +3,16 @@
 //   pull-list.csv       one row per store × lot to pull, with the store's name and city
 //   supplier-request.md a credit/replacement request citing the supplier's own ship notices
 //   customer-notice.md  the notice text for loyalty customers who bought affected lots (count only)
+//   store-status.csv   every store that holds or sold the item: PULL (affected lot on hand), NOTIFY (affected lot
+//                       sold since the recall, none left), CLEAR (only lots the notice does not list, named as
+//                       evidence), HOLD (stock whose lot is unknown); see storeStatus
 //   fda-traceability.csv FDA recalls only: our receiving records for the affected lots in the shape of the FSMA 204
 //                       receiving key data elements, sortable by lot and date (see fsmaSheet)
 //   packet.json         the SQL ids behind every file, and whether the totals reconcile
 // Nothing is sent. Every row comes from its own federated query, and the packet is withheld when its
 // on-hand total does not equal the number the Auditor already re-derived.
 import { mkdirSync, writeFileSync, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { inList, say, type AgentContext } from "./agents/context.ts";
+import { inList, lit, say, type AgentContext } from "./agents/context.ts";
 import { Trace } from "./trace.ts";
 import { issueContract, verifyContract, ContractRefused } from "./contract.ts";
 import type { Finding } from "./agents/investigator.ts";
@@ -21,6 +24,8 @@ export interface Packet {
   caseId: string; recall: string; firm: string; product: string; verdict: Finding["verdict"]; dir: string; status: "draft" | "withheld";
   stores: number; pullUnits: number; auditedUnits: number; shipNotices: number; customers: number;
   sql: { pullList: string; shipNotices: string }; reason?: string; files: string[];
+  /** Stores by status (PULL, NOTIFY, CLEAR, HOLD), from store-status.csv. */
+  storeStatus?: Record<string, number>;
   /** Our items in the pull list (title), for the review screen. */
   items?: string[];
 }
@@ -92,6 +97,15 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
     writeFileSync(`${dir}/${name}`, md + "\n");
     packet.files.push(name);
   }
+  const st = await storeStatusQuery(ctx, k, skus, n);
+  const pullFromStatus = st.rows.filter((x) => x.status === "PULL").reduce((a, x) => a + x.affectedOnHand, 0);
+  if (st.rows.length && pullFromStatus !== pullUnits) {
+    ctx.trace.emit("critique", "Auditor", { caseId: k.id, code: "packet-mismatch", detail: `store status PULL rows sum to ${pullFromStatus} units, the pull list to ${pullUnits}; store-status.csv withheld` });
+  } else if (st.rows.length) {
+    writeFileSync(`${dir}/store-status.csv`, st.csv);
+    packet.files.push("store-status.csv");
+    packet.storeStatus = st.counts;
+  }
   if (k.recall.feed === "fda_food" && (rows.length || asns.length)) {
     writeFileSync(`${dir}/fda-traceability.csv`, fsmaSheet(k, rows, asns, { pull: pull.sqlId, ship: ship.sqlId }));
     packet.files.push("fda-traceability.csv");
@@ -121,6 +135,59 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
 }
 
 /** A person approves a drafted packet: the approval is recorded next to it, with who and when. Nothing is sent. */
+export type StoreStatus = "PULL" | "NOTIFY" | "CLEAR" | "HOLD";
+export interface StoreLot { store_id: string; store: string; city: string; state: string; lot_code: string; on_hand: number; sold: number }
+export const STORE_COLUMNS = ["store_id", "store", "city", "state", "status", "affected_units_on_hand", "other_units_on_hand", "lots_on_hand", "affected_units_sold_since_recall", "evidence"];
+
+/**
+ * One status per store that holds the matched item or sold an affected lot since the recall. CLEAR needs positive
+ * evidence: the notice lists its lots (lotRule "listed-lots") and every lot the store holds is outside that list,
+ * named in the row. A lot code we cannot read (empty) is never cleared: HOLD. Pure, so it is tested without SQL.
+ */
+export function storeStatus(rows: StoreLot[], affectedLots: string[], lotRule: string): { store: StoreLot; status: StoreStatus; affectedOnHand: number; otherOnHand: number; lots: string[]; sold: number; evidence: string }[] {
+  const aff = new Set(affectedLots.map((l) => l.toUpperCase()));
+  const by = new Map<string, StoreLot[]>();
+  for (const r of rows) (by.get(r.store_id) ?? by.set(r.store_id, []).get(r.store_id)!).push(r);
+  return [...by.values()].map((lots) => {
+    const isAff = (l: StoreLot) => aff.has(l.lot_code.toUpperCase());
+    const affectedOnHand = lots.filter(isAff).reduce((a, l) => a + l.on_hand, 0);
+    const unknown = lots.filter((l) => !l.lot_code.trim() && l.on_hand > 0).reduce((a, l) => a + l.on_hand, 0);
+    const otherOnHand = lots.filter((l) => !isAff(l)).reduce((a, l) => a + l.on_hand, 0);
+    const sold = lots.filter(isAff).reduce((a, l) => a + l.sold, 0);
+    const held = [...new Set(lots.filter((l) => l.on_hand > 0).map((l) => l.lot_code || "(no lot code)"))].sort();
+    let status: StoreStatus, evidence: string;
+    if (affectedOnHand > 0) { status = "PULL"; evidence = `holds recalled lot(s) ${[...new Set(lots.filter((l) => isAff(l) && l.on_hand > 0).map((l) => l.lot_code))].join(", ")}`; }
+    else if (unknown > 0) { status = "HOLD"; evidence = `${unknown} unit(s) with no readable lot code: cannot be cleared`; }
+    else if (sold > 0) { status = "NOTIFY"; evidence = `sold ${sold} unit(s) of recalled lots since the recall, none left on hand`; }
+    else if (otherOnHand > 0 && lotRule === "listed-lots") { status = "CLEAR"; evidence = `holds only lot(s) ${held.join(", ")}, none of which the notice lists (${affectedLots.join(", ")})`; }
+    else { status = "HOLD"; evidence = lotRule === "listed-lots" ? "no stock and no sale of recalled lots" : "the notice lists no lots we can match: every lot counts as recalled"; }
+    return { store: lots[0], status, affectedOnHand, otherOnHand, lots: held, sold, evidence };
+  }).sort((a, b) => ["PULL", "NOTIFY", "HOLD", "CLEAR"].indexOf(a.status) - ["PULL", "NOTIFY", "HOLD", "CLEAR"].indexOf(b.status) || b.affectedOnHand - a.affectedOnHand || a.store.store_id.localeCompare(b.store.store_id));
+}
+
+async function storeStatusQuery(ctx: AgentContext, k: Case, skus: string[], n: NonNullable<Finding["numbers"]>) {
+  const inv = await ctx.sql.run(
+    `SELECT i.store_id, st.name AS store, st.city, st.state, i.lot_code, SUM(i.on_hand) AS on_hand
+     FROM erp.inventory i JOIN erp.stores st ON st.store_id = i.store_id
+     WHERE i.sku IN (${inList(skus)}) GROUP BY i.store_id, st.name, st.city, st.state, i.lot_code`,
+    { agent: "Orchestrator", purpose: `store status for ${k.id}: every lot of the item on hand, by store` });
+  const sold = n.affectedLots.length ? await ctx.sql.run(
+    `SELECT s.store_id, st.name AS store, st.city, st.state, s.lot_code, SUM(s.units) AS units
+     FROM erp.sales s JOIN erp.stores st ON st.store_id = s.store_id
+     WHERE s.sku IN (${inList(skus)}) AND s.lot_code IN (${inList(n.affectedLots)}) AND s.sold_on >= CAST(${lit(k.recall.date || "2026-01-01")} AS DATE)
+     GROUP BY s.store_id, st.name, st.city, st.state, s.lot_code`,
+    { agent: "Orchestrator", purpose: `store status for ${k.id}: recalled lots sold since the recall, by store` }) : undefined;
+  const key = (r: Record<string, unknown>) => `${r.store_id}|${r.lot_code ?? ""}`;
+  const lots = new Map<string, StoreLot>();
+  for (const r of inv.rows) lots.set(key(r), { store_id: String(r.store_id), store: String(r.store), city: String(r.city), state: String(r.state), lot_code: String(r.lot_code ?? ""), on_hand: Number(r.on_hand), sold: 0 });
+  for (const r of sold?.rows ?? []) { const l = lots.get(key(r)) ?? { store_id: String(r.store_id), store: String(r.store), city: String(r.city), state: String(r.state), lot_code: String(r.lot_code ?? ""), on_hand: 0, sold: 0 }; l.sold += Number(r.units); lots.set(key(r), l); }
+  const res = storeStatus([...lots.values()].filter((l) => l.on_hand > 0 || l.sold > 0), n.affectedLots, n.lotRule);
+  const sqlIds = [inv.sqlId, sold?.sqlId].filter(Boolean).join(" ");
+  const csvText = [STORE_COLUMNS.join(","), ...res.map((x) => [x.store.store_id, x.store.store, x.store.city, x.store.state, x.status, x.affectedOnHand, x.otherOnHand, x.lots.join(" "), x.sold, `${x.evidence} (${sqlIds})`].map((v) => csv(v)).join(","))].join("\n") + "\n";
+  const counts = Object.fromEntries((["PULL", "NOTIFY", "HOLD", "CLEAR"] as const).map((s) => [s, res.filter((x) => x.status === s).length]));
+  return { rows: res, csv: csvText, counts };
+}
+
 export const FSMA_COLUMNS = ["traceability_lot_code", "product_description", "upc", "quantity", "unit_of_measure", "quantity_note", "event", "receiving_location", "immediate_previous_source", "traceability_lot_code_source", "date", "date_note", "reference_document", "recall", "sql_id"];
 
 /**

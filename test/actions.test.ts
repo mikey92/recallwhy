@@ -123,3 +123,16 @@ test("FSMA 204 receiving records: one row per DC receipt (ship notice) and per s
   assert.match(lines[3], /not in our ship notices/);
   assert.match(lines[3], /^L2,/);
 });
+
+test("store status: PULL on any recalled lot, CLEAR only with listed lots and none of them held, an unreadable lot is never cleared", async () => {
+  const { storeStatus } = await import("../src/actions.ts");
+  const L = (store_id: string, lot_code: string, on_hand: number, sold = 0) => ({ store_id, store: store_id, city: "c", state: "TX", lot_code, on_hand, sold });
+  const rows = [L("S1", "A1", 5), L("S1", "Z9", 2), L("S2", "Z9", 4), L("S3", "", 3), L("S4", "A1", 0, 6), L("S5", "Z8", 1)];
+  const by = (r: ReturnType<typeof storeStatus>) => Object.fromEntries(r.map((x) => [x.store.store_id, x.status]));
+  assert.deepEqual(by(storeStatus(rows, ["A1"], "listed-lots")), { S1: "PULL", S4: "NOTIFY", S3: "HOLD", S2: "CLEAR", S5: "CLEAR" });
+  const s1 = storeStatus(rows, ["A1"], "listed-lots").find((x) => x.store.store_id === "S1")!;
+  assert.equal(s1.affectedOnHand, 5); assert.equal(s1.otherOnHand, 2);
+  assert.match(storeStatus(rows, ["A1"], "listed-lots").find((x) => x.store.store_id === "S2")!.evidence, /only lot\(s\) Z9, none of which the notice lists \(A1\)/);
+  // A notice that lists no lots we can match clears nothing.
+  assert.ok(!storeStatus(rows, ["A1", "Z9", "Z8"], "all-lots").some((x) => x.status === "CLEAR"));
+});

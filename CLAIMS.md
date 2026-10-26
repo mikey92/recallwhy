@@ -14,6 +14,7 @@
 | On real products 97 of 97 barcode recalls found by rule, 0 of 152 look-alikes matched | RECORDED | `eval/REAL.md`, `check:claims` |
 | Live: 39 notices since 8 Oct → 5 action packets, 1,093 units in 14 stores, in 4 min 22 s, 0 failed SQL | RECORDED | `examples/output/example_4/trace.jsonl`, `check:claims` |
 | A proven supplier rule is written back to Zetaris, read back in full, and Zetaris's DQ rule reports 0 invalid rows | RECORDED | every live example trace, `check:claims` |
+| A store is CLEAR only when the notice lists its lots and every lot the store holds is outside the list (named in the row); PULL rows add up to the pull list or the file is withheld | REPRODUCIBLE | `test/actions.test.ts`, `store-status.csv` in every packet |
 | The model never writes SQL | REPRODUCIBLE | `test/e2e.test.ts` |
 | A high-risk model answer served by another model than requested is not used | REPRODUCIBLE | `test/llm.test.ts` |
 | Meterless H-MEM 13/13, Markovian 8/8, World Model 8/8 upstream conformance; engines byte-identical to Meterless@1742dec | REPRODUCIBLE | `npm run check:engines` |
