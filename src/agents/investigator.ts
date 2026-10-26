@@ -100,9 +100,20 @@ async function readLots(ctx: AgentContext, r: Recall): Promise<{ lots: string[];
       `Text from a food recall notice:\n"""${r.codeInfo.slice(0, 1500)}"""\n\nList every lot code or batch code in it as a JSON array of strings, copied exactly. Do not include dates, best-by dates, UPC numbers or product names. If there are none, answer [].`,
       { agent: "Investigator", purpose: `read lot codes ${r.id}`, maxTokens: 400, tier: "fast" }).catch(() => "[]");
     const m = out.match(/\[[\s\S]*?\]/);
-    try { for (const l of JSON.parse(m?.[0] ?? "[]") as unknown[]) if (typeof l === "string" && l.trim()) sources[l.trim()] ??= "model"; } catch { /* model gave no JSON: regex lots only */ }
+    const dates: string[] = [];
+    try { for (const l of JSON.parse(m?.[0] ?? "[]") as unknown[]) if (typeof l === "string" && l.trim()) { if (isDateLike(l)) dates.push(l.trim()); else sources[l.trim()] ??= "model"; } } catch { /* model gave no JSON: regex lots only */ }
+    // A date is not a lot code (expiration and best-by dates sit next to lots in code_info): reading one as a
+    // lot would narrow the recall to "lots" we never hold and clear stock that is recalled.
+    if (dates.length) ctx.trace.emit("critique", "Auditor", { caseId: `case-${r.id.replace(":", "-")}`, code: "lot-is-a-date", detail: `the model read ${dates.length} date(s) as lot codes (${dates.slice(0, 4).join(", ")}); dropped` });
   }
   return { lots: Object.keys(sources), sources };
+}
+
+/** True for a date written the ways recall notices write them (9/4/26, 2026-09-04, Sep 4 2026, 04SEP2026, 09/2026). */
+export function isDateLike(v: string): boolean {
+  const t = v.trim();
+  return /^\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}$/.test(t) || /^\d{4}[/.-]\d{1,2}[/.-]\d{1,2}$/.test(t) || /^\d{1,2}[/.-]\d{4}$/.test(t)
+    || /^(\d{1,2}\s*)?(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*\d{1,2}?,?\s*\d{2,4}$/i.test(t) || /^\d{1,2}(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d{2,4}$/i.test(t);
 }
 
 /** Exposure for the SKUs we believe are covered. One query per source, all through the SQL runner. */

@@ -140,7 +140,11 @@ export async function auditBriefWithModel(ctx: AgentContext, caseId: string, fac
       "Check every sentence of the DRAFT against the FACTS it cites in brackets. Facts named notice_* come from the recall notice; facts named our_* come from our own systems. Paraphrase and plain conclusions drawn directly from the facts are fine. A sentence is unsupported only if it adds information the cited facts do not contain (for example a state, a person, a confirmation, or a notice statement about our stores).",
       "A sentence that restates a cited fact in other words is supported. Do not object to wording, tone, or a recommended action that follows from the facts.",
       "Answer exactly OK if every sentence is supported. Otherwise answer UNSUPPORTED: <the first unsupported claim, quoted>."].join("\n"),
-    { agent: "Auditor", purpose: `check brief support ${caseId}`, maxTokens: 120 }).catch(() => "OK");
+    { agent: "Auditor", purpose: `check brief support ${caseId}`, maxTokens: 120 }).catch((e: Error) => {
+      // The lexical checks still ran; say plainly that the model check did not.
+      ctx.trace.emit("note", "Auditor", { text: `model check of the brief for ${caseId} skipped (${e.message.slice(0, 80)}); lexical checks only` });
+      return "OK";
+    });
   return /^\W*UNSUPPORTED/i.test(verdict) ? verdict.replace(/^\W*UNSUPPORTED\W*/i, "unsupported claim: ").slice(0, 240) : undefined;
 }
 

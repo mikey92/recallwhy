@@ -8,7 +8,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
 import { loadConfig } from "./config.ts";
-import { decide, inQueue, reviewQueue, runOnce } from "./app.ts";
+import { decide, inQueue, reviewQueue, runInProgress, runOnce } from "./app.ts";
 import { approvePacket, listPackets } from "./actions.ts";
 
 const PORT = Number(process.env.PORT ?? 8000);
@@ -40,7 +40,7 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   if (req.method === "GET" && url.pathname === "/queue") return send(200, reviewQueue());
   if (req.method === "GET" && url.pathname === "/packets") return send(200, listPackets());
   const packetFile = url.pathname.match(/^\/runs\/([\w-]+)\/actions\/([\w.:-]+)\/([\w.-]+\.(?:csv|md|json))$/);
-  if (req.method === "GET" && packetFile) {
+  if (req.method === "GET" && packetFile && !packetFile[2].includes("..")) {
     const path = `out/${packetFile[1]}/actions/${packetFile[2]}/${packetFile[3]}`;
     if (!existsSync(path)) return send(404, { error: "no such packet file" });
     res.writeHead(200, { "Content-Type": path.endsWith(".csv") ? "text/csv; charset=utf-8" : path.endsWith(".json") ? "application/json" : "text/markdown; charset=utf-8" });
@@ -58,6 +58,7 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
       return send(400, { error: 'body must be {"recall": "H-1407-2026", "sku": "NW-100005", "verdict": "same" | "not-this", "note"?: "..."}' });
     // Only pairs the agents escalated can be decided here, so the API cannot plant decisions on arbitrary recalls.
     if (!inQueue(d.recall, d.sku)) return send(409, { error: `${d.sku} for ${d.recall} is not in the review queue (GET /queue)` });
+    if (busy || runInProgress()) return send(409, { error: "a run is in progress; record the decision when it finishes (it would be overwritten)" });
     return send(200, { stored: true, ...decide(d.recall, d.sku, d.verdict, typeof d.note === "string" ? d.note.slice(0, 300) : undefined), usedOn: "the next POST /run" });
   }
   if (req.method === "POST" && url.pathname === "/approve") {

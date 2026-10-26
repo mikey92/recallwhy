@@ -6,7 +6,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, normalize } from "node:path";
-import { decide, humanDecisions, inQueue, reviewQueue } from "./app.ts";
+import { decide, humanDecisions, inQueue, reviewQueue, runInProgress } from "./app.ts";
 import { approvePacket, listPackets } from "./actions.ts";
 
 const PORT = Number(process.env.VIEW_PORT ?? 8899);
@@ -27,6 +27,7 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     try { d = JSON.parse(Buffer.concat(chunks).toString("utf8")); } catch { /* answered below */ }
     if (typeof d.recall !== "string" || typeof d.sku !== "string" || (d.verdict !== "same" && d.verdict !== "not-this")) { res.writeHead(400); return res.end("recall, sku and verdict (same | not-this) are required"); }
     if (!inQueue(d.recall, d.sku)) { res.writeHead(409); return res.end("This case is no longer in the review queue. Reload the page."); }
+    if (runInProgress()) { res.writeHead(409); return res.end("A run is in progress: record the decision when it finishes, or it would be overwritten."); }
     return json(res, decide(d.recall, d.sku, d.verdict, typeof d.note === "string" && d.note.trim() ? d.note.trim().slice(0, 300) : undefined));
   }
   if (url.pathname === "/api/packets") return json(res, listPackets());

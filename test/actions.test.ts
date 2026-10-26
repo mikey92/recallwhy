@@ -91,3 +91,21 @@ test("the review screen titles a packet with our items from its pull list", asyn
   const csv = 'store_id,store,city,state,sku,upc,item,lot_code,units_to_pull\nS005,Northwind #005 Seattle,Seattle,WA,NW-1,0302,Spicy guacamole,L1,15\nS007,"Northwind #007, Tyler",Tyler,TX,NW-2,0303,"Salsa ""Fresca"", 12 oz",L2,3\nS008,X,Y,TX,NW-1,0302,Spicy guacamole,L3,1\n';
   assert.deepEqual(itemsFromPullList(csv), ["Spicy guacamole", 'Salsa "Fresca", 12 oz']);
 });
+
+test("a reviewer's decision is refused while a run is in progress (it would be overwritten), and accepted after", async () => {
+  const { decide, runInProgress, RunInProgress } = await import("../src/app.ts");
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const cwd = process.cwd(); const dir = mkdtempSync(`${tmpdir()}/rw-lock-`);
+  process.chdir(dir);
+  try {
+    mkdirSync("state", { recursive: true });
+    writeFileSync("state/run.lock", JSON.stringify({ pid: process.pid, runId: "r" }));
+    assert.equal(runInProgress(), true);
+    assert.throws(() => decide("fda:H-1-2026", "NW-1", "same"), RunInProgress);
+    writeFileSync("state/run.lock", JSON.stringify({ pid: 999999, runId: "crashed" }));
+    assert.equal(runInProgress(), false);
+    rmSync("state/run.lock");
+    assert.match(decide("fda:H-1-2026", "NW-1", "same").memoryId, /mem-/);
+  } finally { process.chdir(cwd); }
+});

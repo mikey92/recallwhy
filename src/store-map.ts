@@ -99,7 +99,9 @@ export function storeMapSection(points: MapPoint[], mapCases: MapCase[], paths: 
   const total = points.reduce((n, p) => n + p.units, 0);
   const listed = (c: MapCase) => new Set(c.states === "nationwide" ? Object.keys(paths) : Array.isArray(c.states) ? c.states : []);
   // The map opens on the recall with the most units to pull; the picker switches recall.
-  const first = acting[0];
+  // Open on the recall with the most stores outside its own distribution list (the point of the map), else the most units.
+  const outsideOf = (c: MapCase) => points.filter((p) => p.cases.some((k) => k.id === c.id && !k.inNotice)).length;
+  const first = [...acting].sort((a, b) => outsideOf(b) - outsideOf(a))[0];
   const named = first ? listed(first) : new Set<string>();
   const max = Math.max(...points.map((p) => p.units));
   const dot = (p: MapPoint) => {
@@ -114,7 +116,7 @@ export function storeMapSection(points: MapPoint[], mapCases: MapCase[], paths: 
     return `<option value="${esc(c.id)}">${esc(recallName(c.recall))} — ${count(unitsOf(c.id), "unit", "units")}${n ? `, ${count(n, "store", "stores")} outside the notice's states` : ""}</option>`; };
   return `<section class="map storemap"><h2>Where to pull: ${count(total, "unit", "units")} in ${count(points.length, "store", "stores")}</h2>
 <div class="sub">Store locations are real SNAP-authorized supermarkets (USDA FNS Retailer Locator); units come from the run's pull lists. Shaded states: the selected recall notice's own distribution list. <span class="k k-in"></span> store in a listed state · <span class="k k-out"></span> store in a state the notice does not list — the stock got there anyway, so checking the distribution list alone would miss it (${count(outside.length, "store", "stores")} in this run).</div>
-<label class="pick">Recall <select id="mapcase">${acting.map(opt).join("")}<option value="">all ${acting.length} recalls (no shading)</option></select></label>
+<label class="pick">Recall <select id="mapcase">${[first, ...acting.filter((c) => c !== first)].filter(Boolean).map(opt).join("")}<option value="">all ${acting.length} recalls (no shading)</option></select></label>
 ${svg}
 <table class="pulls"><thead><tr><th>Store</th><th>Location</th><th>Units</th><th>Recall: units</th></tr></thead><tbody>${rows}</tbody></table>
 <script>(() => { const D = ${data}; const sel = document.getElementById("mapcase"); if (!sel) return;

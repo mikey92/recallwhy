@@ -90,7 +90,9 @@ export function whatTheAgentsDid(slice: Ev[]): Highlight[] {
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 function md(src: string): string {
   const inline = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*([^*]+)\*/g, "<i>$1</i>").replace(/_(run [^_]+|why-paragraph[^_]+)_/g, "<i>$1</i>")
-    .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2">$1</a>').replace(/\[(E\d+)\]/g, '<span class="cite">$1</span>');
+    .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2">$1</a>')
+    // A brief links its packet files relative to briefs/; the report sits one level up.
+    .replace(/\[([^\]]+)\]\(\.\.\/(actions\/[\w.:-]+\/[\w.-]+)\)/g, '<a href="$2">$1</a>').replace(/\[(E\d+)\]/g, '<span class="cite">$1</span>');
   const out: string[] = []; let list = false;
   for (const line of src.split("\n")) {
     if (/^- /.test(line)) { if (!list) { out.push("<ul>"); list = true; } out.push(`<li>${inline(line.slice(2))}</li>`); continue; }
@@ -125,6 +127,13 @@ function sourceMap(evs: Ev[]): string {
   }).join("");
   const sqls = carto.filter((e) => e.kind === "sql").length;
   return `<section class="map"><details class="srcmap"><summary>Source map: how the Cartographer read the four sources (${sqls} catalog and profiling queries)</summary><ul>${msgs}</ul><ul>${facts}</ul></details></section>`;
+}
+
+/** The report's title line: what the safety manager has to act on. */
+function headline(cases: { verdict: string }[]): string {
+  const on = cases.filter((c) => c.verdict === "act-now" || c.verdict === "notify").length, review = cases.filter((c) => c.verdict === "needs-human").length;
+  const parts = [on ? `${on} recall${on === 1 ? "" : "s"} on our shelves` : "no recall on our shelves", ...(review ? [`${review} for a person to decide`] : [])];
+  return parts.join(", ");
 }
 
 /** `tracePath` overrides the default logs/trace-<runId>.jsonl, e.g. to re-render a committed example from its own trace. */
@@ -175,8 +184,8 @@ export function renderReport(outDir: string, tracePath?: string): string {
   };
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RecallWhy run ${esc(res.runId)}</title><style>
-:root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1f;--mute:#6b7280;--line:#e5e5e0}
-@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1e1e1e;--ink:#eee;--mute:#9aa0a6;--line:#333}}
+:root{color-scheme:light dark;--bg:#f7f7f5;--card:#fff;--ink:#1d1d1f;--mute:#6b7280;--line:#e5e5e0;--link:#1d4ed8}a{color:var(--link)}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1e1e1e;--ink:#eee;--mute:#9aa0a6;--line:#333;--link:#93c5fd}.usmap .d-in{fill:#fca5a5}.usmap .st-named{fill:#5b1a1a}.out{color:#fbbf24}}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,sans-serif}
 header{padding:28px 32px 8px}h1{margin:0;font-size:26px}.sub{color:var(--mute)}
 .warn{margin:12px 0 0;padding:8px 12px;border-radius:8px;background:#fef3c7;color:#92400e;font-size:14px}@media (prefers-color-scheme:dark){.warn{background:#78350f55;color:#fcd34d}}
@@ -196,7 +205,7 @@ code{font-size:12px}ul{margin:4px 0;padding-left:20px}
 .storemap{border-left-color:#b91c1c}.pulls{width:100%;border-collapse:collapse;font-size:13px}.pulls th,.pulls td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:top}.pulls .n{text-align:right;font-variant-numeric:tabular-nums}.out{color:#b45309;font-size:12px}
 .usmap{width:100%;height:auto;max-height:440px;margin:6px 0}.usmap .st{fill:var(--line);stroke:var(--card);stroke-width:1}.usmap .st-named{fill:#fca5a5;stroke:var(--card);stroke-width:1}
 .usmap circle{stroke:#fff;stroke-width:1.5;fill-opacity:.85}.usmap .d-in{fill:#b91c1c}.usmap .d-out{fill:#d97706}
-.pick select{max-width:100%}.ev-list summary,.trace summary{cursor:pointer}.ev-list summary h3{display:inline}.trace summary{padding:2px 0 6px}.srcmap summary{cursor:pointer;font-weight:600;font-size:16px;padding:6px 0}
+.pick select{max-width:100%;min-height:32px}.ev-list summary,.trace summary{cursor:pointer}.ev-list summary h3{display:inline}.trace summary{padding:2px 0 6px}.srcmap summary{cursor:pointer;font-weight:600;font-size:16px;padding:6px 0}
 .k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.k-in{background:#b91c1c}.k-out{background:#d97706}.pick{display:block;margin:8px 0 0;font-size:13px;color:var(--mute)}
 @media (prefers-color-scheme:dark){.usmap .st-named{fill:#7f1d1d}}
 /* "What the agents did": chips across the top of a case card, one per highlight read from that case's trace. */
@@ -214,8 +223,8 @@ header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
 @media (prefers-reduced-motion:reduce){header,.map,.case{animation:none}}
 @media print{header,.map,.case{animation:none}}
 @media (max-width:820px){.case{grid-template-columns:1fr}.trace{border-left:0;border-top:1px solid var(--line)}main,header{padding-left:16px;padding-right:16px}.did{padding:8px 14px}.brief{padding-left:14px;padding-right:14px}}
-</style></head><body><header><h1>RecallWhy</h1>
-<div class="sub">Run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b> · ${res.scanned} recalls since ${esc(since)} → ${cases.length} cases</div>
+</style></head><body><header><h1>RecallWhy · ${headline(cases)}</h1>
+<div class="sub">${res.scanned} recalls since ${esc(since)} → ${cases.length} cases on our catalog · <small>run ${esc(res.runId)} · engine <b>${esc(res.engine)}</b>${res.engine === "duckdb-sample" ? " (SAMPLE — Zetaris not used)" : ""} · model <b>${esc(res.model)}</b></small></div>
 ${evs.filter((e) => e.kind === "msg" && /^WARNING: live feed/.test(e.text ?? "")).map((e) => `<div class="warn">${esc(e.text ?? "")}</div>`).join("")}
 ${summary()}
 <div class="sub">${existsSync(`${outDir}/digest.md`) ? `<a href="digest.md">Weekly digest</a>` : ""}${existsSync(`${outDir}/actions`) ? ` · Action packets (drafts, not sent): ${readdirSync(`${outDir}/actions`).length} — pull lists, supplier requests and customer notices in <a href="actions/">actions/</a>` : ""}</div>

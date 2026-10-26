@@ -1,6 +1,6 @@
 // One run of the agent team, shared by the CLI and the HTTP API: build the context
 // (SQL runner, model generator, engines, trace), run the orchestrator, close.
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { Trace } from "./trace.ts";
 import { makeRunner } from "./sql/index.ts";
 import { makeGenerator, llmFromEnv } from "./llm.ts";
@@ -15,21 +15,35 @@ export async function runOnce(env: NodeJS.ProcessEnv, opts: RunOptions, trace = 
   const llm = llmFromEnv(env);
   if (llm.provider === "none" && llm.note) console.warn(llm.note);
   const ctx = { sql, gen: makeGenerator(llm, trace), memory: new CaseMemory(trace), world: new World(trace), trace, model: `${llm.provider}:${llm.model}` };
+  // While a run holds H-MEM in memory it rewrites state/hmem on every record, so a reviewer's decision
+  // stored meanwhile by another process would be overwritten: decide() refuses while this lock is held.
+  mkdirSync("state", { recursive: true });
+  writeFileSync(RUN_LOCK, JSON.stringify({ pid: process.pid, runId: trace.runId }));
   try {
     const r = await run(ctx, opts);
     const dir = `${r.outDir}/briefs`;
     const briefs = existsSync(dir) ? Object.fromEntries(readdirSync(dir).map((f) => [f.replace(/\.md$/, ""), readFileSync(`${dir}/${f}`, "utf8")])) : {};
     return { ...r, trace: trace.file, engine: sql.engine, model: ctx.model, briefs };
   } finally {
+    rmSync(RUN_LOCK, { force: true });
     await sql.close();
   }
 }
+
+const RUN_LOCK = "state/run.lock";
+/** A run in progress in a live process (a lock left by a crashed run does not count). */
+export function runInProgress(): boolean {
+  if (!existsSync(RUN_LOCK)) return false;
+  try { const { pid } = JSON.parse(readFileSync(RUN_LOCK, "utf8")); process.kill(pid, 0); return true; } catch { return false; }
+}
+export class RunInProgress extends Error { constructor() { super("a run is in progress; record the decision when it finishes (it would be overwritten)"); } }
 
 /** "H-1407-2026" → "fda:H-1407-2026", "26717" → "cpsc:26717"; already-prefixed ids pass through. */
 const recallKey = (r: string) => (r.includes(":") ? r : /^[A-Z]-\d+-\d{4}$/.test(r) ? `fda:${r}` : `cpsc:${r}`);
 
 /** A reviewer's decision, stored in H-MEM with high trust; the next run follows it. Shared by the CLI and the API. */
 export function decide(recallId: string, sku: string, verdict: "same" | "not-this", note = ""): { recall: string; memoryId: string } {
+  if (runInProgress()) throw new RunInProgress();
   const trace = new Trace({ quiet: true });
   const id = recallKey(recallId);
   const rec = new CaseMemory(trace).record({ recallId: id, sku, verdict, reason: note, by: "human", runId: trace.runId }, "Human");

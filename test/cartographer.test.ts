@@ -112,7 +112,10 @@ test("for a barcode format it has no rule for, the model proposes a transform an
   try {
     const rows = (await sql.run("SELECT sku, lot_code FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP019' AND length(upc) = 10 LIMIT 5", { agent: "test", purpose: "pick rows" })).rows;
     const skus = rows.map((r) => String(r.sku)), lots = rows.map((r) => String(r.lot_code));
+    // Each reply is a separate run: a supplier is diagnosed once per run.
+    let runs = 0;
     const withReply = async (reply: string) => {
+      const trace = new Trace({ dir, quiet: true, runId: `propose-${++runs}` });
       const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => reply, model: "test:model" } as unknown as AgentContext;
       ctx.map = await chart(ctx);
       return reconcile(ctx, "case-test", skus, lots);

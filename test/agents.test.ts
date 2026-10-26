@@ -66,3 +66,9 @@ test("a brief may not say the notice names our lots when it names none", async (
   assert.equal(saysNoticeNamesLots("The notice does not list any lots, so every lot counts [E7]."), false);
   assert.equal(saysNoticeNamesLots("Decathlon recalled the bicycles because the fork can break [E4]; we hold 639 units in 8 stores [E9]."), false);
 });
+
+test("a date the model reads as a lot code is dropped; real lot codes stay", async () => {
+  const { isDateLike } = await import("../src/agents/investigator.ts");
+  for (const d of ["9/4/26", "9/10/26", "2026-09-04", "09/2026", "Sep 4, 2026", "Sept 2026", "04SEP2026", "12.05.2026"]) assert.equal(isDateLike(d), true, d);
+  for (const l of ["720106", "L6081A", "26078", "TFTX209U11", "TFIC207", "A-1234", "2026A", "0726"]) assert.equal(isDateLike(l), false, l);
+});

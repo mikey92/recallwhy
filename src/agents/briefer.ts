@@ -15,6 +15,13 @@ const HEAD: Record<Finding["verdict"], string> = {
   "needs-human": "NEEDS HUMAN REVIEW — evidence not strong enough to decide",
 };
 
+/** What a case is about, for its heading: our item that the notice covers, else the notice's product. */
+function caseName(k: Case, f: Finding): string {
+  const ours = f.decisions.filter((d) => d.verdict === "same").map((d) => d.title);
+  const name = ours.length ? ours.slice(0, 2).join(", ") + (ours.length > 2 ? ` and ${ours.length - 2} more` : "") : k.recall.title.split(/[.,;(]/)[0];
+  return name.trim().slice(0, 90) || k.recall.id;
+}
+
 export interface Brief { caseId: string; verdict: Finding["verdict"]; markdown: string; whyBy: "model" | "template"; attempts: number }
 
 /** A draft that says the notice names, lists or identifies our lots (wrong when the notice names no lot codes). */
@@ -71,7 +78,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   if (n && n.unitsSoldSince > 0) actions.push(`Send recall notice to loyalty customers who bought affected lots since ${k.recall.date}: at most ${n.loyaltyCustomers} ${cite("our_loyalty_customers_who_bought_affected_lots")}`);
   if (n && (f.verdict === "act-now" || f.verdict === "notify")) actions.push(`Contact ${n.supplier ?? "the supplier"} for credit and replacement ${cite("our_supplier_for_this_sku")}`);
   if (f.verdict === "no-exposure") actions.push(`No pull needed. Keep the notice on file; re-run if new lots arrive ${cite("our_affected_lots")}`);
-  if (f.verdict === "needs-human") actions.push(`Review in the queue: \`npm run decide -- ${k.recall.id} <sku> same|not-this --note "..."\`. The decision is stored in memory and used on the next run.`);
+  if (f.verdict === "needs-human") actions.push(`Decide it in the review screen (review.html, or \`npm run decide -- ${k.recall.id} <sku> same|not-this --note "..."\`). The decision is stored in memory and the next run follows it.`);
 
   const caveats: string[] = ["Retailer stock, sales, lots and ship notices are synthetic (Northwind Mercantile, generated for this demo); food items are real products with real barcodes (USDA FoodData Central, Open Food Facts)."];
   if (n?.lotRule === "all-lots") caveats.push("The notice lists no lot codes we could verify, so every lot of the SKU is treated as affected.");
@@ -80,7 +87,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   for (const c of openCritiques) caveats.push(`Open Auditor objection: ${c}`);
 
   const md = [
-    `# ${HEAD[f.verdict]}`, "", `**${k.recall.id}** · ${k.recall.firm} · ${k.recall.date}${k.recall.url ? ` · [notice](${k.recall.url})` : ""}`, "",
+    `# ${HEAD[f.verdict].split(" — ")[0]} — ${caseName(k, f)}`, "", `${HEAD[f.verdict].split(" — ")[1]} · **${k.recall.id}** · ${k.recall.firm} · ${k.recall.date}${k.recall.url ? ` · [notice](${k.recall.url})` : ""}`, "",
     `> ${k.recall.title.slice(0, 200)}`, "", "## Why", why, "",
     "## What we matched", ...f.decisions.map((d) => `- \`${d.sku}\` ${d.title} — **${d.verdict}** (${d.decidedBy}, ${d.basis}): ${d.why}`), "",
     ...(actions.length ? ["## Actions", ...actions.map((a) => `- ${a}`), ""] : []),

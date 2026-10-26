@@ -173,6 +173,8 @@ async function duckCatalog(ctx: AgentContext): Promise<TableInfo[]> {
  * if it also holds for every barcoded ship notice of that supplier, and the map is corrected for
  * the rest of the run. Returns the rules it learned (empty if the gap is not a key format issue).
  */
+const triedThisRun = new WeakMap<object, Set<string>>();
+
 export async function reconcile(ctx: AgentContext, caseId: string, skus: string[], lots: string[]): Promise<SupplierRule[]> {
   const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
   const t = ["as-written", "no-leading-zeros", "no-check-digit"] as const;
@@ -191,6 +193,11 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
     const ok = t.map((_, i) => Number(row[`k${i}`] ?? 0));
     const covered = ctx.map?.joins.find((j) => j.left === ASN || j.right === ASN);
     if (ok[0] === n || (covered?.chosen === "normalized" && ok[1] === n) || covered?.rules?.some((r) => r.supplier === supplier)) continue;
+    // A supplier is diagnosed once per run: when no rule held (and no proposal proved), a later audit round
+    // of the same or another case does not repeat the SQL and the model calls.
+    const tried = triedThisRun.get(ctx.trace) ?? triedThisRun.set(ctx.trace, new Set()).get(ctx.trace)!;
+    if (tried.has(supplier)) { notes.push(`${supplier}: already diagnosed in this run and no rule held; not tried again`); continue; }
+    tried.add(supplier);
     let transform: Transform | undefined = (["no-leading-zeros", "no-check-digit"] as const).find((_, i) => ok[i + 1] === n);
     let proposal: { ops: ProposedOps; why: string; by: string } | undefined;
     let label = "", all: Awaited<ReturnType<typeof run>> | undefined, tot = 0, hit = 0, feedback = "";

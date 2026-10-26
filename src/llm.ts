@@ -5,7 +5,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import type { Trace } from "./trace.ts";
 
-/** tier "fast": a narrow, checked task (copy lot codes out of a notice, check a brief against its evidence) that a smaller model can do; it goes to `fastModel` when one is set. */
+/** tier "fast": a narrow, checked task (copy lot codes out of a notice, each kept only if it appears there) that a smaller model can do; it goes to `fastModel` when one is set. */
 export interface GenOpts { purpose: string; agent: string; system?: string; maxTokens?: number; json?: boolean; tier?: "fast" }
 export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 
@@ -80,10 +80,15 @@ function nightshiftToken(): string | undefined {
 
 export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
   const pace = makePacer(cfg.rpm ?? 0);
+  // Circuit breaker: when Nightshift cannot be reached at all (wrong URL, not running), stop calling it after
+  // a few tries and let every later call take the no-model path at once, instead of waiting minutes per call.
+  let unreachable = 0;
+  const BREAK_AFTER = 3;
   return async (prompt, opts) => {
     const call = opts.tier === "fast" && cfg.fastModel ? { ...cfg, model: cfg.fastModel } : cfg;
     // No model: callers fall back (judge → UNSURE, lots → regex, brief → template); nothing was called, so nothing is logged.
     if (cfg.provider === "none") throw new Error("no model configured (LLM_PROVIDER=none)");
+    if (unreachable >= BREAK_AFTER) throw new Error("model endpoint unreachable earlier in this run; continuing without a model");
     const t0 = Date.now();
     let output = "";
     let error: string | undefined;
@@ -97,7 +102,8 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
           await pace();
           try { ({ output, served } = await openai(call, prompt, opts)); break; } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
-            if (attempt >= RETRIES.length + 1 || !/HTTP (429|502|503|504)\b|\b429\b|first token|fetch failed/i.test(msg)) throw e;
+            // Rate limits and slow first tokens are transient; a connection that cannot be opened is not.
+            if (attempt >= RETRIES.length + 1 || !/HTTP (429|502|503|504)\b|\b429\b|first token|aborted due to timeout/i.test(msg)) throw e;
             trace.emit("llm.retry", opts.agent, { purpose: opts.purpose, attempt, waitMs: RETRIES[attempt - 1], reason: msg.slice(0, 160) });
             await new Promise((r) => setTimeout(r, RETRIES[attempt - 1]));
           }
@@ -105,6 +111,10 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
       }
     } catch (e) {
       error = e instanceof Error ? e.message : String(e);
+      const cause = e instanceof Error && e.cause instanceof Error ? e.cause.message : "";
+      if (/fetch failed|ECONNREFUSED|ENOTFOUND|EHOSTUNREACH/i.test(`${error} ${cause}`)) {
+        if (++unreachable === BREAK_AFTER) trace.emit("note", opts.agent, { text: `model endpoint unreachable ${BREAK_AFTER} times in a row (${error.slice(0, 80)}); the rest of this run goes on without a model: text matches go to a person, briefs use the template` });
+      } else unreachable = 0;
     }
     // Which model actually answered: Nightshift may route meterless/auto to any model, so record what it reports.
     trace.emit("llm", opts.agent, { model: `${call.provider}:${call.model}`, served_model: served.model, receipt: served.receipt, purpose: opts.purpose, prompt: prompt.slice(0, 4000), output: error ? `ERROR ${error}` : output, ms: Date.now() - t0 });

@@ -33,6 +33,9 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   const prior = await priorVerdicts(ctx);
   const verdicts: VerdictRow[] = [];
   for (const k of todo) {
+    // One case failing (a federated query timing out, say) must not cost the run: the case goes to a
+    // person with the error, and the other cases, the report, the digest and the write-back still happen.
+    try {
     const { finding, open, openSkus } = await adjudicate(ctx, k);
     for (const d of finding.decisions) {
       const row = verdictRow(k.recall.id, d, finding.verdict === "needs-human", openSkus);
@@ -45,13 +48,29 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
     const b = await brief(ctx, k, finding, entities, open);
     const p = await actionPacket(ctx, k, finding, outDir);
     const packetNote = p ? (p.status === "draft"
-      ? `\n## Action packet (drafts, not sent)\n${p.files.map((f) => `- [${f}](../actions/${k.id}/${f})`).join("\n")}\n- Pull ${p.pullUnits} unit(s) in ${p.stores} store(s); the total equals the Auditor's re-derived on-hand. Approve with \`npm run approve -- ${ctx.trace.runId} ${k.id}\`.\n`
+      ? `\n## Action packet (drafts, not sent)\n${p.files.map((f) => `- [${f}](../actions/${k.id}/${f})`).join("\n")}\n- Pull ${p.pullUnits} unit(s) in ${p.stores} store(s); the total equals the Auditor's re-derived on-hand. Approve it in the review screen (review.html, or \`npm run approve -- ${ctx.trace.runId} ${k.id}\`).\n`
       : `\n## Action packet withheld\n- ${p.reason}\n`) : "";
     writeFileSync(`${outDir}/briefs/${k.id}.md`, b.markdown + packetNote);
     briefs.push(b);
     results.push({ id: k.id, recall: k.recall.id, verdict: finding.verdict, rounds: finding.round, whyBy: b.whyBy, ...(p ? { packet: { status: p.status, stores: p.stores, units: p.pullUnits, files: p.files } } : {}) });
     const n = finding.numbers;
     forDigest.push({ id: k.id, recall: k.recall.id, firm: k.recall.firm, product: k.recall.title, verdict: finding.verdict, onHand: n?.onHandUnits ?? 0, stores: n?.storesWithStock ?? 0, sold: n?.unitsSoldSince ?? 0, customers: n?.loyaltyCustomers ?? 0, packet: p?.status });
+    } catch (e) {
+      const why = (e as Error).message.slice(0, 300);
+      ctx.trace.emit("escalate", "Orchestrator", { caseId: k.id, open: [`the run could not finish this case: ${why}`] });
+      say(ctx, "Orchestrator", "Human", `${k.id}: could not finish (${why}); sent to a person, the run goes on`);
+      writeFileSync(`${outDir}/briefs/${k.id}.md`, `# NEEDS HUMAN REVIEW — the run could not finish this case
+
+**${k.recall.id}** · ${k.recall.firm} · ${k.recall.date}
+
+> ${k.recall.title.slice(0, 300)}
+
+## Why
+A step failed: ${why}. Nothing was decided for this recall; check it by hand or run it again (\`only: ["${k.recall.id}"]\`).
+`);
+      results.push({ id: k.id, recall: k.recall.id, verdict: "needs-human", rounds: 0, whyBy: "template" });
+      forDigest.push({ id: k.id, recall: k.recall.id, firm: k.recall.firm, product: k.recall.title, verdict: "needs-human", onHand: 0, stores: 0, sold: 0, customers: 0 });
+    }
   }
   await publishVerdicts(ctx, verdicts, prior).catch((e) => ctx.trace.emit("note", "Orchestrator", { text: `verdicts not written back to Zetaris: ${(e as Error).message.slice(0, 160)}` }));
   await digest(ctx, { runId: ctx.trace.runId, scanned }, forDigest, outDir).catch((e) => ctx.trace.emit("note", "Briefer", { text: `digest not written: ${(e as Error).message}` }));

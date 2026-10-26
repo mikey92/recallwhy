@@ -77,3 +77,22 @@ test("narrow checked tasks go to the small Nemotron; the judge stays on the main
   assert.deepEqual(sent, ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-ultra-550b-a55b"]);
   assert.deepEqual(events.filter((e) => e.kind === "llm").map((e) => e.model), ["meterless:nvidia/nemotron-3.5-lightning-30b-a3b", "meterless:nvidia/nemotron-3-ultra-550b-a55b"]);
 });
+
+test("an unreachable Nightshift fails fast: no retries on a refused connection, and after 3 the run stops calling it", async () => {
+  const { llmFromEnv, makeGenerator } = await import("../src/llm.ts");
+  const cfg = llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", LLM_RPM: "0" } as NodeJS.ProcessEnv);
+  let calls = 0;
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async () => { calls++; throw new TypeError("fetch failed", { cause: new Error("connect ECONNREFUSED 127.0.0.1:8088") }); }) as typeof fetch;
+  const events: { kind: string; text?: string }[] = [];
+  const trace = { runId: "r", emit: (kind: string, _a: string, d: { text?: string }) => events.push({ kind, ...d }) } as never;
+  const gen = makeGenerator(cfg, trace);
+  const t0 = Date.now();
+  try {
+    for (let i = 0; i < 5; i++) await assert.rejects(gen("x", { agent: "Investigator", purpose: "judge" }));
+  } finally { globalThis.fetch = realFetch; }
+  assert.equal(calls, 3);
+  assert.ok(Date.now() - t0 < 2000);
+  assert.equal(events.filter((e) => e.kind === "llm.retry").length, 0);
+  assert.ok(events.some((e) => e.kind === "note" && /unreachable 3 times/.test(e.text ?? "")));
+});

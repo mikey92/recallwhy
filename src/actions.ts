@@ -116,7 +116,7 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
 
 /** A person approves a drafted packet: the approval is recorded next to it, with who and when. Nothing is sent. */
 export function approvePacket(runId: string, caseId: string, by: string, note = ""): { ok: boolean; reason?: string; file?: string } {
-  if (!/^[\w-]+$/.test(runId) || !/^[\w.:-]+$/.test(caseId)) return { ok: false, reason: "bad run or case id" };
+  if (!/^[\w-]+$/.test(runId) || !/^[\w.:-]+$/.test(caseId) || caseId.includes("..")) return { ok: false, reason: "bad run or case id" };
   const dir = `out/${runId}/actions/${caseId}`;
   if (!existsSync(`${dir}/packet.json`)) return { ok: false, reason: "no packet for this run and case" };
   const p = JSON.parse(readFileSync(`${dir}/packet.json`, "utf8")) as Packet;
