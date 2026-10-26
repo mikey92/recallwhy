@@ -1,5 +1,5 @@
 {
-  "note": "Seconds from the Investigator opening a case to its action packet, in the committed live example runs (Zetaris + Nemotron via Meterless Nightshift, paced at 4 model calls a minute).",
+  "note": "Seconds from the Investigator opening a case to its action packet (after the Cartographer's map and the Scout's sweep, which run once per run), in the committed live example runs (Zetaris + Nemotron via Meterless Nightshift, paced at 4 model calls a minute).",
   "casesWithPacket": 11,
   "medianSeconds": 45.869,
   "minSeconds": 12.267,

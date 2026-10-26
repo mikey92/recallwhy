@@ -44,6 +44,14 @@ export function parseCsv(text: string): { headers: string[]; rows: string[][] } 
   return { headers: rows[0] ?? [], rows: rows.slice(1) };
 }
 
+/** A real calendar date in yyyy-mm-dd (a time may follow). */
+export function isDate(v: string): boolean {
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return false;
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
+}
+
 export interface Violation { file: string; rule: string; count: number; examples: string[] }
 
 /** Every way the folder's CSVs break the contract (an empty list means it can be loaded). */
@@ -54,6 +62,7 @@ export function checkFolder(dir: string): { violations: Violation[]; rows: Recor
     v.count++; if (v.examples.length < 3) v.examples.push(example);
   };
   const data = new Map<string, Record<string, string>[]>();
+  const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
   for (const t of CONTRACT) {
     const f = join(dir, t.file);
     if (!existsSync(f)) { add(t.file, "file is missing", f); continue; }
@@ -68,7 +77,8 @@ export function checkFolder(dir: string): { violations: Violation[]; rows: Recor
         const v = r[c.name] ?? "";
         if (c.required && v === "") add(t.file, `${c.name} is required`, at);
         else if (v !== "" && c.type === "int" && !/^-?\d+$/.test(v)) add(t.file, `${c.name} is a whole number`, `${at}: ${v}`);
-        else if (v !== "" && c.type === "date" && !/^\d{4}-\d{2}-\d{2}/.test(v)) add(t.file, `${c.name} is a date (yyyy-mm-dd)`, `${at}: ${v}`);
+        else if (v !== "" && c.type === "date" && !isDate(v)) add(t.file, `${c.name} is a date (yyyy-mm-dd)`, `${at}: ${v}`);
+        else if (v !== "" && c.type === "date" && v.slice(0, 10) > tomorrow) add(t.file, `${c.name} is not in the future`, `${at}: ${v}`);
       }
       const key = t.key.map((k) => r[k]).join("|");
       if (seen.has(key)) add(t.file, `key (${t.key.join(", ")}) is unique`, `${at}: ${key}`); seen.add(key);

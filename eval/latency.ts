@@ -26,7 +26,7 @@ for (const d of readdirSync(ex).filter((d) => existsSync(`${ex}/${d}/trace.jsonl
 const med = (a: number[]) => { const b = [...a].sort((x, y) => x - y); return b.length ? (b[Math.floor((b.length - 1) / 2)] + b[Math.ceil((b.length - 1) / 2)]) / 2 : 0; };
 const withPacket = cases.filter((c) => c.packet);
 const out = {
-  note: "Seconds from the Investigator opening a case to its action packet, in the committed live example runs (Zetaris + Nemotron via Meterless Nightshift, paced at 4 model calls a minute).",
+  note: "Seconds from the Investigator opening a case to its action packet (after the Cartographer's map and the Scout's sweep, which run once per run), in the committed live example runs (Zetaris + Nemotron via Meterless Nightshift, paced at 4 model calls a minute).",
   casesWithPacket: withPacket.length,
   medianSeconds: med(withPacket.map((c) => c.seconds)),
   minSeconds: Math.min(...withPacket.map((c) => c.seconds)),
@@ -36,4 +36,4 @@ const out = {
   cases: cases.map((c) => ({ ...c, seconds: Math.round(c.seconds * 10) / 10, modelSeconds: Math.round(c.modelSeconds * 10) / 10, sqlSeconds: Math.round(c.sqlSeconds * 10) / 10 })),
 };
 writeFileSync("eval/results/latency.json", JSON.stringify(out, null, 2) + "\n");
-console.log(`notice → action packet: median ${out.medianSeconds.toFixed(1)} s over ${out.casesWithPacket} cases (min ${out.minSeconds.toFixed(1)}, max ${out.maxSeconds.toFixed(1)}); model time median ${out.medianModelSeconds.toFixed(1)} s, SQL ${out.medianSqlSeconds.toFixed(1)} s`);
+console.log(`case opened → action packet: median ${out.medianSeconds.toFixed(1)} s over ${out.casesWithPacket} cases (min ${out.minSeconds.toFixed(1)}, max ${out.maxSeconds.toFixed(1)}); model time median ${out.medianModelSeconds.toFixed(1)} s, SQL ${out.medianSqlSeconds.toFixed(1)} s (up to ${Math.max(...withPacket.map((c) => c.sqlSeconds)).toFixed(1)} s when a Zetaris data-quality run falls inside the case)`);

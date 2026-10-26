@@ -144,3 +144,17 @@ test("when the fast model fails, the profile's fallback runs the task and the tr
   assert.match(String(llm[0].output), /^ERROR/);
   assert.deepEqual(llm[1].usage, { prompt: 120, completion: 8 });
 });
+
+test("Scout Intent: a high-risk answer served by another model than the one requested is not used; a low-risk one is recorded", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-llm-"));
+  const trace = new Trace({ dir, quiet: true, runId: "llm-elsewhere" });
+  const real = globalThis.fetch;
+  globalThis.fetch = (async () => new Response(JSON.stringify({ model: "some/smaller-model", choices: [{ message: { content: "SAME: x" } }] }), { status: 200 })) as typeof fetch;
+  try {
+    const gen = makeGenerator(llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", LLM_RPM: "0", METERLESS_FAST_MODEL: "" }), trace);
+    await assert.rejects(gen("q", { purpose: "judge NW-1 vs fda:H-1", agent: "Investigator" }), /served by some\/smaller-model/);
+    assert.equal(await gen("q", { purpose: "read lot codes fda:H-1", agent: "Investigator" }), "SAME: x");
+  } finally { globalThis.fetch = real; }
+  const evs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "route" && (e.data?.served_elsewhere ?? e.served_elsewhere));
+  assert.equal(evs.length, 2);
+});

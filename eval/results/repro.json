@@ -1,0 +1,32 @@
+{
+  "note": "Final decision per pair after the Investigator ⇄ Auditor loop; three runs of Nemotron 3 Ultra on the same pairs (the committed full run and two re-runs of the subset).",
+  "pairs": 44,
+  "covered": 16,
+  "agreeRun1Run2": 43,
+  "agreeRun1Full": 42,
+  "agreeRun2Full": 43,
+  "agreeAllThree": 42,
+  "wronglyDismissed": {
+    "full": 1,
+    "run1": 2,
+    "run2": 1
+  },
+  "differences": [
+    {
+      "recall": "cpsc:26766",
+      "sku": "NW-100873",
+      "label": "same",
+      "full": "same",
+      "run1": "not-this",
+      "run2": "same"
+    },
+    {
+      "recall": "cpsc:26735",
+      "sku": "NW-100877",
+      "label": "same",
+      "full": "same",
+      "run1": "unsure",
+      "run2": "unsure"
+    }
+  ]
+}

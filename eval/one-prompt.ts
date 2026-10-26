@@ -22,7 +22,8 @@ export function prompt(k: Case): string {
   const r = k.recall;
   return [
     "You are a retailer's product-safety analyst. A recall notice and the items in our catalog that might be the recalled product are below.",
-    "For EVERY item, decide whether it is the product the notice recalls (the same product, not another flavour, size or line of the same brand).",
+    "For EVERY item, decide whether it is the product the notice recalls. It must be the same product from the same firm or brand AND the same product variety: a different flavor, variety, model or product line of the same brand is DIFFERENT, and so is a different package size or a product that merely contains our item as an ingredient.",
+    "(The vendor is the firm we buy from; it can be the manufacturer or distributor, not the brand on the package. Item-master titles are abbreviated and cut off, so a missing word is not a difference.)",
     "",
     `RECALL NOTICE ${r.id} (${r.firm})`,
     `Product: ${r.text}`,
@@ -31,17 +32,21 @@ export function prompt(k: Case): string {
     `Barcodes printed in the notice: ${r.upcs.join(", ") || "(none)"}`,
     "",
     "OUR ITEMS",
-    ...k.candidates.map((c) => `${c.sku.sku} | UPC ${c.sku.upc || "(none)"} | ${c.sku.brand} | ${c.sku.title}`),
+    ...k.candidates.map((c) => `${c.sku.sku} | vendor ${c.sku.brand} | ${c.sku.title} | dept ${c.sku.department ?? ""} | UPC ${c.sku.upc || "(none)"}`),
     "",
-    "Answer one line per item, nothing else: <SKU> SAME, <SKU> NOT, or <SKU> UNSURE (if you cannot tell).",
+    "Answer one line per item, nothing else: <SKU>: SAME, <SKU>: DIFFERENT, or <SKU>: UNSURE (if you cannot tell).",
   ].join("\n");
 }
+
+/** "<SKU>: SAME" etc.; "NOT SURE" reads as unsure, anything unreadable too. */
+const verdictRe = (sku: string) => new RegExp(`${sku}\\W{0,4}(NOT SURE|SAME|DIFFERENT|NOT|UNSURE)\\b`, "i");
 
 export function parse(out: string, skus: string[]): Map<string, "same" | "not-this" | "unsure"> {
   const res = new Map<string, "same" | "not-this" | "unsure">();
   for (const s of skus) {
-    const m = out.match(new RegExp(`${s}\\W+(SAME|NOT|UNSURE)`, "i"));
-    res.set(s, !m ? "unsure" : m[1].toUpperCase() === "SAME" ? "same" : m[1].toUpperCase() === "NOT" ? "not-this" : "unsure");
+    const m = out.replace(/[*`]/g, "").match(verdictRe(s));
+    const w = m?.[1].toUpperCase().replace(/\s+/g, " ");
+    res.set(s, w === "SAME" ? "same" : w === "DIFFERENT" || w === "NOT" ? "not-this" : "unsure");
   }
   return res;
 }
@@ -62,10 +67,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const agents = new Map((JSON.parse(readFileSync("eval/results/meterless-nvidia_nemotron-3-ultra-550b-a55b.json", "utf8")).rows as { recall: string; sku: string; final: string }[]).map((r) => [`${r.recall}|${r.sku}`, r.final]));
   let i = 0, unparsed = 0;
   for (const k of cases) {
-    const out = await (gen as (p: string, o: { purpose: string; agent: string; maxTokens?: number }) => Promise<string>)(prompt(k), { purpose: `judge one-prompt baseline ${k.recall.id}`, agent: "Baseline", maxTokens: 600 }).catch(() => "");
+    const out = await (gen as (p: string, o: { purpose: string; agent: string; system?: string; maxTokens?: number }) => Promise<string>)(prompt(k), { purpose: `judge one-prompt baseline ${k.recall.id}`, agent: "Baseline", system: "You check a retailer's item-master lines against a U.S. federal recall notice. You answer one line per item.", maxTokens: 1200 }).catch(() => "");
     const skus = k.candidates.map((c) => c.sku.sku);
     const v = parse(out, skus);
-    unparsed += skus.filter((s) => !new RegExp(`${s}\\W+(SAME|NOT|UNSURE)`, "i").test(out)).length;
+    unparsed += skus.filter((s) => !verdictRe(s).test(out.replace(/[*`]/g, ""))).length;
     for (const c of k.candidates) {
       const label = (gt.get(c.sku.sku) ?? "").split("|").includes(k.recall.number) || (c.sku.upc && k.recall.upcs.includes(c.sku.upc)) ? "same" : "not-this";
       rows.push({ recall: k.recall.id, sku: c.sku.sku, basis: c.basis, label, final: v.get(c.sku.sku)!, agents: agents.get(`${k.recall.id}|${c.sku.sku}`) });

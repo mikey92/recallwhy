@@ -3,8 +3,8 @@
 //   pull-list.csv       one row per store × lot to pull, with the store's name and city
 //   supplier-request.md a credit/replacement request citing the supplier's own ship notices
 //   customer-notice.md  the notice text for loyalty customers who bought affected lots (count only)
-//   fda-traceability.csv FDA recalls only: the FSMA 204 sortable spreadsheet of the affected lots' records we
-//                       hold (supplier shipments into our DCs, receipts at our stores), one row per record
+//   fda-traceability.csv FDA recalls only: our receiving records for the affected lots in the shape of the FSMA 204
+//                       receiving key data elements, sortable by lot and date (see fsmaSheet)
 //   packet.json         the SQL ids behind every file, and whether the totals reconcile
 // Nothing is sent. Every row comes from its own federated query, and the packet is withheld when its
 // on-hand total does not equal the number the Auditor already re-derived.
@@ -121,20 +121,25 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
 }
 
 /** A person approves a drafted packet: the approval is recorded next to it, with who and when. Nothing is sent. */
-export const FSMA_COLUMNS = ["traceability_lot_code", "product_description", "upc", "quantity", "unit_of_measure", "quantity_basis", "event", "location", "immediate_previous_source", "event_date", "reference_document", "recall", "sql_id"];
+export const FSMA_COLUMNS = ["traceability_lot_code", "product_description", "upc", "quantity", "unit_of_measure", "quantity_note", "event", "receiving_location", "immediate_previous_source", "traceability_lot_code_source", "date", "date_note", "reference_document", "recall", "sql_id"];
 
 /**
- * The FSMA 204 sortable spreadsheet (21 CFR 1.1455(c)(3)) for the affected lots, from the records we hold:
- * the supplier's shipment into our distribution center (ship notice, ship date) and the receipt at each store
- * that still has stock (ERP, first received date; the ERP keeps the quantity on hand, not the quantity received,
- * and the column says so). Rows sort by lot, then date. Every row names the query that produced it.
+ * Our receiving records for the affected lots, one row per record, in the shape of the FSMA 204 receiving key data
+ * elements (21 CFR 1.1345) and sortable by lot and date, the form the FDA asks for within 24 hours (1.1455(c)(3)).
+ * The rule covers foods on the Food Traceability List; this sheet is drafted for every FDA recall and a person
+ * decides whether it applies. Two kinds of rows, both receipts by us: at a distribution center, from the supplier's
+ * ship notice (we hold its ship date, not the date the DC received it), and at a store that still has stock, from
+ * the ERP (first received date; the ERP keeps the quantity on hand, not the quantity received, so a store that
+ * received a lot and sold it all has no row). The supplier stands in as the lot code source: the notices do not
+ * say who assigned the code. Every row names the query that produced it; addresses are not in our data.
  */
 export function fsmaSheet(k: Pick<Case, "recall">, rows: PullRow[], asns: ShipRow[], sql: { pull: string; ship: string }): string {
   const titles = new Map(rows.map((r) => [r.sku, { title: r.title, upc: r.upc }]));
+  const source = new Map(asns.map((a) => [`${a.sku}|${a.lot_code}`, `${a.supplier} (${a.supplier_id})`]));
   const recs = [
-    ...asns.map((a) => [a.lot_code, titles.get(a.sku)?.title ?? a.sku, titles.get(a.sku)?.upc ?? "", a.units, "each", "shipped", "shipping (supplier to our DC)", `Northwind DC, ${a.dc_state}`, `${a.supplier} (${a.supplier_id})`, a.shipped_on, `ship notice ${a.asn_id}`, k.recall.id, sql.ship]),
-    ...rows.map((r) => [r.lot_code, r.title, r.upc, r.on_hand, "each", "on hand now", "receiving (store)", `${r.store} ${r.store_id}, ${r.city}, ${r.state}`, "Northwind DC", r.received_on ?? "", "ERP inventory", k.recall.id, sql.pull]),
-  ].sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[9]).localeCompare(String(b[9])));
+    ...asns.map((a) => [a.lot_code, titles.get(a.sku)?.title ?? a.sku, titles.get(a.sku)?.upc ?? "", a.units, "each", "units shipped to us", "receiving (our distribution center)", `Northwind DC, ${a.dc_state}`, `${a.supplier} (${a.supplier_id})`, `${a.supplier} (${a.supplier_id})`, a.shipped_on, "ship date on the supplier's notice", `ship notice ${a.asn_id}`, k.recall.id, sql.ship]),
+    ...rows.map((r) => [r.lot_code, r.title, r.upc, r.on_hand, "each", "on hand now (received quantity not in the ERP)", "receiving (store)", `${r.store} (${r.store_id}), ${r.city}, ${r.state}`, "Northwind distribution center", source.get(`${r.sku}|${r.lot_code}`) ?? "not in our ship notices", r.received_on ?? "", "first received at the store (ERP)", "ERP inventory", k.recall.id, sql.pull]),
+  ].sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[10]).localeCompare(String(b[10])));
   return [FSMA_COLUMNS.join(","), ...recs.map((r) => r.map((v) => csv(v as string | number)).join(","))].join("\n") + "\n";
 }
 

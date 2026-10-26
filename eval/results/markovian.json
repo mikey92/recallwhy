@@ -1,10 +1,11 @@
 {
-  "note": "Prompt tokens of the weekly digest over a full sample-mode run since 2026-07-01, with Markovian (each batch + a ≤256-token carryover) vs a loop that re-reads every earlier batch. Tokens = characters / 4 on both sides.",
+  "note": "Prompt tokens of the weekly digest over a full sample-mode run since 2026-07-01. Markovian: each batch + a ≤256-token carryover, so the largest prompt stays small. Compared with (a) one prompt holding every case (fewer tokens in total, but its size grows with the run) and (b) a chunked loop that re-reads every earlier batch. Tokens = characters / 4 on all sides.",
   "cases": 184,
   "urgentChunks": 27,
   "markovianPromptTokens": 13033,
   "fullHistoryPromptTokens": 133522,
   "savedPercent": 90.2,
+  "onePromptAllCasesTokens": 8726,
   "largestPromptTokens": {
     "markovian": 584,
     "fullHistory": 8726

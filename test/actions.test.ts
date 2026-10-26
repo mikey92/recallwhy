@@ -110,7 +110,7 @@ test("a reviewer's decision is refused while a run is in progress (it would be o
   } finally { process.chdir(cwd); }
 });
 
-test("FSMA 204 sortable spreadsheet: one row per ship notice and per store receipt, sorted by lot then date, each with its query", async () => {
+test("FSMA 204 receiving records: one row per DC receipt (ship notice) and per store receipt, sorted by lot then date, each with its query", async () => {
   const { fsmaSheet, FSMA_COLUMNS } = await import("../src/actions.ts");
   const rows = [{ store_id: "S2", store: "B", city: "X", state: "TX", sku: "NW-1", upc: "012", title: "Salsa, Mild", lot_code: "L2", on_hand: 5, received_on: "2026-08-03" },
     { store_id: "S1", store: "A", city: "Y", state: "NJ", sku: "NW-1", upc: "012", title: "Salsa, Mild", lot_code: "L1", on_hand: 7, received_on: "2026-08-02" }];
@@ -118,7 +118,8 @@ test("FSMA 204 sortable spreadsheet: one row per ship notice and per store recei
   const lines = fsmaSheet({ recall: { id: "fda:H-1" } } as never, rows, asns, { pull: "q-p", ship: "q-s" }).trim().split("\n");
   assert.equal(lines[0], FSMA_COLUMNS.join(","));
   assert.equal(lines.length, 4);
-  assert.match(lines[1], /^L1,"Salsa, Mild",012,40,each,shipped,shipping .*ship notice ASN-1,fda:H-1,q-s$/);
-  assert.match(lines[2], /^L1,.*,7,each,on hand now,receiving \(store\),.*2026-08-02,ERP inventory,fda:H-1,q-p$/);
+  assert.match(lines[1], /^L1,"Salsa, Mild",012,40,each,units shipped to us,receiving \(our distribution center\),"Northwind DC, NJ",S \(SUP1\),S \(SUP1\),2026-08-01,.*ship notice ASN-1,fda:H-1,q-s$/);
+  assert.match(lines[2], /^L1,.*,7,each,on hand now .*,receiving \(store\),"A \(S1\), Y, NJ",Northwind distribution center,S \(SUP1\),2026-08-02,.*ERP inventory,fda:H-1,q-p$/);
+  assert.match(lines[3], /not in our ship notices/);
   assert.match(lines[3], /^L2,/);
 });

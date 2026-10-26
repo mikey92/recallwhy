@@ -79,6 +79,9 @@ function nightshiftToken(): string | undefined {
   return undefined;
 }
 
+/** Same model, allowing a provider prefix on either side ("nvidia/x" vs "x"). */
+export const sameModel = (served: string, requested: string) => { const a = served.toLowerCase(), b = requested.toLowerCase(); return a === b || a.endsWith(`/${b}`) || b.endsWith(`/${a}`); };
+
 export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
   const pace = makePacer(cfg.rpm ?? 0);
   // Circuit breaker: when Nightshift cannot be reached at all (wrong URL, not running), stop calling it after
@@ -118,6 +121,14 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
         if (/fetch failed|ECONNREFUSED|ENOTFOUND|EHOSTUNREACH/i.test(`${error} ${cause}`)) {
           if (++unreachable === BREAK_AFTER) trace.emit("note", opts.agent, { text: `model endpoint unreachable ${BREAK_AFTER} times in a row (${error.slice(0, 80)}); the rest of this run goes on without a model: text matches go to a person, briefs use the template` });
         } else unreachable = 0;
+      }
+      // Nightshift may route a request to another model. For a high-risk intent that is not accepted: the answer is
+      // dropped (the caller falls back: judge → UNSURE, a person decides). For the others it is recorded.
+      const elsewhere = !error && served.model && !sameModel(served.model, model) ? served.model : undefined;
+      if (elsewhere) {
+        trace.emit("route", opts.agent, { spec: "meterless-scout-intent", purpose: opts.purpose, intent: r.intent, risk: r.risk, from: model, served_elsewhere: elsewhere,
+          reason: r.risk === "high" ? `requested ${model}, served by ${elsewhere}: a high-risk answer from another model is not used` : `requested ${model}, served by ${elsewhere}; recorded` });
+        if (r.risk === "high") error = `served by ${elsewhere}, not the requested ${model}`;
       }
       // Which model actually answered: Nightshift may route to another model, so record what it reports, with the tokens it counted.
       trace.emit("llm", opts.agent, { model: `${cfg.provider}:${model}`, served_model: served.model, receipt: served.receipt, usage: served.usage, intent: r.intent, purpose: opts.purpose, prompt: prompt.slice(0, 4000), output: error ? `ERROR ${error}` : output, ms: Date.now() - t0 });

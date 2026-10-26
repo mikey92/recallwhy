@@ -1,5 +1,7 @@
-// What the Meterless Markovian engine saves in the weekly digest, measured on the prompts the digest actually
-// sends, not estimated: a full sample-mode run since 2026-07-01 (every recall that touches the catalog), with a
+// What the Meterless Markovian engine changes in the weekly digest, measured on the prompts the digest actually
+// sends, not estimated. The gain is a bounded prompt: every call stays small however many cases a run has. Its
+// total tokens are NOT lower than one prompt holding every case (that is reported too), only lower than a loop
+// that re-reads its history on each call. Setup: a full sample-mode run since 2026-07-01 (every recall that touches the catalog), with a
 // stand-in model that records each digest prompt and answers in the engine's checkpoint format. For every
 // chunk, the Markovian prompt (this batch + a carryover of at most 256 tokens) is compared with what a loop
 // without Markovian would send: the same prompt plus every earlier batch's case lines, re-read each time.
@@ -42,12 +44,13 @@ const chunks = digestPrompts.map((p, k) => {
   return { chunk: k + 1, markovianPromptTokens: withMarkovian, fullHistoryPromptTokens: without };
 });
 const out = {
-  note: "Prompt tokens of the weekly digest over a full sample-mode run since 2026-07-01, with Markovian (each batch + a ≤256-token carryover) vs a loop that re-reads every earlier batch. Tokens = characters / 4 on both sides.",
+  note: "Prompt tokens of the weekly digest over a full sample-mode run since 2026-07-01. Markovian: each batch + a ≤256-token carryover, so the largest prompt stays small. Compared with (a) one prompt holding every case (fewer tokens in total, but its size grows with the run) and (b) a chunked loop that re-reads every earlier batch. Tokens = characters / 4 on all sides.",
   cases: r.cases.length, urgentChunks: digestPrompts.length,
   markovianPromptTokens: markov, fullHistoryPromptTokens: full,
   savedPercent: full ? Math.round((1 - markov / full) * 1000) / 10 : 0,
+  onePromptAllCasesTokens: chunks.length ? chunks[chunks.length - 1].fullHistoryPromptTokens : 0,
   largestPromptTokens: { markovian: Math.max(...chunks.map((c) => c.markovianPromptTokens)), fullHistory: Math.max(...chunks.map((c) => c.fullHistoryPromptTokens)) },
   chunks,
 };
 writeFileSync(join(repo, "eval/results/markovian.json"), JSON.stringify(out, null, 2) + "\n");
-console.log(`${out.cases} cases, ${out.urgentChunks} digest chunks: ${markov} prompt tokens with Markovian vs ${full} re-reading earlier batches (${out.savedPercent}% fewer); largest prompt ${out.largestPromptTokens.markovian} vs ${out.largestPromptTokens.fullHistory} tokens`);
+console.log(`${out.cases} cases, ${out.urgentChunks} digest chunks: largest prompt ${out.largestPromptTokens.markovian} tokens with Markovian vs ${out.onePromptAllCasesTokens} for one prompt holding every case; total ${markov} (Markovian) vs ${out.onePromptAllCasesTokens} (one prompt) vs ${full} (re-reading earlier batches)`);

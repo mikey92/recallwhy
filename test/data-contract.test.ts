@@ -29,6 +29,12 @@ test("a folder that breaks the contract is reported rule by rule", () => {
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
+test("dates must be real calendar dates", async () => {
+  const { isDate } = await import("../src/data-contract.ts");
+  assert.ok(isDate("2026-02-28") && isDate("2028-02-29T10:00:00"));
+  assert.ok(!isDate("2026-13-01") && !isDate("2026-02-30") && !isDate("26-02-01"));
+});
+
 test("parseCsv keeps quoted commas and doubled quotes", () => {
   assert.deepEqual(parseCsv('a,b\n"x, y","say ""hi"""\n'), { headers: ["a", "b"], rows: [["x, y", 'say "hi"']] });
 });

@@ -90,3 +90,7 @@ The 3 remaining wrongly dismissed pairs are generator artefacts more than model 
 - The two small models are conservative and dismiss 14–18 real matches, which no later check can recover.
 
 Results per pair are in `eval/results/*.json`. `python3 eval/first-vs-final.py <tag>` recomputes the first-answer tables. Each result file also lists the supplier rules the Cartographer learned (`cartographerRules`) and the model calls that failed after retries (`modelCalls`).
+
+## Repeatability
+
+`eval/repro.ts` compares the committed full Ultra run with two more runs of a 44-pair subset (16 covered; `eval/run.ts --recalls`, `eval/results/repro-run1.json`, `repro-run2.json`): the same final decision in all three runs for 42 of 44 pairs, 43 between the two re-runs; wrongly dismissed 1 / 2 / 1; no false alarm in any run. Differences, pair by pair: `eval/results/repro.json`.
