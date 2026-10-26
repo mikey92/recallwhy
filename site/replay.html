@@ -24,6 +24,7 @@ footer{padding:0 20px 10px;color:var(--mute);font-size:12px}
 <select id="run" aria-label="Run"><option value="example_1">example_1 · 5 recalls, SUP028 rule proven</option><option value="example_2">example_2 · Nemotron proposes a barcode rule</option><option value="example_3">example_3 · escalated to a person</option><option value="example_3_after_human_decision">example_3 after a human decision</option><option value="example_4">example_4 · live, the last two and a half weeks</option><option value="example_1_sample_mode">example_1 · sample mode, no model</option></select>
 <select id="speed" aria-label="Speed"><option value="4">4×</option><option value="10" selected>10×</option><option value="40">40×</option></select>
 <label class="stat"><input type="checkbox" id="writes"> show World Model writes</label> <button id="again">Replay</button><span class="stat" id="stat"></span><a id="rep" href="#">report →</a></header>
+<p id="watch" style="margin:0;padding:8px 20px 0;color:var(--ink);font-size:15px"></p>
 <main>
 <section class="lane Cartographer"><h2>Cartographer<span class="k" id="n-Cartographer">0</span></h2><div class="feed" id="f-Cartographer"></div></section>
 <section class="lane Scout"><h2>Scout<span class="k" id="n-Scout">0</span></h2><div class="feed" id="f-Scout"></div></section>
@@ -35,6 +36,14 @@ footer{padding:0 20px 10px;color:var(--mute);font-size:12px}
 <footer>Replays the committed trace.jsonl of a real run (live Zetaris and NVIDIA Nemotron through Meterless Nightshift, except the sample-mode run) at the speed chosen. Every line is an event the code emitted; nothing here is generated in the browser.</footer>
 <script>
 const $ = (s) => document.querySelector(s);
+const WATCH = {
+  example_1: "the Cartographer maps the sources (left); the Auditor blocks the judge's dismissal of our salsa fresca and sends it to a person; then SUP028's dropped check digit is proven on 391 ship notices and written back to Zetaris.",
+  example_2: "the Auditor finds ship notices the barcode map cannot reach; the Cartographer asks Nemotron for SUP010's rule, SQL proves it on all 193 ship notices, and the map, the rule and the verdicts are written back to Zetaris under signed contracts (right lane).",
+  example_3: "the judge dismisses our date-sweetened chocolate three times while its own quote names it; the Auditor blocks every time and the case goes to a person.",
+  example_3_after_human_decision: "the Investigator follows the reviewer's two decisions from memory without asking the model, and the Orchestrator flags the verdict that changed against the one kept in Zetaris.",
+  example_4: "the live feeds of the last two and a half weeks: 39 recalls, 5 on our shelves; SUP007's barcode rule proven and written back; two rules remembered from earlier runs and re-proven first.",
+  example_1_sample_mode: "the same agents and SQL with no Zetaris and no model: text matches go to a person instead of being judged.",
+};
 const esc = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 const LANES = ["Cartographer", "Scout", "Investigator", "Auditor", "Briefer", "Orchestrator"];
 let timer = null, counts = {}, stats = {};
@@ -65,7 +74,11 @@ async function play() {
   const run = $("#run").value, speed = Number($("#speed").value);
   history.replaceState(null, "", "?run=" + run);
   $("#rep").href = "examples/" + run + "/report.html";
-  const evs = (await (await fetch("examples/" + run + "/trace.jsonl")).text()).trim().split("\n").map((l) => JSON.parse(l));
+  $("#watch").innerHTML = "<b>What to watch:</b> " + (WATCH[run] || "the agents' messages, SQL and model calls, lane by lane.");
+  const resp = await fetch("examples/" + run + "/trace.jsonl").catch(() => null);
+  if (!resp || !resp.ok) { $("#stat").textContent = "No recorded run called " + run + "."; return; }
+  $("#stat").textContent = "Loading…";
+  const evs = (await resp.text()).trim().split("\n").map((l) => JSON.parse(l));
   let i = 0;
   const step = () => {
     if (i >= evs.length) { $("#stat").innerHTML += " · <b>done</b>"; return; }

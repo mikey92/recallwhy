@@ -13,14 +13,14 @@
 - **Live, end to end, in minutes:** the last two and a half weeks of live notices (39 since 8 Oct) became five action packets — 1,093 units in 14 stores, 6 of them in states the notice never listed — in 4 min 16 s ([report](https://mikey92.github.io/recallwhy/examples/example_4/report.html)). Each run starts where the last stopped: the supplier rules it proved and every verdict are kept in Zetaris, a remembered rule is re-proven before it is used, and a verdict that changes (e.g. after a reviewer's decision) is flagged.
 - **134 of 146 recalled items caught, 1 missed, 1 false alarm**, and 91% of 322 recall/SKU pairs settled without a person (Nemotron 3 Ultra; rules alone catch 89). On real products, 97 of 97 recalls are found by barcode and 0 of 152 look-alikes are matched.
 - **The agents repair the join, not just read it.** When a supplier's barcodes don't reach our items, the Cartographer finds the supplier's rule (a dropped check digit, a padded GTIN; for an unknown format Nemotron proposes one), SQL proves it on every ship notice of that supplier (391 of 391), and the corrected join is written back into Zetaris as a view any Zetaris user can query, confirmed by Zetaris lineage and a data-quality rule with 0 invalid rows. [See it in Zetaris's own catalog](docs/img/zetaris-preview.png).
-- **Nothing unproven gets through.** The Auditor re-derives every number with its own SQL and can block; a dismissal whose own quote names our item goes back to the judge or to a person; a pull list is withheld unless it equals the Auditor's on-hand number.
+- **Nothing unchecked gets through.** The Auditor re-derives every number with its own SQL and can block; a dismissal whose own quote names our item goes back to the judge or to a person; a pull list is withheld unless it equals the Auditor's on-hand number.
 - **It ends in work a person approves:** a pull list per store and lot, a supplier request citing the supplier's own ship notices, a customer notice, and a map of where to pull. Nothing is sent.
 - **Data:** the food items are real products (USDA FoodData Central, Open Food Facts) and the 24 stores stand at real SNAP supermarket locations (USDA FNS); stock, sales and ship notices are synthetic, because no public data holds them.
-- **Check it yourself:** `npm ci && npm run verify` — type check, every test, every number in these documents recomputed from the committed results, the Meterless engines checked against upstream and its conformance suites, and the model-free evaluations re-run.
+- **Check it yourself:** `npm ci && npm run verify` — type check, every test, the headline numbers in these documents recomputed from the committed results, the Meterless engines checked against upstream and its conformance suites, and the model-free evaluations re-run.
 
 ![Where to pull, from the live run example_1: 873 units in 16 stores at their real SNAP locations; the selected recall notice's distribution states are shaded, and the amber stores in WA, OR and CA hold recalled stock in states the notice never listed](docs/img/report-map.png)
 
-Retailers get this wrong today. In December 2025 the FDA sent warning letters to Kroger, Albertsons, Target and Walmart: recalled ByHeart infant formula was still on shelves in over 175 locations across 36 states, in one case for more than three weeks. Store associates cited not knowing about the recall, "confusion regarding which specific lots were affected", and not removing all the affected product ([FDA](https://content.govdelivery.com/accounts/USFDA/bulletins/4000713), [Food Safety News](https://www.foodsafetynews.com/2025/12/fda-warns-retailers-who-failed-to-pull-recalled-byheart-formula/)).
+**Why it matters.** The ByHeart case above is in the FDA's own letters ([FDA](https://content.govdelivery.com/accounts/USFDA/bulletins/4000713), [Food Safety News](https://www.foodsafetynews.com/2025/12/fda-warns-retailers-who-failed-to-pull-recalled-byheart-formula/)): store associates cited not knowing about the recall and "confusion regarding which specific lots were affected". Recalls are rising: 571 FDA recalls covering 138.5 million units in 2025, a nine-year high ([Sedgwick via Just Food](https://www.just-food.com/news/us-food-drink-recalls-hit-nine-year-high-report/)), and 420 CPSC recall announcements, an 18-year high ([U.S. PIRG](https://pirg.org/media-center/new-report-nearly-900-injuries-linked-to-unsafe-consumer-products-in-2025-as-recalls-hit-18-year-high/)). A food recall costs a company about $10 million in direct costs on average ([GMA/FMI/Deloitte via Food Dive](https://www.fooddive.com/news/more-than-money-what-a-recall-truly-costs/426855/)). And lot-level records are becoming law: the FDA's Food Traceability Rule (FSMA 204) requires traceability lot codes at each critical step and records handed to the FDA within 24 hours as an electronic sortable spreadsheet, enforced from 20 July 2028 ([FDA](https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods)). RecallWhy's pull list is that kind of record: per store and lot, with the query behind every number. The barcode rules the Cartographer proves are the ones GS1 defines (a GTIN-12 padded to 14 digits, a dropped check digit) ([GS1](https://www.gs1.org/docs/idkeys/GS1_GTIN_Executive_Summary.pdf)), applied only after SQL shows they hold for every ship notice of that supplier.
 
 **What RecallWhy changes:** over 322 recall/SKU pairs from 515 notices, on an item master whose food lines are real products, the agents settle 292 (91%) without a person, 290 of them correctly, and send 30 to a reviewer with the reason; 134 of 146 recalled items are caught, with 1 missed and 1 false alarm (rules alone: 89). See [Evaluation](#evaluation).
 
@@ -80,7 +80,7 @@ For every run, in `out/<run>/`:
 | **Meterless** | H-MEM, World Model and Markovian mounted from Meterless@1742dec; Nightshift as the model provider; Scout Intent's execution contract and guard implemented from its spec | engines byte-identical to upstream and green on the upstream conformance suites (H-MEM 13/13, Markovian 8/8, World Model 8/8); guard 10/10 on Scout's adversarial set, 0 of the 517 real notices in `sample/` flagged | `npm run check:engines` (CI), `test/contract.test.ts`, `test/guard.test.ts` | Scout's intent classifier and model routing (one intent here) |
 | **NVIDIA Nemotron** | Two models by task: 3 Ultra judges, writes briefs and the digest, checks briefs for the Auditor and proposes barcode transforms; 3.5 Lightning reads lot codes (checked word for word against the notice). Every call's requested and served model and Nightshift receipt are in the trace and [on the site](https://mikey92.github.io/recallwhy/) | 134 of 146 caught, 1 missed, 1 false alarm over 322 pairs; 0 of 392 calls failed | [`eval/EVAL.md`](eval/EVAL.md) | no embedding or safety model |
 
-**Zetaris (load-bearing: every agent reads data only through it)**
+**Zetaris (load-bearing: in a live run every agent reads data only through it; sample mode uses a labelled DuckDB stand-in)**
 - `sql/01_feeds.sql` registers two live **Lightning REST tables**:
   - saferproducts.gov CPSC recalls. Its response is a top-level JSON array, which Zetaris accepted; the getting-started notes listed that shape as untested.
   - api.fda.gov food enforcement.
@@ -100,7 +100,7 @@ For every run, in `out/<run>/`:
 
 **Meterless agent engines** (mounted from [github.com/Meterless/Meterless](https://github.com/Meterless/Meterless), Apache-2.0, see `src/engines/*/NOTICE`). Engine tests: `npm test` (run by CI on every push, with `npm run check:repro`, which re-runs the model-free evaluations and compares every pair with the committed results, and `npm run check:claims`, which recomputes every number in this README, EVAL, metadata, the deck and the site from `eval/results/` and the example traces) runs `test/engines.test.ts` (H-MEM: a human decision survives a restart and changes the next session's decision; human decisions outrank agent decisions; World Model: one id per entity, facts persist with provenance, the Briefer's context cites them).
 - **H-MEM** (`src/engines/hmem`, wrapper `src/memory.ts`): every adjudication is stored: the agents' in working memory at confidence 0.6, humans' (`npm run decide`) in long-term memory at 0.95. Decisions in a case that was escalated, and UNSURE calls, are not stored as the agents' answer; the reviewer's decision is. Before judging, the Investigator reads the exact prior decisions for that recall/SKU pair plus similar past cases. A human decision is followed and cited in the brief. The trust ledger records every write and every read, including the exact prior-decision lookup.
-- **Markovian** (`src/engines/markovian`, used by `src/digest.ts`): the weekly digest is a Markovian chain over every case of the run, in chunks of at most 7 cases with a carryover of at most 256 tokens (`chunkSize` 2000, `maxChunks` 32); the run record's chunk count, status and estimated token savings go into the trace and the digest's footer. Tested in `test/actions.test.ts` (40 cases in at least 6 chunks, every prompt bounded, later chunks see only the carried state, and model lines with an invented number are replaced).
+- **Markovian** (`src/engines/markovian`, used by `src/digest.ts`): the weekly digest is a Markovian chain over every case of the run, in chunks of 6 cases (more per chunk past 180 cases) with a carryover of at most 256 tokens (`chunkSize` 2000, `maxChunks` 32); the run record's chunk count, status and estimated token savings go into the trace and the digest's footer. Tested in `test/actions.test.ts` (40 cases in at least 6 chunks, every prompt bounded, later chunks see only the carried state, and model lines with an invented number are replaced).
 - **World Model** (`src/engines/world-model`, wrapper `src/world.ts`): recalls, cases and findings are entities and facts. Every write carries provenance: source kind, agent, and the SQL id or model call. Our context builder (`buildContext()` in `src/world.ts`) reads the engine's fact view, and it is the **only** input the Briefer sees, so a brief can only cite what the team actually established.
 
 **Meterless Nightshift (primary AI provider)**: every model call goes through one injected generator (`src/llm.ts`) to Nightshift's OpenAI-compatible Runtime API on the same machine (`http://127.0.0.1:8088/v1`, with `meterless-app` and `meterless-scope` headers; the runtime token is read from Nightshift's own token file or `METERLESS_RUNTIME_TOKEN`). The NVIDIA key lives in Nightshift's provider store, not in this repository. Each `llm` trace event records the requested model, the model Nightshift actually routed to (`served_model`) and its receipt id; the live viewer and the report show `requested ⇒ served` per call. Transient errors (429, 502–504, first-token timeouts) are retried with backoff and logged as `llm.retry`. Calls to `nvidia/*` models are paced to 4 a minute (a burst of 4, then one every 15 s), about what the hosted endpoint allows, so a long run waits between calls instead of collecting 429s; `LLM_RPM` changes the rate and `0` turns pacing off.
@@ -127,7 +127,7 @@ cp .env.example .env          # fill in Zetaris and Postgres settings
 docker compose up -d && npm run load     # synthetic ERP + supplier portal
 npm run setup:zetaris                    # register feeds + datasources in Zetaris
 # Nightshift running, NVIDIA key added under Setup ▸ Providers (LLM_PROVIDER=meterless is the default)
-npm run agents -- --since 2026-09-15 --limit 5   # about 3 minutes; → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
+npm run agents -- --since 2026-09-15 --limit 5   # about 5 minutes, mostly waiting on the paced model; → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
 npm run view                             # http://127.0.0.1:8899 — watch the five agents live, open reports;
                                          # /review — decide escalated cases (stored in H-MEM, followed next run)
 ```
@@ -168,27 +168,31 @@ The same agents and the same SQL run against an in-process DuckDB stand-in, over
 
 ```bash
 npm run queue                                           # escalated cases
-npm run decide -- H-1259-2026 NW-100058 same --note "same rice balls as the notice"
-npm run agents -- --since 2026-07-01 --only H-1259-2026 # Investigator follows the stored decision
+npm run decide -- H-1085-2026 NW-100153 not-this --note "the notice recalls Pineapple Lassi; ours is the orange one"
+npm run agents -- --since 2026-07-01 --only H-1085-2026 # not-ours: the Investigator follows the stored decision
 ```
 
 The same through the API, in the container with no credentials:
 
 ```bash
-curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1259-2026"]}'   # needs-human
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1085-2026"]}'   # needs-human (no model: a reviewer decides text matches)
 curl localhost:8000/queue                                                                                                 # why it needs a reviewer
-curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1259-2026","sku":"NW-100058","verdict":"same"}'
-curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1259-2026"]}'   # act-now, following the decision
+curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1085-2026","sku":"NW-100153","verdict":"not-this"}'
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1085-2026"]}'   # not-ours, following the decision
 ```
 
 ## Failure handling
 
 | Failure | What happens | Where |
 |---|---|---|
-| Zetaris configured but not answering | The run falls back to the sample stand-in; the trace has the `sql.error` and a note saying why (`ZETARIS_FALLBACK=false` to fail instead) | `src/sql/index.ts` |
+| Zetaris configured but not answering at the start | The run falls back to the sample stand-in; the trace has the `sql.error` and a note saying why (`ZETARIS_FALLBACK=false` to fail instead) | `src/sql/index.ts` |
+| A query fails in the middle of a case | That case goes to a person with the error in its brief; the other cases, the report, the digest and the verdict write-back still happen | `src/orchestrator.ts` |
 | A live feed is down (openFDA answers 500 at times; it did during this build) | The Scout reports it and goes on with the other feed; the Cartographer keeps the map without the feed profile | `src/agents/scout.ts`, `cartographer.ts` |
 | No Zetaris credentials, or `SAMPLE_MODE=true` | Same agents and SQL on the DuckDB stand-in, labelled `duckdb-sample` | `src/sql/duck.ts` |
 | Nightshift 429, 502–504, first-token timeout | Retried after 3, 8, 20, 45 and 90 s (the hosted NVIDIA limits are per minute), each retry logged as `llm.retry` | `src/llm.ts` |
+| Nightshift unreachable (connection refused, wrong URL) | Not retried; after 3 in a row the rest of the run goes on without a model (a trace note says so) | `src/llm.ts` |
+| A model reads a date as a lot code | Dropped, with an Auditor critique: a date would narrow the recall to lots we never hold | `src/agents/investigator.ts` |
+| A reviewer decides while a run is in progress | Refused (`409`): the run holds H-MEM and would overwrite it; decide when it finishes | `src/app.ts` |
 | Model call still failing, or no token | The judge answers UNSURE and the pair goes to the human queue; lot reading falls back to the regex; the Briefer uses its template | `src/agents/investigator.ts`, `briefer.ts` |
 | Model claim not supported by the notice or the data | The Auditor blocks it and sends a critique; after 2 revisions the case is escalated to a human | `src/agents/auditor.ts` |
 | Bad request to `POST /run` | `400` with the reason; `409` if a run is already going | `src/api.ts` |
@@ -251,7 +255,7 @@ Four suppliers send a 10-digit core (no leading digit, no check digit), a format
 - The Cartographer knows two barcode transforms (leading-zero padding, a dropped check digit); for anything else the model proposes one from a fixed set of string ops and SQL proves it on all of the supplier's rows. A format those ops cannot express (a remapped prefix, a per-row lookup) is still reported as unexplained, and its rows stay with the SKU join.
 - CPSC notices carry no distribution list, so the feed view treats them as nationwide and the "shipped outside the recall's distribution" caveat only fires for FDA recalls.
 - The loyalty-customer count sums weekly distinct counts, so it is an upper bound.
-- CPSC notices rarely print UPCs (4 of 184 in the `sample/` snapshot of 22 Oct, 4 of 189 in the live feed on 24 Oct), so CPSC matching leans on model numbers and the judge.
+- CPSC notices rarely print UPCs (4 of 184 in the `sample/` snapshot of 22 Oct, 4 of 189 in the live feed on 26 Oct), so CPSC matching leans on model numbers and the judge.
 - The feed windows are fixed in `sql/01_feeds.sql` (2026-07-01 onward). Recalls before that date aren't read.
 - Nightshift and Zetaris run locally on one Mac for this build. Hosted NVIDIA endpoints are rate-limited, so long evaluations can see 429s; those calls are retried and logged.
 
@@ -261,3 +265,4 @@ Four suppliers send a 10-digit core (no leading digit, no check digit), a format
 - `src/engines/hmem`, `src/engines/world-model` and `src/engines/markovian` are the Meterless reference implementations (Apache-2.0), mounted byte-identical (each `CHANGES.md` records that nothing was changed; `npm run check:engines` checks it).
 - Product data: USDA FoodData Central (CC0) and Open Food Facts (ODbL); see `data/real/README.md`.
 - Libraries: `pg`, `@duckdb/node-api`, `tsx`, `typescript`.
+- Licence: Apache-2.0 (`LICENSE`). The build window opened 22 Oct 00:00 UTC, which is 21 Oct 17:00 in the Pacific time GitHub shows for the first commits.

@@ -26,7 +26,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <section class="s dark"><div class="k">Open Agent Hackathon 2026 · Track 1 — Solving Fragmented Intelligence</div>
 <h1 style="margin-top:220px;font-size:140px">RecallWhy</h1>
 <p style="font-size:42px;max-width:1400px">Agents that tell a retailer which recalled products are on its shelves, which lots, which stores, how many customers to call — <b>and why they believe it.</b></p>
-<p class="mute" style="margin-top:60px">Zetaris federated SQL · Meterless H-MEM + World Model + Markovian · Meterless Nightshift · NVIDIA Nemotron 3 Ultra · real products from USDA FoodData Central and Open Food Facts</p>
+<p class="mute" style="margin-top:60px">Zetaris federated SQL · Meterless H-MEM + World Model + Markovian · Meterless Nightshift · NVIDIA Nemotron 3 Ultra + 3.5 Lightning · real products from USDA FoodData Central and Open Food Facts</p>
 <div class="foot"><span>Mike Kim · solo</span><span>github.com/mikey92/recallwhy</span></div></section>
 
 <section class="s"><div class="k">1 · Problem and users</div>
@@ -65,7 +65,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <tr><td>Data access</td><td>Zetaris Lightning SQL over its REST API (<code>/api/proxy/sql-editor/sqls/run-query</code>)</td></tr>
 <tr><td>Agents</td><td>TypeScript on Node 22, no agent framework — five agents, one orchestrator, one trace</td></tr>
 <tr><td>Memory, state, long reads</td><td>Meterless H-MEM, World Model and Markovian reference engines (Apache-2.0), mounted in <code>src/engines/</code></td></tr>
-<tr><td>Model</td><td>Meterless <b>Nightshift</b> Runtime API (OpenAI-compatible) → NVIDIA <b>Nemotron 3 Ultra 550B-A55B</b>; no model and a human queue when Nightshift is absent</td></tr>
+<tr><td>Model</td><td>Meterless <b>Nightshift</b> Runtime API (OpenAI-compatible) → NVIDIA <b>Nemotron 3 Ultra 550B-A55B</b> (judge, briefs, Auditor check, digest) + <b>Nemotron 3.5 Lightning 30B-A3B</b> (lot codes); no model and a human queue when Nightshift is absent</td></tr>
 <tr><td>Retailer data</td><td>Postgres 16 in Docker — food items are real products (USDA FoodData Central, Open Food Facts: 95 recalled, 86 same-brand, 260 more); stores at real SNAP-authorized supermarket locations (USDA FNS); stock, sales and ship notices synthetic</td></tr>
 <tr><td>Entry points</td><td><code>POST /run</code> · <code>POST /approve</code> API · Dockerfile · CLI · live trace viewer · review screen</td></tr>
 <tr><td>No-credential mode</td><td><code>SAMPLE_MODE=true</code>: same agents and SQL on an in-process DuckDB stand-in, labelled SAMPLE</td></tr>
@@ -99,8 +99,8 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">6 · What's unique</div><h2>Map the fragments first. Then trust no one — including the model.</h2>
-<ul><li><b>The map is a hypothesis the Auditor can send back.</b> Rows the key can't reach go to the Cartographer, which learns the supplier's rule (padding, dropped check digit) and proves it on all that supplier's ship notices.</li><li><b>The model proposes, SQL proves.</b> For a format the code has no rule for (a 10-digit core), Nemotron 3 Ultra proposes a transform from sampled pairs in a fixed op set; it is adopted only if it holds on every one of the supplier's rows (193 to 390 rows, four suppliers), then written back to Zetaris and checked by its lineage and data-quality rule. Judge off: <b>89</b> of 146 caught with known rules, <b>99</b> with proposals, <b>53</b> without the Cartographer.</li><li><b>Re-derives every number in Zetaris</b> with differently written SQL; a mismatch blocks the brief.</li>
-<li><b>"Cheese ≠ pepperoni"</b>: a quote can be copied from the notice and still describe another variety — every product word of our item must appear in the notice. Live run: blocked, re-judged, ruled <i>not ours</i>.</li>
+<ul><li><b>The map is a hypothesis the Auditor can send back.</b> Rows the key can't reach go to the Cartographer, which learns the supplier's rule (padding, dropped check digit) and proves it on all that supplier's ship notices.</li><li><b>The model proposes, SQL proves.</b> For a format the code has no rule for (a 10-digit core), Nemotron 3 Ultra proposes a transform from sampled pairs in a fixed op set; it is adopted only if it holds on every one of the supplier's rows (193 to 390 rows, four suppliers), then written back to Zetaris and checked by its lineage and data-quality rule. Judge off: <b>89</b> of 146 caught with known rules, <b>99</b> with proposals, <b>53</b> without the Cartographer.</li><li><b>The Auditor re-derives every number in Zetaris</b> with differently written SQL; a mismatch blocks the brief.</li>
+<li><b>"Cheese ≠ pepperoni"</b>: a quote can be copied from the notice and still describe another variety — every product word of our item must appear in the notice. An earlier live run: blocked, re-judged, ruled <i>not ours</i>.</li>
 <li><b>And the other way</b>: the judge dismissed our Taylor Farms "Salsa Fresca" while quoting "Tomato Salsa Fresca" — every word of ours is in its own quote, so the Auditor sends it to a person (live run, example_1).</li>
 <li><b>What the model writes is checked too</b>: lot codes must appear verbatim in the notice, and every brief sentence must be supported by the evidence it cites, or it is rewritten.</li>
 <li><b>Human decisions change the next run</b> through H-MEM; a changed verdict is flagged against Zetaris.</li></ul>
@@ -127,7 +127,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <tr><td>No Cartographer — rules only</td><td>53</td><td>0</td><td>0</td><td>269</td></tr>
 <tr><td>Cartographer, known rules only</td><td>89</td><td>0</td><td>0</td><td>233</td></tr>
 <tr><td>Cartographer + model-proposed transforms (no judge)</td><td>99</td><td>0</td><td>0</td><td>223</td></tr>
-<tr style="font-weight:700"><td>+ NVIDIA Nemotron 3 Ultra via Nightshift</td><td>134</td><td>1</td><td>1</td><td>30</td></tr></table>
+<tr style="font-weight:700"><td>Full system: Cartographer + Nemotron 3 Ultra judge + Auditor</td><td>134</td><td>1</td><td>1</td><td>30</td></tr></table>
 <table class="tight" style="margin-bottom:14px"><tr><th>Text matches (47 covered of 223)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
 <tr><td>Ultra: judge's first answer</td><td>43</td><td style="color:#c0392b">4</td><td>2</td><td>0</td></tr>
 <tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>45</td><td>1</td><td>1</td><td>20</td></tr></table>

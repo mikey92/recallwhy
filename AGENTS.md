@@ -63,10 +63,10 @@ reason, or escalates to a human when the evidence is not good enough.
 6. Weekly digest (`src/digest.ts`) — all cases of a run through the Markovian engine in bounded
    chunks; totals in code; model lines dropped if they state a number no case has.
 
-Human decisions (`recallwhy decide <case> same|not-this --note ...`) go into H-MEM with high
-trust; the next run retrieves them and the Investigator must honour or explicitly overrule them.
+Human decisions (`npm run decide -- <recall-id> <sku> same|not-this --note ...`) go into H-MEM with high
+trust; the next run retrieves them and the Investigator follows them and cites them.
 
-## Meterless engines mounted (Apache-2.0 reference code, adapted, see engines/*/NOTICE)
+## Meterless engines mounted unchanged (Apache-2.0 reference code; byte-identical to upstream, see engines/*/CHANGES.md)
 - `src/engines/hmem/`        H-MEM: MemoryStoreService, MemoryRetrievalService, TrustLedgerService.
 - `src/engines/world-model/` World Model: WorldStoreService, IngestPipelineService. `src/world.ts` adds our context builder over its fact view.
 - `src/engines/markovian/`   Markovian: chunked chain with compressed carryover, used by `src/digest.ts`.
@@ -75,7 +75,9 @@ Engine state persists under `state/` (gitignored). Engines emit JSONL to `logs/`
 ## Model calls
 All LLM calls go through one injected `Generator` (src/llm.ts):
 - `meterless` provider (default) → Meterless Nightshift Runtime API (`127.0.0.1:8088/v1`), model
-  `nvidia/nemotron-3-ultra-550b-a55b`; the trace records the routed model and receipt per call,
+  `nvidia/nemotron-3-ultra-550b-a55b` for judging, briefs, the Auditor's check and the digest, and
+  `nvidia/nemotron-3.5-lightning-30b-a3b` for reading lot codes (tier "fast", `METERLESS_FAST_MODEL`);
+  the trace records the requested and routed model and the receipt per call,
 - `ollama` provider → any local model; `openai` provider → any OpenAI-compatible endpoint,
 - `none` → no model: text matches go to the human queue, briefs use the template.
   Configured only by env vars. No keys in code.
