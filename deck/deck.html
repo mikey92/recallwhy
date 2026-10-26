@@ -20,6 +20,7 @@ table{border-collapse:collapse;font-size:28px;width:100%}table.tight{font-size:2
 code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padding:2px 8px;border-radius:6px}.dark code{background:#fff1}
 .flow{display:flex;align-items:center;gap:18px;font-size:27px}.box{border:2px solid #d6d1c7;border-radius:14px;padding:18px 22px;background:#fff;text-align:center}
 .arrow{font-size:40px;color:#9aa0ab}
+.e2e li{font-size:25px!important;line-height:1.38!important;margin:0 0 8px!important}
 </style></head><body>
 
 <section class="s dark"><div class="k">Open Agent Hackathon 2026 · Track 1 — Solving Fragmented Intelligence</div>
@@ -72,8 +73,21 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s dark"><div class="k">5 · How Zetaris and Meterless are used</div><h2>Load-bearing, not bolted on.</h2>
-<div class="grid g2"><div class="card"><h3>Zetaris</h3><p>• Cartographer maps sources with Zetaris's catalog: <code>SHOW DATASOURCES</code>, <code>DESCRIBE DATASOURCE TABLE</code>, <code>SHOW LIGHTNING DATABASES</code> → profiles and join tests<br>• 2 live Lightning REST tables → schemastore views<br>• 2 JDBC datasources (ERP, supplier portal)<br>• Scout: <b>REST × JDBC</b> join — live FDA notice digits ⋈ ERP UPCs<br>• Investigator: ship notices ⋈ suppliers ⋈ ERP item master<br>• Auditor: re-queries the live notice and re-aggregates every number itself<br>• Setup is code: <code>npm run setup:zetaris</code></p></div>
+<div class="grid g2"><div class="card"><h3>Zetaris</h3><p>• Cartographer maps sources with Zetaris's catalog: <code>SHOW DATASOURCES</code>, <code>DESCRIBE DATASOURCE TABLE</code>, <code>SHOW LIGHTNING DATABASES</code> → profiles and join tests<br>• 2 live Lightning REST tables → schemastore views<br>• 2 JDBC datasources (ERP, supplier portal)<br>• Scout: <b>REST × JDBC</b> join — live FDA notice digits ⋈ ERP UPCs<br>• Investigator: ship notices ⋈ suppliers ⋈ ERP item master<br>• Auditor: re-queries the live notice and re-aggregates every number itself<br>• <b>Writes back</b>: a proven supplier rule becomes the view <code>reconciled.ship_notice_item_keys</code>, checked with <code>INFER SQLTABLE SOURCES</code> and <code>RUN DQ</code> (0 invalid)<br>• Setup is code: <code>npm run setup:zetaris</code></p></div>
 <div class="card"><h3>Meterless</h3><p>• <b>H-MEM</b>: every adjudication stored with trust; human decisions (0.95) are followed on the next run; audited agent decisions are reused without a model call; trust ledger logs reads/writes<br>• <b>World Model</b>: recalls, cases, findings as facts; every write carries provenance (agent, SQL id, model call)<br>• <b>ContextBuilder</b> is the Briefer's only input — it cannot cite what the team didn't establish<br>• <b>Markovian</b>: the weekly digest reads every case of a run in bounded chunks with a compressed carryover (≤256 tokens)<br>• <b>Nightshift</b> is the primary AI provider: every model call, with its receipt and routed model in the trace</p></div></div>
+<div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
+
+<section class="s"><div class="k">5b · One live recall, end to end</div><h2>A live FDA notice to a pull list, through Zetaris.</h2>
+<div class="grid g2" style="gap:40px"><div>
+<p style="font-size:24px;margin:0 0 10px"><b>H-0014-2027</b>, GIAS lemon Alfredo fettuccine, read from the live feed on 26 Oct:</p><ol class="e2e" style="margin:0;padding-left:28px">
+<li><b>Scout</b> reads the live FDA feed through Zetaris (REST) and sweeps it against the ERP (JDBC): our SKU's UPC is printed in the notice.</li>
+<li><b>Investigator</b>: Nemotron reads the lot codes from the notice; SQL: 18 units on hand in 1 store, 30 sold since 24 Sep.</li>
+<li><b>Auditor</b> blocks the shortcut: the supplier's ship notices reach the lot by SKU, <b>0 by barcode</b> → sends the rows to the Cartographer.</li>
+<li><b>Cartographer</b>: SUP028 drops the check digit — proven on <b>391 of 391</b> ship notices, written back to Zetaris, read back, lineage + DQ rule 0 invalid.</li>
+<li><b>Auditor</b> re-derives every number with its own SQL → approved. <b>Briefer</b> cites only World Model facts.</li>
+<li><b>Packet</b>: pull 18 units in 1 store, supplier request citing its ship notice, notice for at most 9 customers. A person approves; nothing is sent.</li></ol>
+<p class="mute" style="font-size:22px;margin-top:18px">Trace: examples/output/example_4/trace.jsonl, seq 155–202.</p></div>
+<div><img class="shot" src="zetaris-preview.png" style="height:600px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">The corrected join in Zetaris's own Data Explorer: <code>reconciled.ship_notice_item_keys</code>, where SUP028's 11-digit barcodes now meet our 12-digit UPCs. Any Zetaris user can query it.</p></div></div>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s"><div class="k">6 · What's unique</div><h2>Map the fragments first. Then trust no one — including the model.</h2>
@@ -87,7 +101,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 
 <section class="s dark"><div class="k">7 · Product</div>
 <div class="grid g2" style="gap:36px;margin-top:10px"><div><img class="shot" src="report.png" style="height:760px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Each case opens with what the agents did (here: a supplier rule proven by SQL on 391/391 and written back to Zetaris), then the cited brief and the trace.</p></div>
-<div><img class="shot" src="live.png" style="height:380px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Live viewer: the agents' events as they happen, from the trace file.</p><img class="shot" src="review.png" style="margin-top:18px;height:330px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Review screen: the open case, the Auditor's objection, and a decision stored in Meterless H-MEM.</p></div></div></section>
+<div><img class="shot" src="review.png" style="height:720px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">Review screen on a live run's queue: the Auditor's objection to a dismissal, and the decision a person records in Meterless H-MEM. Same screen on the site, no install.</p></div></div></section>
 
 <section class="s"><div class="k">7b · The work it hands on</div><h2>Every recall with our stock ends in a packet a person approves.</h2>
 <div class="grid g2"><div><div class="card"><h3>pull-list.csv</h3><p>One row per store and lot: store, city, item, UPC, lot, units. <b>Withheld unless it adds up to the on-hand number the Auditor re-derived with its own SQL.</b></p></div>
