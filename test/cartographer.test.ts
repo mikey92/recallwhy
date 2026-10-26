@@ -231,3 +231,42 @@ test("writing the corrected map back is idempotent: a second publish replaces th
     await duck.close();
   }
 });
+
+// Zetaris refusing a write must never stop a run: the map is still corrected for this run, and the trace says what failed.
+async function reconcileWith(failOn: RegExp) {
+  const dir = mkdtempSync(join(tmpdir(), "rw-fail-"));
+  const trace = new Trace({ dir, quiet: true, runId: "fail" });
+  const duck = new DuckSampleRunner({ trace });
+  await duck.ready;
+  let viewSelect = "";
+  const sql = { engine: "zetaris", close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) => {
+    if (failOn.test(q)) return Promise.reject(new Error("Zetaris query failed 400: refused for the test"));
+    if (/^\s*(CREATE SCHEMASTORE|DROP VIEW)/i.test(q)) { const m = q.match(/VIEW ship_notice_item_keys[\s\S]*?\bAS\s+(SELECT[\s\S]+)$/i); if (m) viewSelect = m[1]; return Promise.resolve({ rows: [], sqlId: "q-ddl", ms: 1 }); }
+    if (/^\s*(INFER|ACTIVATE)/i.test(q)) return Promise.resolve({ rows: [], sqlId: "q-x", ms: 1 });
+    if (/^\s*RUN DQ/i.test(q)) return Promise.resolve({ rows: [{ type: "Foreign Key Constraint", total_record: "1", valid_record: "1", invalid_record: "0" }], sqlId: "q-dq", ms: 1 });
+    if (q.includes(RECONCILED)) return duck.run(q.replace(RECONCILED, `(${viewSelect}) v`), meta);
+    if (/reconciled\.supplier_rules/.test(q)) return Promise.reject(new Error("no such view"));
+    return duck.run(q, meta);
+  } };
+  const ctx = { sql, trace, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), gen: async () => "", model: "none" } as unknown as AgentContext;
+  ctx.map = await chart({ ...ctx, sql: duck } as unknown as AgentContext);
+  const rows = (await duck.run("SELECT sku, lot_code FROM supplier_portal.ship_notices WHERE supplier_id = 'SUP007' AND upc <> '' LIMIT 5", { agent: "test", purpose: "pick rows" })).rows;
+  const learned = await reconcile(ctx, "case-test", rows.map((r) => String(r.sku)), rows.map((r) => String(r.lot_code)));
+  const msgs = readFileSync(trace.file, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "msg").map((e) => e.text as string);
+  await duck.close();
+  return { learned, msgs, map: ctx.map };
+}
+
+test("if Zetaris refuses the map write-back, the rule still corrects this run's map and the trace says the write failed", async () => {
+  const { learned, msgs, map } = await reconcileWith(/^\s*CREATE SCHEMASTORE VIEW ship_notice_item_keys/i);
+  assert.deepEqual(learned.map((r) => r.supplier), ["SUP007"]);
+  assert.ok(map!.joins.some((j) => j.rules?.some((r) => r.supplier === "SUP007")));
+  assert.ok(msgs.some((t) => /could not write the corrected map back to Zetaris \(Zetaris query failed 400: refused for the test/.test(t)));
+});
+
+test("if the USL re-bind fails, the write-back still counts and the trace says the key was not re-checked", async () => {
+  const { learned, msgs } = await reconcileWith(/^\s*ACTIVATE USL TABLE lightning\.metastore\.recallwhy\.recall_exposure\.ship_notice/i);
+  assert.equal(learned.length, 1);
+  assert.ok(msgs.some((t) => /written back to Zetaris as reconciled\.ship_notice_item_keys and read back: SUP007/.test(t)));
+  assert.ok(msgs.some((t) => /could not re-check the barcode key in the Zetaris USL \(Zetaris query failed 400/.test(t)));
+});
