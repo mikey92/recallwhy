@@ -13,10 +13,10 @@
 - **Live, end to end, in minutes:** the last two and a half weeks of live notices (39 since 8 Oct) became five action packets — 1,093 units in 14 stores, 6 of them in states the notice never listed — in 4 min 16 s ([report](https://mikey92.github.io/recallwhy/examples/example_4/report.html)). Each run starts where the last stopped: the supplier rules it proved and every verdict are kept in Zetaris, a remembered rule is re-proven before it is used, and a verdict that changes (e.g. after a reviewer's decision) is flagged.
 - **134 of 146 recalled items caught, 1 missed, 1 false alarm**, and 91% of 322 recall/SKU pairs settled without a person (Nemotron 3 Ultra; rules alone catch 89). On real products, 97 of 97 recalls are found by barcode and 0 of 152 look-alikes are matched.
 - **The agents repair the join, not just read it.** When a supplier's barcodes don't reach our items, the Cartographer finds the supplier's rule (a dropped check digit, a padded GTIN; for an unknown format Nemotron proposes one), SQL proves it on every ship notice of that supplier (391 of 391), and the corrected join is written back into Zetaris as a view any Zetaris user can query, confirmed by Zetaris lineage and a data-quality rule with 0 invalid rows. [See it in Zetaris's own catalog](docs/img/zetaris-preview.png).
-- **Nothing unproven gets through.** The Auditor re-derives every number with its own SQL and can block; a dismissal whose own quote names our item goes back to the judge or to a person; a pull list is withheld unless it equals the Auditor's on-hand number.
+- **Nothing unchecked gets through.** The Auditor re-derives every number with its own SQL and can block; a dismissal whose own quote names our item goes back to the judge or to a person; a pull list is withheld unless it equals the Auditor's on-hand number.
 - **It ends in work a person approves:** a pull list per store and lot, a supplier request citing the supplier's own ship notices, a customer notice, and a map of where to pull. Nothing is sent.
 - **Data:** the food items are real products (USDA FoodData Central, Open Food Facts) and the 24 stores stand at real SNAP supermarket locations (USDA FNS); stock, sales and ship notices are synthetic, because no public data holds them.
-- **Check it yourself:** `npm ci && npm run verify` — type check, every test, every number in these documents recomputed from the committed results, the Meterless engines checked against upstream and its conformance suites, and the model-free evaluations re-run.
+- **Check it yourself:** `npm ci && npm run verify` — type check, every test, the headline numbers in these documents recomputed from the committed results, the Meterless engines checked against upstream and its conformance suites, and the model-free evaluations re-run.
 
 ![Where to pull, from the live run example_1: 873 units in 16 stores at their real SNAP locations; the selected recall notice's distribution states are shaded, and the amber stores in WA, OR and CA hold recalled stock in states the notice never listed](docs/img/report-map.png)
 
@@ -127,7 +127,7 @@ cp .env.example .env          # fill in Zetaris and Postgres settings
 docker compose up -d && npm run load     # synthetic ERP + supplier portal
 npm run setup:zetaris                    # register feeds + datasources in Zetaris
 # Nightshift running, NVIDIA key added under Setup ▸ Providers (LLM_PROVIDER=meterless is the default)
-npm run agents -- --since 2026-09-15 --limit 5   # about 3 minutes; → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
+npm run agents -- --since 2026-09-15 --limit 5   # about 5 minutes, mostly waiting on the paced model; → out/<run>/report.html + report.md, briefs/, logs/trace-<run>.jsonl
 npm run view                             # http://127.0.0.1:8899 — watch the five agents live, open reports;
                                          # /review — decide escalated cases (stored in H-MEM, followed next run)
 ```
@@ -168,27 +168,31 @@ The same agents and the same SQL run against an in-process DuckDB stand-in, over
 
 ```bash
 npm run queue                                           # escalated cases
-npm run decide -- H-1259-2026 NW-100058 same --note "same rice balls as the notice"
-npm run agents -- --since 2026-07-01 --only H-1259-2026 # Investigator follows the stored decision
+npm run decide -- H-1085-2026 NW-100153 not-this --note "the notice recalls Pineapple Lassi; ours is the orange one"
+npm run agents -- --since 2026-07-01 --only H-1085-2026 # not-ours: the Investigator follows the stored decision
 ```
 
 The same through the API, in the container with no credentials:
 
 ```bash
-curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1259-2026"]}'   # needs-human
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1085-2026"]}'   # needs-human (no model: a reviewer decides text matches)
 curl localhost:8000/queue                                                                                                 # why it needs a reviewer
-curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1259-2026","sku":"NW-100058","verdict":"same"}'
-curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1259-2026"]}'   # act-now, following the decision
+curl -X POST localhost:8000/decide -H 'Content-Type: application/json' -d '{"recall":"H-1085-2026","sku":"NW-100153","verdict":"not-this"}'
+curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since":"2026-07-01","only":["H-1085-2026"]}'   # not-ours, following the decision
 ```
 
 ## Failure handling
 
 | Failure | What happens | Where |
 |---|---|---|
-| Zetaris configured but not answering | The run falls back to the sample stand-in; the trace has the `sql.error` and a note saying why (`ZETARIS_FALLBACK=false` to fail instead) | `src/sql/index.ts` |
+| Zetaris configured but not answering at the start | The run falls back to the sample stand-in; the trace has the `sql.error` and a note saying why (`ZETARIS_FALLBACK=false` to fail instead) | `src/sql/index.ts` |
+| A query fails in the middle of a case | That case goes to a person with the error in its brief; the other cases, the report, the digest and the verdict write-back still happen | `src/orchestrator.ts` |
 | A live feed is down (openFDA answers 500 at times; it did during this build) | The Scout reports it and goes on with the other feed; the Cartographer keeps the map without the feed profile | `src/agents/scout.ts`, `cartographer.ts` |
 | No Zetaris credentials, or `SAMPLE_MODE=true` | Same agents and SQL on the DuckDB stand-in, labelled `duckdb-sample` | `src/sql/duck.ts` |
 | Nightshift 429, 502–504, first-token timeout | Retried after 3, 8, 20, 45 and 90 s (the hosted NVIDIA limits are per minute), each retry logged as `llm.retry` | `src/llm.ts` |
+| Nightshift unreachable (connection refused, wrong URL) | Not retried; after 3 in a row the rest of the run goes on without a model (a trace note says so) | `src/llm.ts` |
+| A model reads a date as a lot code | Dropped, with an Auditor critique: a date would narrow the recall to lots we never hold | `src/agents/investigator.ts` |
+| A reviewer decides while a run is in progress | Refused (`409`): the run holds H-MEM and would overwrite it; decide when it finishes | `src/app.ts` |
 | Model call still failing, or no token | The judge answers UNSURE and the pair goes to the human queue; lot reading falls back to the regex; the Briefer uses its template | `src/agents/investigator.ts`, `briefer.ts` |
 | Model claim not supported by the notice or the data | The Auditor blocks it and sends a critique; after 2 revisions the case is escalated to a human | `src/agents/auditor.ts` |
 | Bad request to `POST /run` | `400` with the reason; `409` if a run is already going | `src/api.ts` |
@@ -251,7 +255,7 @@ Four suppliers send a 10-digit core (no leading digit, no check digit), a format
 - The Cartographer knows two barcode transforms (leading-zero padding, a dropped check digit); for anything else the model proposes one from a fixed set of string ops and SQL proves it on all of the supplier's rows. A format those ops cannot express (a remapped prefix, a per-row lookup) is still reported as unexplained, and its rows stay with the SKU join.
 - CPSC notices carry no distribution list, so the feed view treats them as nationwide and the "shipped outside the recall's distribution" caveat only fires for FDA recalls.
 - The loyalty-customer count sums weekly distinct counts, so it is an upper bound.
-- CPSC notices rarely print UPCs (4 of 184 in the `sample/` snapshot of 22 Oct, 4 of 189 in the live feed on 24 Oct), so CPSC matching leans on model numbers and the judge.
+- CPSC notices rarely print UPCs (4 of 184 in the `sample/` snapshot of 22 Oct, 4 of 189 in the live feed on 26 Oct), so CPSC matching leans on model numbers and the judge.
 - The feed windows are fixed in `sql/01_feeds.sql` (2026-07-01 onward). Recalls before that date aren't read.
 - Nightshift and Zetaris run locally on one Mac for this build. Hosted NVIDIA endpoints are rate-limited, so long evaluations can see 429s; those calls are retried and logged.
 

@@ -1,9 +1,9 @@
 # Text matching on real product titles
 
-The main evaluation (`eval/EVAL.md`) runs on a synthetic item master whose covered titles were
-generated from the notice text, so a judge could match them partly by construction. This check
-asks the same question with titles nobody derived from a notice, and reports separately how far
-the product's barcode path gets on the same items.
+The main evaluation (`eval/EVAL.md`) runs on the retailer's item master with barcodes visible: its food
+lines are real products, its non-food titles are built from CPSC notice text. This check asks the text
+question alone, on real product titles nobody derived from a notice, with every barcode hidden, and
+reports separately how far the product's barcode path gets on the same items.
 
 ## Method
 
@@ -32,7 +32,7 @@ the product's barcode path gets on the same items.
    prompt, `src/agents/investigator.ts`), `audit` (Auditor's text checks, `src/agents/auditor.ts`),
    `revise` up to two rounds, then a reviewer. SQL is a stub that returns no rows (no inventory
    here). Model: `nvidia/nemotron-3-ultra-550b-a55b` through Meterless Nightshift, same generator
-   and pacing as `eval/run.ts` (about 4 calls a minute, so a run takes about 75 min).
+   and pacing as `eval/run.ts` (about 4 calls a minute, so a run takes about 79 min).
 5. **Barcode path, reported separately** (`barcodePath` in the result): the same pairs with the
    barcode visible. A SKU whose UPC the Scout finds in the notice is a `upc` candidate, which the
    Investigator settles by rule (no model call); the Auditor then re-checks the digits against the

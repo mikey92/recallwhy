@@ -14,8 +14,8 @@ Everything else counts as *not covered*. 146 pairs are covered (97 food, 49 non-
 
 | Judge model | Covered caught (of 146) | Wrongly dismissed | False alarms (of 176) | Sent to human | Model calls failed after retries | Time |
 |---|---|---|---|---|---|---|
-| none (rules only, `--provider none`) | 89 | 0 | 0 | 233 | — | 14 s |
-| none for the judge, Ultra for the Cartographer only (`--provider none --map-model …`) | 99 | 0 | 0 | 223 | — | 1 min |
+| none (rules only, `--provider none`) | 89 | 0 | 0 | 233 | — | 38 s |
+| none for the judge, Ultra for the Cartographer only (`--provider none --map-model …`) | 99 | 0 | 0 | 223 | — | 28 s |
 | NVIDIA Nemotron 3.5 Lightning 30B-A3B, through Meterless Nightshift | 98 | 10 | 0 | 57 | 0 of 452 | 6,747 s |
 | **NVIDIA Nemotron 3 Ultra 550B-A55B, through Meterless Nightshift** | **134** | **1** | **1** | 30 | 0 of 392 | 6,153 s |
 
