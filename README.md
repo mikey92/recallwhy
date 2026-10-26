@@ -1,6 +1,6 @@
 # RecallWhy
 
-**[▶ Demo video (3:28)](https://iframe.mediadelivery.net/embed/778121/63dc2807-917d-4d11-9ebe-04e3a6fcf0aa)** · **[Try the review screen, no install](https://mikey92.github.io/recallwhy/review.html)** · **[A live report](https://mikey92.github.io/recallwhy/examples/example_4/report.html)** · **[Watch the agents (replay)](https://mikey92.github.io/recallwhy/replay.html?run=example_2)** · [Slides (PDF)](deck/RecallWhy-deck.pdf)
+**[▶ Demo video (3:38)](https://iframe.mediadelivery.net/embed/778121/527853c5-0530-4cf3-97c8-db4fb73aadcd)** · **[Try the review screen, no install](https://mikey92.github.io/recallwhy/review.html)** · **[A live report](https://mikey92.github.io/recallwhy/examples/example_4/report.html)** · **[Watch the agents (replay)](https://mikey92.github.io/recallwhy/replay.html?run=example_2)** · [Slides (PDF)](deck/RecallWhy-deck.pdf)
 
 [![CI](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml/badge.svg)](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mikey92/recallwhy?quickstart=1)
 
