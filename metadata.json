@@ -85,10 +85,10 @@
     },
     "nvidia": {
       "used": true,
-      "how": "NVIDIA Nemotron 3 Ultra 550B-A55B, called through Meterless Nightshift (the NVIDIA key is in Nightshift's provider store), is the default model behind the single injected generator: it judges text matches between a recall notice and an item-master line (and must quote the notice), reads lot codes out of messy code_info text, and writes the why-paragraph that the Auditor checks. Each call's routed model is recorded in the trace and shown in the viewer and report.",
+      "how": "NVIDIA Nemotron 3 Ultra 550B-A55B, called through Meterless Nightshift (the NVIDIA key is in Nightshift's provider store), is the default model behind the single injected generator: it judges text matches between a recall notice and an item-master line (and must quote the notice), writes the why-paragraph that the Auditor checks (the Auditor's check is an Ultra call too), the digest and barcode-transform proposals; NVIDIA Nemotron 3.5 Lightning 30B-A3B reads lot codes out of messy code_info text (each kept only if it appears in the notice). Each call's routed model is recorded in the trace and shown in the viewer and report.",
       "models": [
         "nvidia/nemotron-3-ultra-550b-a55b (via Nightshift, default)",
-        "nvidia/nemotron-3.5-lightning-30b-a3b (via Nightshift, compared on the same 322 pairs)",
+        "nvidia/nemotron-3.5-lightning-30b-a3b (via Nightshift: the lot-code reader in live runs; also compared as the judge on the same 322 pairs)",
         "nemotron-3-nano:latest and :4b (via Ollama, earlier evaluation)"
       ],
       "evaluation": "eval/EVAL.md: on an item master whose food lines are real products, Nemotron 3 Ultra through Nightshift catches 134/146 covered pairs over 322 (rules alone: 89; Cartographer with model-proposed transforms and no judge: 99), 1 wrongly dismissed, 1 false alarm, 30 to a human, 0 of 392 model calls failed; on text matches the Auditor cuts the judge's first-answer dismissals 4 → 1 and false alarms 2 → 1"
