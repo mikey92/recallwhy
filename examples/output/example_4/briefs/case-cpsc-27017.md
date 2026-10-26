@@ -5,7 +5,7 @@
 > Decathlon America Recalls Van Rysel GRVL AF Bicycles Due to Risk of Serious Injury or Death from Crash Hazard
 
 ## Why
-The recall notice from Decathlon America LLC identifies Van Rysel GRVL AF Bicycles because the front lock nut can loosen during use, causing the front wheel to dislodge and posing a crash hazard [E1][E2][E3]. Our inventory matches the recalled product and holds all lots named in the notice [E6][E7][E8]. We currently have 639 units on hand across 8 stores and have sold 83 units to 47 loyalty customers since the recall date of 2026-10-08 [E9][E10][E11][E12].
+The recall notice from Decathlon America LLC identifies Van Rysel GRVL AF Bicycles because the front lock nut can loosen during use, causing the front wheel to dislodge and posing a crash hazard [E1][E2][E3]. Our inventory matches the recalled product and, because the notice names no lot codes, every lot we hold is treated as affected [E6][E7][E8]. We currently have 639 units on hand across 8 stores and have sold 83 units to 47 loyalty customers since the recall date of 2026-10-08 [E9][E10][E11][E12].
 
 ## What we matched
 - `NW-100855` VAN RYSEL GRVL AF BICYCLES — **same** (judge, text): notice names "Van Rysel GRVL AF Bicycles"
@@ -27,7 +27,7 @@ The recall notice from Decathlon America LLC identifies Van Rysel GRVL AF Bicycl
 - [E4] notice_recall_date: "2026-10-08" — *zetaris q-5dbe7a18dc by Scout*
 - [E5] notice_distribution_states: "nationwide" — *zetaris q-5dbe7a18dc by Scout*
 - [E6] match_decision: "NW-100855 VAN RYSEL GRVL AF BICYCLES: same — notice names \"Van Rysel GRVL AF Bicycles\"" — *model by Investigator*
-- [E7] our_lots_named_in_notice: ["L24-1266","L24-1422","L24-2682","L24-4540","L24-6344","L24-6778","L24-7184","L24-8579","L24-9790","L25-1286","L25-2776","L25-3954","L25-4885","L25-5055","L25- — *zetaris q-23b3efa928 by Investigator*
+- [E7] our_affected_lots: "the notice names no lot codes, so every lot we hold is treated as affected: L24-1266, L24-1422, L24-2682, L24-4540, L24-6344, L24-6778, L24-7184, L24-8579, L24 — *zetaris q-23b3efa928 by Investigator*
 - [E8] lot_rule: "all-lots" — *agent by Investigator*
 - [E9] our_stores_holding_affected_lots: 8 — *zetaris q-23b3efa928 by Investigator*
 - [E10] our_units_on_hand_in_affected_lots: 639 — *zetaris q-23b3efa928 by Investigator*
@@ -37,9 +37,9 @@ The recall notice from Decathlon America LLC identifies Van Rysel GRVL AF Bicycl
 - [E14] our_stores_with_units_on_hand: ["S002 CA: 125","S006 WA: 103","S017 NJ: 97","S011 MN: 90","S014 WI: 82","S001 CA: 74","S016 NY: 46","S010 IL: 22"] — *zetaris q-23b3efa928 by Investigator*
 - [E15] verdict: "act-now" — *agent by Auditor*
 
-_why-paragraph written by meterless:nvidia/nemotron-3-ultra-550b-a55b and checked by the Auditor; run 2026-10-26T02-13-33-d850cd_
+_why-paragraph written by meterless:nvidia/nemotron-3-ultra-550b-a55b and checked by the Auditor; run 2026-10-26T03-08-13-32ec70_
 ## Action packet (drafts, not sent)
 - [pull-list.csv](../actions/case-cpsc-27017/pull-list.csv)
 - [supplier-request.md](../actions/case-cpsc-27017/supplier-request.md)
 - [customer-notice.md](../actions/case-cpsc-27017/customer-notice.md)
-- Pull 639 unit(s) in 8 store(s); the total equals the Auditor's re-derived on-hand. Approve with `npm run approve -- 2026-10-26T02-13-33-d850cd case-cpsc-27017`.
+- Pull 639 unit(s) in 8 store(s); the total equals the Auditor's re-derived on-hand. Approve with `npm run approve -- 2026-10-26T03-08-13-32ec70 case-cpsc-27017`.

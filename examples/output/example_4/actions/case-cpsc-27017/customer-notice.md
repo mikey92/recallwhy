@@ -11,6 +11,6 @@ You bought a product that Decathlon America LLC, of San Francisco, California ha
 
 Reason given in the recall notice: "The recalled bicycles' front lock nut can loosen during use, causing the front wheel to dislodge or loosen over time, posing a crash hazard."
 
-Please do not use it. Return it to any Northwind store for a full refund, or dispose of it. Your receipt is not needed.
+Please stop using it. The remedy the firm offers is in the recall notice (https://www.cpsc.gov/Recalls/2027/Decathlon-America-Recalls-Van-Rysel-GRVL-AF-Bicycles-Due-to-Risk-of-Serious-Injury-or-Death-from-Crash-Hazard); you can also bring it to any Northwind store and we will help. Your receipt is not needed.
 
-_Prepared by RecallWhy run 2026-10-26T02-13-33-d850cd. Review before sending._
+_Prepared by RecallWhy run 2026-10-26T03-08-13-32ec70. Review before sending._
