@@ -179,7 +179,7 @@ test("on Zetaris, a proven rule is written back as a schemastore view and read b
     // Zetaris stand-in: DDL is recorded, and reads of the published view run its SELECT on DuckDB.
     const ddl: string[] = []; let viewSelect = "";
     const sql = { engine: "zetaris", close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) => {
-      if (/^\s*(CREATE SCHEMASTORE|DROP VIEW)/i.test(q)) { ddl.push(q); const m = q.match(/\bAS\s+(SELECT[\s\S]+)$/i); if (m) viewSelect = m[1]; return Promise.resolve({ rows: [], sqlId: "q-ddl", ms: 1 }); }
+      if (/^\s*(CREATE SCHEMASTORE|DROP VIEW)/i.test(q)) { ddl.push(q); const m = q.match(/VIEW ship_notice_item_keys[\s\S]*?\bAS\s+(SELECT[\s\S]+)$/i); if (m) viewSelect = m[1]; return Promise.resolve({ rows: [], sqlId: "q-ddl", ms: 1 }); }
       if (/^\s*INFER SQLTABLE SOURCES/i.test(q)) return Promise.resolve({ rows: [{ datasource: "SUPPLIER_PORTAL.ship_notices", alias: "a" }, { datasource: "ERP.skus", alias: "s" }], sqlId: "q-infer", ms: 1 });
       if (/^\s*ACTIVATE USL TABLE/i.test(q)) return Promise.resolve({ rows: [], sqlId: "q-act", ms: 1 });
       if (/^\s*RUN DQ/i.test(q)) return duck.run(`SELECT COUNT(*) AS total_record, SUM(CASE WHEN item_sku = notice_sku THEN 1 ELSE 0 END) AS valid_record, SUM(CASE WHEN item_sku <> notice_sku THEN 1 ELSE 0 END) AS invalid_record FROM (${viewSelect}) v`, meta);
@@ -210,7 +210,8 @@ test("writing the corrected map back is idempotent: a second publish replaces th
     const views = new Map<string, string>(); let creates = 0;
     const sql = { engine: "zetaris", close: () => duck.close(), run: (q: string, meta: { agent: string; purpose: string }) => {
       if (/^\s*SHOW TABLES IN reconciled/i.test(q)) return Promise.resolve({ rows: [...views.keys()].map((v) => ({ name: v })), sqlId: "q-show", ms: 1 });
-      if (/^\s*DROP VIEW IF EXISTS/i.test(q)) { views.delete(RECONCILED); return Promise.resolve({ rows: [], sqlId: "q-drop", ms: 1 }); }
+      if (/^\s*DROP VIEW IF EXISTS/i.test(q)) { if (q.includes(RECONCILED)) views.delete(RECONCILED); return Promise.resolve({ rows: [], sqlId: "q-drop", ms: 1 }); }
+      if (/^\s*CREATE SCHEMASTORE VIEW supplier_rules/i.test(q)) return Promise.resolve({ rows: [], sqlId: "q-rules", ms: 1 });
       const m = q.match(/^\s*CREATE SCHEMASTORE VIEW[\s\S]*?\bAS\s+(SELECT[\s\S]+)$/i);
       if (m) { assert.ok(!views.has(RECONCILED), "the old view is dropped before it is recreated"); views.set(RECONCILED, m[1]); creates++; return Promise.resolve({ rows: [], sqlId: "q-create", ms: 1 }); }
       if (/^\s*CREATE SCHEMASTORE CONTAINER/i.test(q)) return Promise.resolve({ rows: [], sqlId: "q-c", ms: 1 });
