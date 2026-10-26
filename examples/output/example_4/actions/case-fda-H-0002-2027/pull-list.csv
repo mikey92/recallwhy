@@ -1,0 +1,13 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S003,Northwind #003 Saint Helens,Saint Helens,OR,NW-100173,075465559127,Living Alfalfa Sprouts,L24-2882,51
+S003,Northwind #003 Saint Helens,Saint Helens,OR,NW-100173,075465559127,Living Alfalfa Sprouts,L25-4414,35
+S003,Northwind #003 Saint Helens,Saint Helens,OR,NW-100173,075465559127,Living Alfalfa Sprouts,L25-4847,19
+S005,Northwind #005 Seattle,Seattle,WA,NW-100173,075465559127,Living Alfalfa Sprouts,L24-4398,15
+S005,Northwind #005 Seattle,Seattle,WA,NW-100173,075465559127,Living Alfalfa Sprouts,L25-2783,37
+S015,Northwind #015 New York,New York,NY,NW-100173,075465559127,Living Alfalfa Sprouts,L24-6364,40
+S015,Northwind #015 New York,New York,NY,NW-100173,075465559127,Living Alfalfa Sprouts,L24-9767,60
+S015,Northwind #015 New York,New York,NY,NW-100173,075465559127,Living Alfalfa Sprouts,L25-2356,38
+S018,Northwind #018 Wildwood,Wildwood,NJ,NW-100173,075465559127,Living Alfalfa Sprouts,L24-4837,29
+S018,Northwind #018 Wildwood,Wildwood,NJ,NW-100173,075465559127,Living Alfalfa Sprouts,L24-5356,7
+S020,Northwind #020 Clearfield,Clearfield,PA,NW-100173,075465559127,Living Alfalfa Sprouts,L24-3893,20
+S024,Northwind #024 Atlanta,Atlanta,GA,NW-100173,075465559127,Living Alfalfa Sprouts,L25-9342,4

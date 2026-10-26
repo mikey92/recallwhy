@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-0002-2027",
+  "recall": "fda:H-0002-2027",
+  "firm": "LEASA  Industries Co., Inc.",
+  "product": "LEASA Living Alfalfa Sprouts; packaged in plastic clamshell containers; KEEP REFRIGERATED; NET WT. 4 OZ. (113g); Grown…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-26T00-17-52-12c4b7/actions/case-fda-H-0002-2027",
+  "status": "draft",
+  "stores": 6,
+  "pullUnits": 355,
+  "auditedUnits": 355,
+  "shipNotices": 12,
+  "customers": 95,
+  "sql": {
+    "pullList": "q-4eee1c198b",
+    "shipNotices": "q-aee44c6b70"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "caseId": "case-fda-H-0011-2027",
+  "recall": "fda:H-0011-2027",
+  "firm": "The Better Bakehouse Snack Company",
+  "product": "Donutful Chocolate Dipped Vanilla Cake Donuts - 7.05oz/10ct.Case Configuration   5 count carton, 6 cartons per case…",
+  "verdict": "act-now",
+  "dir": "out/2026-10-26T00-17-52-12c4b7/actions/case-fda-H-0011-2027",
+  "status": "draft",
+  "stores": 2,
+  "pullUnits": 69,
+  "auditedUnits": 69,
+  "shipNotices": 1,
+  "customers": 6,
+  "sql": {
+    "pullList": "q-4c52d970f4",
+    "shipNotices": "q-790b9785d4"
+  },
+  "files": [
+    "pull-list.csv",
+    "supplier-request.md",
+    "customer-notice.md"
+  ]
+}

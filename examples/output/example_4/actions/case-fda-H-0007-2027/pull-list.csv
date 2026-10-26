@@ -1,0 +1,3 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S010,Northwind #010 Batavia,Batavia,IL,NW-100052,073214003280,GOLDEN GREEK PEPERONCINI 32 FL OZ,720106,8
+S015,Northwind #015 New York,New York,NY,NW-100052,073214003280,GOLDEN GREEK PEPERONCINI 32 FL OZ,720106,4

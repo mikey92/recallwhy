@@ -1,0 +1,3 @@
+store_id,store,city,state,sku,upc,item,lot_code,units_to_pull
+S014,Northwind #014 Iola,Iola,WI,NW-100141,850041392103,Chocolate Dipped Vanilla Cake,26078,9
+S018,Northwind #018 Wildwood,Wildwood,NJ,NW-100141,850041392103,Chocolate Dipped Vanilla Cake,26078,60
