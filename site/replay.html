@@ -60,6 +60,7 @@ function render(e) {
   else if (e.kind.startsWith("world") && !$("#writes").checked) return; // the facts each agent records: hidden unless asked for, so the lanes show messages, SQL and model calls
   else if (e.kind.startsWith("world")) { cls = "world"; body = e.kind === "world.context" ? "context: " + e.evidenceCount + " evidence items" : esc(e.predicate) + " = " + esc(JSON.stringify(e.value)).slice(0, 90); }
   else if (e.kind === "contract") { cls = "contract"; body = e.event === "contract.issued" ? "signed for <b>" + esc(e.intent) + "</b>: " + esc((e.capabilities || []).join(", ")) + " · expires in 5 min" : esc(e.event) + " · " + esc(e.capability) + (e.reason ? " — " + esc(e.detail) : " (" + esc(e.agent) + ")"); }
+  else if (e.kind === "route") { cls = "mem"; body = e.fallback ? "fallback → <b>" + esc(e.fallback) + "</b>: " + esc(e.reason) : "Scout Intent: <b>" + esc(e.intent) + "</b> (" + esc(e.risk) + " risk) → " + esc(e.model); }
   else if (e.kind === "guard") { cls = "crit"; body = "notice text held back from the model: " + esc(e.cls || "") + " " + esc(e.match || ""); }
   else if (e.kind === "escalate") { cls = "crit"; body = "escalated " + esc(e.caseId) + " to human review"; }
   else body = esc(e.text ?? e.summary ?? "");

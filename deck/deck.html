@@ -85,7 +85,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <li><b>Auditor</b> blocks the shortcut: the supplier's ship notices reach the lot by SKU, <b>0 by barcode</b> → sends the rows to the Cartographer.</li>
 <li><b>Cartographer</b>: SUP007 drops the check digit — proven on <b>458 of 458</b> ship notices, written back to Zetaris with lineage + DQ rule 0 invalid; the USL key now reaches <b>12,554 of 14,244</b>. Two rules from earlier runs were re-proven first.</li>
 <li><b>Auditor</b> re-derives every number with its own SQL → approved. <b>Packet</b>: pull 12 units in 2 stores, supplier request, notice for at most 12 customers. A person approves; nothing is sent.</li></ol>
-<p class="mute" style="font-size:22px;margin-top:18px">Trace: examples/output/example_4/trace.jsonl, seq 104–170. The whole run, 39 live notices to 5 packets: 4 min 9 s.</p></div>
+<p class="mute" style="font-size:22px;margin-top:18px">Trace: examples/output/example_4/trace.jsonl, seq 104–170. The whole run, 39 live notices to 5 packets: 4 min 18 s.</p></div>
 <div><img class="shot" src="zetaris-preview.png" style="height:600px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">The corrected join in Zetaris's own Data Explorer: <code>reconciled.ship_notice_item_keys</code>, where suppliers' 11-digit barcodes now meet our 12-digit UPCs. Any Zetaris user can query it.</p></div></div>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 

@@ -3,7 +3,7 @@
 Zetaris Lightning 2.4.3.1 (local Docker). Every agent reads data only through it; the agents also write
 back to it. Each row below names the object, the statement that creates or uses it, the independent check,
 and what that check returned on the live example runs of 26 Oct (`examples/README.md`; timings from each
-run's own trace, 0 failed statements in any run; `example_2` took 1 min 46 s end to end including the Nemotron calls).
+run's own trace, 0 failed statements in any run; `example_2` took 1 min 49 s end to end including the Nemotron calls).
 
 ## Sources
 
@@ -66,9 +66,9 @@ size; `SHOW DQ INVALID RECORD` is capped by the row limit and is used in `sql/04
 
 | State of the map | `RUN DQ matched_sku` (valid / total) | Unreached, by supplier |
 |---|---|---|
-| `example_1`, from empty state, after SUP028's rule (proven 391/391) | 11,903 / 14,244 (14.5 s) | 2,341: SUP007 458, SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281, SUP010 193 |
-| `example_2`, SUP028 remembered, after SUP010's rule (proposed by Nemotron, proven 193/193) | 12,096 / 14,244 (24.4 s) | 2,148: SUP007 458, SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281 |
-| `example_4`, two rules remembered, after SUP007's rule (proven 458/458) | 12,554 / 14,244 (26.9 s) | 1,690: SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281 |
+| `example_1`, from empty state, after SUP028's rule (proven 391/391) | 11,903 / 14,244 (14.6 s) | 2,341: SUP007 458, SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281, SUP010 193 |
+| `example_2`, SUP028 remembered, after SUP010's rule (proposed by Nemotron, proven 193/193) | 12,096 / 14,244 (26.3 s) | 2,148: SUP007 458, SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281 |
+| `example_4`, two rules remembered, after SUP007's rule (proven 458/458) | 12,554 / 14,244 (27.4 s) | 1,690: SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281 |
 
 Every other key holds: `item.supplier_id` 900/900, `inventory_lot.store_id` and `.sku` 14,982/14,982,
 `ship_notice.notice_sku` 14,244/14,244, `on_hand_not_negative` 14,982/14,982, `ships_units` 14,244/14,244

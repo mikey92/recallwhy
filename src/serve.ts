@@ -106,6 +106,7 @@ function render(e){const lane=["Cartographer","Scout","Investigator","Auditor","
  else if(e.kind==="critique"){cls="crit";stats.crit++;body=esc(e.code)+": "+esc(e.detail)}
  else if(e.kind.startsWith("memory")){cls="mem";body=e.kind==="memory.write"?esc(e.text):"query "+esc(e.query)+" → "+(e.hits||[]).length+" hit(s)"}
  else if(e.kind.startsWith("world")){cls="world";body=e.kind==="world.context"?"context: "+e.evidenceCount+" evidence items":esc(e.predicate)+" = "+esc(JSON.stringify(e.value)).slice(0,90)}
+ else if(e.kind==="route"){cls="mem";body=e.fallback?"fallback → <b>"+esc(e.fallback)+"</b>: "+esc(e.reason):"Scout Intent: <b>"+esc(e.intent)+"</b> ("+esc(e.risk)+" risk) → "+esc(e.model)}
  else if(e.kind==="escalate"){cls="crit";body="escalated "+esc(e.caseId)+" to human review"}
  else body=esc(e.text??e.summary??"");
  const d=document.createElement("div");d.className="ev "+cls;d.innerHTML="<span class='k'>"+k+"</span> "+body;const f=$("#f-"+lane);f.appendChild(d);f.scrollTop=f.scrollHeight;
