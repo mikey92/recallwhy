@@ -22,7 +22,7 @@ describe("whatTheAgentsDid", () => {
     assert.ok(texts.some((t) => t.startsWith("Map corrected mid-run: SUP028 no-check-digit") && t.includes("391/391 ship notices")), texts.join(" | "));
     assert.ok(texts.some((t) => t.startsWith("Written back to Zetaris as reconciled.ship_notice_item_keys") && t.includes("SUP028 391/391")), texts.join(" | "));
     assert.ok(texts.some((t) => /^Auditor approved after \d+ checks \(live notice re-read, exposure re-derived independently\)$/.test(t)), texts.join(" | "));
-    assert.ok(texts.some((t) => /^\d+ SQL queries on zetaris · \d+ model calls \(nvidia\/nemotron-3-ultra-550b-a55b\)$/.test(t)), texts.join(" | "));
+    assert.ok(texts.some((t) => /^\d+ SQL queries on zetaris · \d+ model calls \(nvidia\/nemotron-3\.5-lightning-30b-a3b, nvidia\/nemotron-3-ultra-550b-a55b\)$/.test(t)), texts.join(" | "));
     assert.ok(hs.length <= 4);
   });
 
