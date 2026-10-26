@@ -13,12 +13,14 @@ a.card:hover{border-color:var(--accent)}main>p a{color:var(--accent)}a.card b{di
 .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:18px 0}
 .num{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.num b{font-size:30px;display:block;line-height:1.1}.num span{color:var(--mute);font-size:13px}
 img{max-width:100%;border-radius:12px;border:1px solid var(--line)}iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000}
-h2{font-size:20px;margin:34px 0 10px}small{color:var(--mute)}
+h2{font-size:20px;margin:34px 0 10px}.hook{font-size:17px;margin:-8px 0 22px;border-left:3px solid var(--accent);padding-left:12px}.chapters{font-size:14px;color:var(--mute);margin:10px 0 0}.chapters b{color:var(--ink)}small{color:var(--mute)}
 </style></head><body><main>
 <div class="k">Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence</div>
 <h1>RecallWhy</h1>
-<p class="lead">Five agents tell a retailer's product-safety manager which newly recalled products are on its shelves — which lots, which stores, how many customers to notify — across two live federal feeds, the ERP and the supplier portal, reached only through Zetaris. Every claim carries the query behind it.</p>
+<p class="lead">Last December the FDA warned four of the largest U.S. grocers that recalled infant formula was still on shelves in over 175 locations. RecallWhy turns a new recall notice into a verified pull list, supplier request and customer notice in minutes — which lots, which stores, how many customers — across the live federal feeds, the ERP and the supplier portal, reached only through Zetaris. Every number carries the query behind it.</p>
+<p class="hook">The agents don't just read the fragments: when a join fails, they find the supplier's rule, prove it on all of that supplier's data and write the repaired join back into Zetaris, so the next run starts from it.</p>
 <iframe src="https://iframe.mediadelivery.net/embed/778121/527853c5-0530-4cf3-97c8-db4fb73aadcd" allow="fullscreen" title="RecallWhy demo video (3:38)"></iframe>
+<p class="chapters"><b>In the video (3:38):</b> 0:00 live: 39 recalls, 5 on our shelves · 0:20 the problem · 0:42 Zetaris: feeds, databases, governed model · 1:03 the Cartographer maps the sources · 1:18 Nemotron judges, the Auditor blocks a wrong dismissal · 1:40 a supplier's barcode rule proven and written back · 2:06 the work: map, pull list, drafts · 2:21 a reviewer decides, the next run follows · 2:42 Nemotron proposes a rule, SQL proves it · 3:01 results</p>
 <div class="nums">
 <div class="num"><b>134 / 146</b><span>recalled items caught over 322 recall/SKU pairs on real food products; 1 missed, 1 false alarm (Nemotron 3 Ultra via Meterless Nightshift)</span></div>
 <div class="num"><b>4 → 1</b><span>recalls the judge missed on text matches: 4 on its first answer, 1 after the Auditor sent its dismissals back</span></div>

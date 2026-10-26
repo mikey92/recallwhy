@@ -23,7 +23,7 @@ footer{padding:0 20px 10px;color:var(--mute);font-size:12px}
 <header><h1><a href="./" style="color:inherit;text-decoration:none">RecallWhy</a></h1>
 <select id="run" aria-label="Run"><option value="example_1">example_1 · 5 recalls, SUP028 rule proven</option><option value="example_2">example_2 · Nemotron proposes a barcode rule</option><option value="example_3">example_3 · escalated to a person</option><option value="example_3_after_human_decision">example_3 after a human decision</option><option value="example_4">example_4 · live, the last two and a half weeks</option><option value="example_1_sample_mode">example_1 · sample mode, no model</option></select>
 <select id="speed" aria-label="Speed"><option value="4">4×</option><option value="10" selected>10×</option><option value="40">40×</option></select>
-<button id="again">Replay</button><span class="stat" id="stat"></span><a id="rep" href="#">report →</a></header>
+<label class="stat"><input type="checkbox" id="writes"> show World Model writes</label> <button id="again">Replay</button><span class="stat" id="stat"></span><a id="rep" href="#">report →</a></header>
 <main>
 <section class="lane Cartographer"><h2>Cartographer<span class="k" id="n-Cartographer">0</span></h2><div class="feed" id="f-Cartographer"></div></section>
 <section class="lane Scout"><h2>Scout<span class="k" id="n-Scout">0</span></h2><div class="feed" id="f-Scout"></div></section>
@@ -48,6 +48,7 @@ function render(e) {
   else if (e.kind === "llm.retry") { cls = "crit"; body = esc(e.purpose) + " — attempt " + e.attempt + " failed, waiting " + Math.round(e.waitMs / 1000) + " s"; }
   else if (e.kind === "critique") { cls = "crit"; stats.crit++; body = esc(e.code) + ": " + esc(e.detail); }
   else if (e.kind.startsWith("memory")) { cls = "mem"; body = e.kind === "memory.write" ? esc(e.text) : "query " + esc(e.query) + " → " + (e.hits || []).length + " hit(s)"; }
+  else if (e.kind.startsWith("world") && !$("#writes").checked) return; // the facts each agent records: hidden unless asked for, so the lanes show messages, SQL and model calls
   else if (e.kind.startsWith("world")) { cls = "world"; body = e.kind === "world.context" ? "context: " + e.evidenceCount + " evidence items" : esc(e.predicate) + " = " + esc(JSON.stringify(e.value)).slice(0, 90); }
   else if (e.kind === "contract") { cls = "contract"; body = e.event === "contract.issued" ? "signed for <b>" + esc(e.intent) + "</b>: " + esc((e.capabilities || []).join(", ")) + " · expires in 5 min" : esc(e.event) + " · " + esc(e.capability) + (e.reason ? " — " + esc(e.detail) : " (" + esc(e.agent) + ")"); }
   else if (e.kind === "guard") { cls = "crit"; body = "notice text held back from the model: " + esc(e.cls || "") + " " + esc(e.match || ""); }
@@ -75,6 +76,6 @@ async function play() {
   step();
 }
 const q = new URLSearchParams(location.search).get("run"); if (q) $("#run").value = q;
-$("#run").onchange = play; $("#speed").onchange = play; $("#again").onclick = play;
+$("#run").onchange = play; $("#speed").onchange = play; $("#writes").onchange = play; $("#again").onclick = play;
 play();
 </script></body></html>
