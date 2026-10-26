@@ -1,4 +1,4 @@
-# This week's recalls — 2026-10-26T00-17-52-12c4b7
+# This week's recalls — 2026-10-26T01-39-10-1cbcb7
 
 39 recall notice(s) read; 5 touch our catalog: **5 act now**, 0 notify, 0 need a person, 0 no exposure, 0 not ours.
 On our shelves in recalled lots: **1093 unit(s)**; customers to notify: at most 169.
@@ -19,4 +19,4 @@ On our shelves in recalled lots: **1093 unit(s)**; customers to notify: at most 
 | [case-fda-H-0014-2027](briefs/case-fda-H-0014-2027.md) | GIAS FOOD INC. | act-now | 18 | 1 | 30 | 9 |
 | [case-fda-H-0007-2027](briefs/case-fda-H-0007-2027.md) | G L Mezzetta Inc | act-now | 12 | 2 | 25 | 12 |
 
-_Read through the Meterless Markovian engine: 1 chunk(s) of at most 6 case(s), completed; carryover state ≤ 256 tokens; estimated 0% fewer input tokens than re-reading all earlier batches (0 tokens, estimated). Lines by meterless:nvidia/nemotron-3-ultra-550b-a55b, numbers checked by the Auditor._
+_Read through the Meterless Markovian engine: 1 chunk(s) of at most 6 case(s), completed; carryover state ≤ 256 tokens. Lines by meterless:nvidia/nemotron-3-ultra-550b-a55b, numbers checked by the Auditor._
