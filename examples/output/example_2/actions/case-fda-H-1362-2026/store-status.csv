@@ -1,0 +1,12 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S009,Northwind #009 Algonquin,Algonquin,IL,PULL,83,0,TFIC209 TFTX213U11,13,"holds recalled lot(s) TFTX213U11, TFIC209 (q-02ea1ab8db q-e291ecd57b)"
+S023,Northwind #023 Buford,Buford,GA,PULL,76,57,L24-7871 TFIC209 TFTX209U11,93,"holds recalled lot(s) TFIC209, TFTX209U11 (q-02ea1ab8db q-e291ecd57b)"
+S008,Northwind #008 Jacksonville,Jacksonville,TX,PULL,71,11,L25-9842 TFIC209 TFIC211,44,"holds recalled lot(s) TFIC211, TFIC209 (q-02ea1ab8db q-e291ecd57b)"
+S006,Northwind #006 Everett,Everett,WA,PULL,60,58,L25-4853 TFTX211,0,holds recalled lot(s) TFTX211 (q-02ea1ab8db q-e291ecd57b)
+S001,Northwind #001 Palm Springs,Palm Springs,CA,PULL,55,22,L25-1830 TFTX209U11,10,holds recalled lot(s) TFTX209U11 (q-02ea1ab8db q-e291ecd57b)
+S004,Northwind #004 Albany,Albany,OR,PULL,33,0,TFIC211,0,holds recalled lot(s) TFIC211 (q-02ea1ab8db q-e291ecd57b)
+S003,Northwind #003 Saint Helens,Saint Helens,OR,PULL,30,46,L25-3397 TFIC211,40,holds recalled lot(s) TFIC211 (q-02ea1ab8db q-e291ecd57b)
+S022,Northwind #022 Naples,Naples,FL,PULL,9,0,TFIC209,46,holds recalled lot(s) TFIC209 (q-02ea1ab8db q-e291ecd57b)
+S005,Northwind #005 Seattle,Seattle,WA,PULL,7,56,L25-2806 TFIC209,24,holds recalled lot(s) TFIC209 (q-02ea1ab8db q-e291ecd57b)
+S021,Northwind #021 Deltona,Deltona,FL,CLEAR,0,13,L25-5938,0,"holds only lot(s) L25-5938, none of which the notice lists (TFIC209, TFIC211, TFTX209U11, TFTX211, TFTX213U11) (q-02ea1ab8db q-e291ecd57b)"
+S024,Northwind #024 Atlanta,Atlanta,GA,CLEAR,0,72,L25-1004 L25-1025,0,"holds only lot(s) L25-1004, L25-1025, none of which the notice lists (TFIC209, TFIC211, TFTX209U11, TFTX211, TFTX213U11) (q-02ea1ab8db q-e291ecd57b)"

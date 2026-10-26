@@ -1,0 +1,9 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S012,Northwind #012 Foley,Foley,MN,PULL,64,12,L25-8242 L6079C L6080C,65,"holds recalled lot(s) L6079C, L6080C (q-ce17318e46 q-5713328198)"
+S023,Northwind #023 Buford,Buford,GA,PULL,43,20,L25-1838 L6079C L6080C,22,"holds recalled lot(s) L6080C, L6079C (q-ce17318e46 q-5713328198)"
+S014,Northwind #014 Iola,Iola,WI,PULL,19,29,L24-8555 L25-8086 L6079C,15,holds recalled lot(s) L6079C (q-ce17318e46 q-5713328198)
+S003,Northwind #003 Saint Helens,Saint Helens,OR,PULL,4,43,L25-3549 L6080C,0,holds recalled lot(s) L6080C (q-ce17318e46 q-5713328198)
+S007,Northwind #007 Tyler,Tyler,TX,CLEAR,0,72,L24-8571 L25-6281,0,"holds only lot(s) L24-8571, L25-6281, none of which the notice lists (L6079C, L6080C) (q-ce17318e46 q-5713328198)"
+S013,Northwind #013 Milwaukee,Milwaukee,WI,CLEAR,0,46,L24-5553 L24-9514,0,"holds only lot(s) L24-5553, L24-9514, none of which the notice lists (L6079C, L6080C) (q-ce17318e46 q-5713328198)"
+S018,Northwind #018 Wildwood,Wildwood,NJ,CLEAR,0,37,L24-6920 L25-6448 L6081A,0,"holds only lot(s) L24-6920, L25-6448, L6081A, none of which the notice lists (L6079C, L6080C) (q-ce17318e46 q-5713328198)"
+S022,Northwind #022 Naples,Naples,FL,CLEAR,0,56,L24-7678 L25-1551,0,"holds only lot(s) L24-7678, L25-1551, none of which the notice lists (L6079C, L6080C) (q-ce17318e46 q-5713328198)"

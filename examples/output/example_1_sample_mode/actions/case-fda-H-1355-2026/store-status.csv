@@ -1,0 +1,6 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S008,Northwind #008 Jacksonville,Jacksonville,TX,PULL,69,10,L25-9281 TFNE210A TFNE212A,58,"holds recalled lot(s) TFNE212A, TFNE210A (q-cec1983227 q-0dd5319762)"
+S017,Northwind #017 Trenton,Trenton,NJ,PULL,60,21,L24-7512 L24-7780 TFNE213A,51,holds recalled lot(s) TFNE213A (q-cec1983227 q-0dd5319762)
+S010,Northwind #010 Batavia,Batavia,IL,PULL,50,99,L24-1396 L25-5670 TFNE210A,53,holds recalled lot(s) TFNE210A (q-cec1983227 q-0dd5319762)
+S006,Northwind #006 Everett,Everett,WA,PULL,36,93,L24-9765 L25-7216 TFNE213A,0,holds recalled lot(s) TFNE213A (q-cec1983227 q-0dd5319762)
+S019,Northwind #019 Hazleton,Hazleton,PA,CLEAR,0,58,L24-4669 L25-7760,0,"holds only lot(s) L24-4669, L25-7760, none of which the notice lists (TFNE210A, TFNE212A, TFNE213A) (q-cec1983227 q-0dd5319762)"

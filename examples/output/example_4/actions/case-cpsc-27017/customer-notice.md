@@ -13,4 +13,4 @@ Reason given in the recall notice: "The recalled bicycles' front lock nut can lo
 
 Please stop using it. The remedy the firm offers is in the recall notice (https://www.cpsc.gov/Recalls/2027/Decathlon-America-Recalls-Van-Rysel-GRVL-AF-Bicycles-Due-to-Risk-of-Serious-Injury-or-Death-from-Crash-Hazard); you can also bring it to any Northwind store and we will help. Your receipt is not needed.
 
-_Prepared by RecallWhy run 2026-10-26T18-45-17-abf16c. Review before sending._
+_Prepared by RecallWhy run 2026-10-26T20-37-20-c9de19. Review before sending._

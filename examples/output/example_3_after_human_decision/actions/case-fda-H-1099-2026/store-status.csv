@@ -1,0 +1,6 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S017,Northwind #017 Trenton,Trenton,NJ,PULL,105,0,025204 025216,0,"holds recalled lot(s) 025216, 025204 (q-b7e5b73ae7 q-d6fb5795a7)"
+S018,Northwind #018 Wildwood,Wildwood,NJ,PULL,86,52,025212 026040 L24-4503,0,"holds recalled lot(s) 025212, 026040 (q-b7e5b73ae7 q-d6fb5795a7)"
+S007,Northwind #007 Tyler,Tyler,TX,PULL,39,0,025204 026040,98,"holds recalled lot(s) 025204, 026040 (q-b7e5b73ae7 q-d6fb5795a7)"
+S010,Northwind #010 Batavia,Batavia,IL,PULL,1,40,025205 L25-6924,64,holds recalled lot(s) 025205 (q-b7e5b73ae7 q-d6fb5795a7)
+S006,Northwind #006 Everett,Everett,WA,CLEAR,0,74,L24-4073 L24-8167,0,"holds only lot(s) L24-4073, L24-8167, none of which the notice lists (025204, 025205, 025212, 025216, 026040) (q-b7e5b73ae7 q-d6fb5795a7)"

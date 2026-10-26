@@ -1,0 +1,5 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S018,Northwind #018 Wildwood,Wildwood,NJ,PULL,60,5,26078 L24-3921,0,holds recalled lot(s) 26078 (q-23dccf8576 q-ee16236e4b)
+S014,Northwind #014 Iola,Iola,WI,PULL,9,0,26078,15,holds recalled lot(s) 26078 (q-23dccf8576 q-ee16236e4b)
+S004,Northwind #004 Albany,Albany,OR,CLEAR,0,78,L24-4372 L24-5224,0,"holds only lot(s) L24-4372, L24-5224, none of which the notice lists (26078) (q-23dccf8576 q-ee16236e4b)"
+S023,Northwind #023 Buford,Buford,GA,CLEAR,0,34,L25-3742,0,"holds only lot(s) L25-3742, none of which the notice lists (26078) (q-23dccf8576 q-ee16236e4b)"

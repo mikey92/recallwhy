@@ -1,0 +1,9 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S002,Northwind #002 Garden Grove,Garden Grove,CA,PULL,125,0,L24-7184 L24-9790 L25-5055,12,"holds recalled lot(s) L25-5055, L24-7184, L24-9790 (q-5b767c3623 q-0dff4f92bd)"
+S006,Northwind #006 Everett,Everett,WA,PULL,103,0,L24-1422 L25-4885,0,"holds recalled lot(s) L24-1422, L25-4885 (q-5b767c3623 q-0dff4f92bd)"
+S017,Northwind #017 Trenton,Trenton,NJ,PULL,97,0,L24-1266 L25-5345,0,"holds recalled lot(s) L24-1266, L25-5345 (q-5b767c3623 q-0dff4f92bd)"
+S011,Northwind #011 Grand Rapids,Grand Rapids,MN,PULL,90,0,L24-4540 L24-8579,25,"holds recalled lot(s) L24-4540, L24-8579 (q-5b767c3623 q-0dff4f92bd)"
+S014,Northwind #014 Iola,Iola,WI,PULL,82,0,L24-6344 L25-1286,0,"holds recalled lot(s) L25-1286, L24-6344 (q-5b767c3623 q-0dff4f92bd)"
+S001,Northwind #001 Palm Springs,Palm Springs,CA,PULL,74,0,L24-2682 L25-8388,23,"holds recalled lot(s) L24-2682, L25-8388 (q-5b767c3623 q-0dff4f92bd)"
+S016,Northwind #016 Brooklyn,Brooklyn,NY,PULL,46,0,L24-6778 L25-2776,9,"holds recalled lot(s) L24-6778, L25-2776 (q-5b767c3623 q-0dff4f92bd)"
+S010,Northwind #010 Batavia,Batavia,IL,PULL,22,0,L25-3954 L25-6925,14,"holds recalled lot(s) L25-6925, L25-3954 (q-5b767c3623 q-0dff4f92bd)"

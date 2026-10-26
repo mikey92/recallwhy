@@ -1,0 +1,6 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S010,Northwind #010 Batavia,Batavia,IL,PULL,8,5,720106 L25-2965,12,holds recalled lot(s) 720106 (q-5d18dc152d q-f41a396b87)
+S015,Northwind #015 New York,New York,NY,PULL,4,0,720106,13,holds recalled lot(s) 720106 (q-5d18dc152d q-f41a396b87)
+S004,Northwind #004 Albany,Albany,OR,CLEAR,0,39,L25-1229,0,"holds only lot(s) L25-1229, none of which the notice lists (720106) (q-5d18dc152d q-f41a396b87)"
+S012,Northwind #012 Foley,Foley,MN,CLEAR,0,75,L24-2548 L24-4403 L25-6932,0,"holds only lot(s) L24-2548, L24-4403, L25-6932, none of which the notice lists (720106) (q-5d18dc152d q-f41a396b87)"
+S020,Northwind #020 Clearfield,Clearfield,PA,CLEAR,0,46,L24-4490,0,"holds only lot(s) L24-4490, none of which the notice lists (720106) (q-5d18dc152d q-f41a396b87)"

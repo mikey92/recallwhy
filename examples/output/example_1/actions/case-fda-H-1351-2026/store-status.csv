@@ -1,0 +1,11 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S007,Northwind #007 Tyler,Tyler,TX,PULL,39,0,TFTX211,17,holds recalled lot(s) TFTX211 (q-9f46d2fcfc q-9cc0e7e6ed)
+S017,Northwind #017 Trenton,Trenton,NJ,PULL,36,44,L24-5422 L25-3877 TFTN2171,68,holds recalled lot(s) TFTN2171 (q-9f46d2fcfc q-9cc0e7e6ed)
+S008,Northwind #008 Jacksonville,Jacksonville,TX,PULL,19,25,L25-3472 TFTX211,41,holds recalled lot(s) TFTX211 (q-9f46d2fcfc q-9cc0e7e6ed)
+S005,Northwind #005 Seattle,Seattle,WA,PULL,15,28,L24-6868 TFTX215U11,18,holds recalled lot(s) TFTX215U11 (q-9f46d2fcfc q-9cc0e7e6ed)
+S022,Northwind #022 Naples,Naples,FL,PULL,7,23,L24-7511 TFTX213,0,holds recalled lot(s) TFTX213 (q-9f46d2fcfc q-9cc0e7e6ed)
+S010,Northwind #010 Batavia,Batavia,IL,PULL,6,50,L24-3559 TFTX216U11,10,holds recalled lot(s) TFTX216U11 (q-9f46d2fcfc q-9cc0e7e6ed)
+S001,Northwind #001 Palm Springs,Palm Springs,CA,CLEAR,0,71,L24-3429 L25-4273 L25-6494,0,"holds only lot(s) L24-3429, L25-4273, L25-6494, none of which the notice lists (TFTN2171, TFTX211, TFTX213, TFTX215U11, TFTX216U11) (q-9f46d2fcfc q-9cc0e7e6ed)"
+S009,Northwind #009 Algonquin,Algonquin,IL,CLEAR,0,7,L25-3281 L25-6997,0,"holds only lot(s) L25-3281, L25-6997, none of which the notice lists (TFTN2171, TFTX211, TFTX213, TFTX215U11, TFTX216U11) (q-9f46d2fcfc q-9cc0e7e6ed)"
+S013,Northwind #013 Milwaukee,Milwaukee,WI,CLEAR,0,133,L25-4655 L25-5009 L25-9843,0,"holds only lot(s) L25-4655, L25-5009, L25-9843, none of which the notice lists (TFTN2171, TFTX211, TFTX213, TFTX215U11, TFTX216U11) (q-9f46d2fcfc q-9cc0e7e6ed)"
+S016,Northwind #016 Brooklyn,Brooklyn,NY,CLEAR,0,31,L25-9305,0,"holds only lot(s) L25-9305, none of which the notice lists (TFTN2171, TFTX211, TFTX213, TFTX215U11, TFTX216U11) (q-9f46d2fcfc q-9cc0e7e6ed)"

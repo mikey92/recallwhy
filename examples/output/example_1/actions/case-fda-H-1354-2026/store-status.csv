@@ -1,0 +1,12 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S014,Northwind #014 Iola,Iola,WI,PULL,87,0,TFIC211 TFTX213U11,65,"holds recalled lot(s) TFIC211, TFTX213U11 (q-5991d841fa q-97b927f5ed)"
+S011,Northwind #011 Grand Rapids,Grand Rapids,MN,PULL,65,0,TFTX211 TFTX216,41,"holds recalled lot(s) TFTX211, TFTX216 (q-5991d841fa q-97b927f5ed)"
+S002,Northwind #002 Garden Grove,Garden Grove,CA,PULL,60,57,L24-2106 TFTX211,24,holds recalled lot(s) TFTX211 (q-5991d841fa q-97b927f5ed)
+S005,Northwind #005 Seattle,Seattle,WA,PULL,60,45,L24-7144 L25-6669 TFTX211,0,holds recalled lot(s) TFTX211 (q-5991d841fa q-97b927f5ed)
+S021,Northwind #021 Deltona,Deltona,FL,PULL,55,24,L25-3060 TFIC211 TFTX216,58,"holds recalled lot(s) TFIC211, TFTX216 (q-5991d841fa q-97b927f5ed)"
+S022,Northwind #022 Naples,Naples,FL,PULL,35,20,L24-7213 TFTX211 TFTX213U11,3,"holds recalled lot(s) TFTX213U11, TFTX211 (q-5991d841fa q-97b927f5ed)"
+S004,Northwind #004 Albany,Albany,OR,PULL,23,25,L24-1457 TFTX216,0,holds recalled lot(s) TFTX216 (q-5991d841fa q-97b927f5ed)
+S024,Northwind #024 Atlanta,Atlanta,GA,PULL,18,0,TFTX216,62,holds recalled lot(s) TFTX216 (q-5991d841fa q-97b927f5ed)
+S008,Northwind #008 Jacksonville,Jacksonville,TX,PULL,3,0,TFTX209U11,47,holds recalled lot(s) TFTX209U11 (q-5991d841fa q-97b927f5ed)
+S007,Northwind #007 Tyler,Tyler,TX,CLEAR,0,23,L25-7332,0,"holds only lot(s) L25-7332, none of which the notice lists (TFIC211, TFTX209U11, TFTX211, TFTX213U11, TFTX216) (q-5991d841fa q-97b927f5ed)"
+S017,Northwind #017 Trenton,Trenton,NJ,CLEAR,0,48,L24-9669 L25-3402 L25-9643,0,"holds only lot(s) L24-9669, L25-3402, L25-9643, none of which the notice lists (TFIC211, TFTX209U11, TFTX211, TFTX213U11, TFTX216) (q-5991d841fa q-97b927f5ed)"

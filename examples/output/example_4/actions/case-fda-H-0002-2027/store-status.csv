@@ -1,0 +1,7 @@
+store_id,store,city,state,status,affected_units_on_hand,other_units_on_hand,lots_on_hand,affected_units_sold_since_recall,evidence
+S015,Northwind #015 New York,New York,NY,PULL,138,0,L24-6364 L24-9767 L25-2356,66,"holds recalled lot(s) L24-9767, L24-6364, L25-2356 (q-bd1bd93fbb q-532d23bd65)"
+S003,Northwind #003 Saint Helens,Saint Helens,OR,PULL,105,0,L24-2882 L25-4414 L25-4847,63,"holds recalled lot(s) L24-2882, L25-4847, L25-4414 (q-bd1bd93fbb q-532d23bd65)"
+S005,Northwind #005 Seattle,Seattle,WA,PULL,52,0,L24-4398 L25-2783,35,"holds recalled lot(s) L24-4398, L25-2783 (q-bd1bd93fbb q-532d23bd65)"
+S018,Northwind #018 Wildwood,Wildwood,NJ,PULL,36,0,L24-4837 L24-5356,0,"holds recalled lot(s) L24-5356, L24-4837 (q-bd1bd93fbb q-532d23bd65)"
+S020,Northwind #020 Clearfield,Clearfield,PA,PULL,20,0,L24-3893,16,holds recalled lot(s) L24-3893 (q-bd1bd93fbb q-532d23bd65)
+S024,Northwind #024 Atlanta,Atlanta,GA,PULL,4,0,L25-9342,0,holds recalled lot(s) L25-9342 (q-bd1bd93fbb q-532d23bd65)
