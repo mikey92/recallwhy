@@ -3,3 +3,7 @@ github.com/Meterless/Meterless engines/<engine>/conformance at commit 1742dec (A
 LICENSE in each folder). upstream-blobs.txt lists the git blob id of every file in
 engines/<engine>/reference/src at that commit; scripts/check-engines.ts checks that the engines mounted
 in src/engines/ are byte-identical to them and that each passes its upstream conformance suite.
+The Scout Intent eval harness in scout-intent/evals/ (runner, config, fixtures, regression-set) is copied
+unchanged from github.com/Meterless/Meterless engines/scout-intent/evals at commit 1742dec (Apache-2.0,
+see scout-intent/LICENSE); its scout-intent lines in upstream-blobs.txt are the git blob ids of those
+files, and scripts/check-scout.ts runs it against src/scout/index.ts.
