@@ -28,6 +28,9 @@ Human decisions go into Meterless H-MEM with high trust, and the next run follow
 - the Investigator's and Auditor's joins across the two databases
 - the Auditor's independent re-query of the live notice and of every exposure number
 
+- the Cartographer's write-back: a proven supplier rule becomes the view `reconciled.ship_notice_item_keys` (read back, lineage by `INFER SQLTABLE SOURCES`); the rules themselves are kept as `reconciled.supplier_rules` and re-proven at the start of the next run
+- a governed USL, `recall_exposure` (7 tables, keys, descriptions, 18 data-quality rules): Zetaris's DQ engine names the ship notices no proven rule reaches, by supplier, and checks the verdicts each run writes back (`reconciled.case_verdicts`). See `docs/ZETARIS.md`
+
 Setup is code (`npm run setup:zetaris`). If Zetaris does not answer, a run falls back to the sample stand-in and the trace says so.
 
 **Meterless.**
@@ -35,6 +38,8 @@ Setup is code (`npm run setup:zetaris`). If Zetaris does not answer, a run falls
 - **H-MEM** (reference engine, Apache-2.0, `src/engines/hmem`) stores decisions: the agents' in working memory at 0.6 trust, humans' in long-term memory at 0.95. The Investigator reads it before judging; a human decision is followed and cited.
 - **World Model** (reference engine, `src/engines/world-model`) holds the source map, recalls, cases and findings as facts with provenance (agent, SQL id, model call). Our context builder over its fact view is the Briefer's only input.
 - **Markovian** (reference engine, `src/engines/markovian`) reads every case of a run in bounded chunks with a compressed carryover (at most 256 tokens) to write the weekly digest, so a run with 200 cases costs the same per call as one with 10; totals are computed in code and the Auditor drops model lines that state a number no case has.
+- **Conformance**: the mounted engines are byte-identical to Meterless@1742dec and pass the upstream conformance suites in CI (H-MEM 13/13, Markovian 8/8, World Model 8/8).
+- **Scout Intent** (from its spec): signed, single-use execution contracts on every write; an injection guard before the judge (Scout's adversarial set 10/10, 0 of 517 real notices flagged).
 - Tests: `test/engines.test.ts`, `test/llm.test.ts`, `test/actions.test.ts`.
 
 **NVIDIA.** `nvidia/nemotron-3-ultra-550b-a55b`, reached through Nightshift, is the default model: the match judge, the lot-code reader, the why-paragraph and the Cartographer's barcode-transform proposals. Over 322 recall/SKU pairs on the real-product item master it catches 134 of 146 covered pairs (rules alone: 89), with 1 wrongly dismissed, 1 false alarm and 30 sent to a human; 0 of 392 calls failed after retries. On text matches the Auditor cuts the judge's first-answer dismissals from 4 to 1 (`eval/EVAL.md`).

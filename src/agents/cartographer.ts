@@ -87,7 +87,7 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
     const [big, small] = [withBarcode[i], withBarcode[j]].sort((x, y) => total(map, y.name) - total(map, x.name));
     if (big.source === small.source) continue;
     const q = async (on: string, purpose: string) => ctx.sql.run(
-      `SELECT COUNT(*) AS n FROM ${big.name} a JOIN ${small.name} b ON ${on} WHERE a.upc <> ''`, { agent: "Cartographer", purpose });
+      `SELECT COUNT(*) AS n FROM ${big.name} a JOIN ${small.name} b ON ${on} WHERE a.upc <> '' AND b.upc <> ''`, { agent: "Cartographer", purpose });
     const raw = await q("a.upc = b.upc", `join test ${big.name} x ${small.name} on barcode as written`);
     const norm = await q("regexp_replace(a.upc, '^0+', '') = regexp_replace(b.upc, '^0+', '')", `join test ${big.name} x ${small.name} on barcode without leading zeros`);
     const nonBlank = Object.entries(map.barcodes.find((b) => b.table === big.name)!.lengths).filter(([l]) => l !== "0").reduce((s, [, n]) => s + n, 0);
