@@ -56,3 +56,11 @@ test("a dismissal that quotes another size or count of our line goes to a review
   assert.equal(dismissalSameLine("COBB SALAD WITH TURKEY & BACON", "Wal-Mart Stores, Inc.", "MARKETSIDE ICEBERG SALAD 10/24 oz"), false);
   assert.equal(dismissalSameLine("Large Organic", "Kroger", "Kroger Large 12 Eggs"), false, "descriptive words alone are not a product");
 });
+
+test("a brief may not say the notice names our lots when it names none", async () => {
+  const { saysNoticeNamesLots } = await import("../src/agents/briefer.ts");
+  assert.equal(saysNoticeNamesLots("Our inventory holds all lots named in the notice, 639 units in 8 stores [E9]."), true);
+  assert.equal(saysNoticeNamesLots("The notice lists lot 720106 [E3], and we hold that exact lot [E9]."), true);
+  assert.equal(saysNoticeNamesLots("The notice does not limit the recall to specific lots, so all 639 units we hold are affected [E9]."), false);
+  assert.equal(saysNoticeNamesLots("Decathlon recalled the bicycles because the fork can break [E4]; we hold 639 units in 8 stores [E9]."), false);
+});

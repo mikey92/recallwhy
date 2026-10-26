@@ -90,7 +90,10 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
       ...itemLines.map((i) => `- ${i.replace(/^NW-\d+ /, "")}`),
       `- Lot code${n.affectedLots.length > 1 ? "s" : ""}: ${n.affectedLots.join(", ")}`, "",
       `Reason given in the recall notice: "${k.recall.reason.trim().slice(0, 400)}"`, "",
-      `Please do not use it. Return it to any Northwind store for a full refund, or dispose of it. Your receipt is not needed.`, "",
+      // A consumer product's remedy (refund, repair, replacement) is set by the firm in the CPSC notice; a food is returned or thrown away.
+      k.recall.feed === "cpsc"
+        ? `Please stop using it. The remedy the firm offers is in the recall notice${k.recall.url ? ` (${k.recall.url})` : ""}; you can also bring it to any Northwind store and we will help. Your receipt is not needed.`
+        : `Please do not use it. Return it to any Northwind store for a full refund, or dispose of it. Your receipt is not needed.`, "",
       `_Prepared by RecallWhy run ${ctx.trace.runId}. Review before sending._`,
     ].join("\n");
     writeFileSync(`${dir}/customer-notice.md`, md + "\n");

@@ -107,7 +107,11 @@ async function record(ctx: AgentContext, k: Case, f: Finding): Promise<string[]>
   const n = f.numbers;
   if (n) {
     const src = (ref?: string) => ({ kind: ctx.sql.engine, by: "Investigator", ref });
-    await ctx.world.fact(caseEntity, "our_lots_named_in_notice", n.affectedLots.length ? n.affectedLots : `none (${n.lotRule})`, src(n.sql.inventory));
+    // Say how the affected lots were chosen in the fact itself: a notice that names no lot codes must not read as one that names ours.
+    const lots = n.lotRule === "listed-lots" ? `named in the notice's lot list: ${n.affectedLots.join(", ")}`
+      : n.lotRule === "all-lots" ? `the notice names no lot codes, so every lot we hold is treated as affected: ${n.affectedLots.join(", ") || "none"}`
+      : "none of our lots is in the notice's lot list";
+    await ctx.world.fact(caseEntity, "our_affected_lots", lots, src(n.sql.inventory));
     await ctx.world.fact(caseEntity, "lot_rule", n.lotRule, { kind: "agent", by: "Investigator" });
     await ctx.world.fact(caseEntity, "our_stores_holding_affected_lots", n.storesWithStock, src(n.sql.inventory));
     await ctx.world.fact(caseEntity, "our_units_on_hand_in_affected_lots", n.onHandUnits, src(n.sql.inventory));

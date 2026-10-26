@@ -17,6 +17,11 @@ const HEAD: Record<Finding["verdict"], string> = {
 
 export interface Brief { caseId: string; verdict: Finding["verdict"]; markdown: string; whyBy: "model" | "template"; attempts: number }
 
+/** A draft that says the notice names, lists or identifies our lots (wrong when the notice names no lot codes). */
+export function saysNoticeNamesLots(text: string): boolean {
+  return /\blots?\b[^.]{0,40}\b(named|listed|specified|identified|cited)\b[^.]{0,20}\b(in|by) the (recall )?notice\b|\bnotice('s)?\b[^.]{0,30}\b(names|lists|specifies|identifies)\b[^.]{0,20}\b(our |the )?lots?\b|\bexact lots?\b/i.test(text);
+}
+
 export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: string[], openCritiques: string[] = []): Promise<Brief> {
   const { evidence, text } = buildContext(ctx.world, entities, "Briefer", ctx.trace);
   const ids = new Set(evidence.map((e) => e.id));
@@ -30,6 +35,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   // and so does every brief when no model is configured.
   const drafted = !ctx.model.startsWith("none:") && (f.verdict === "act-now" || f.verdict === "notify" || f.verdict === "no-exposure");
   // A match a reviewer decided is not a confirmed match; the paragraph must say who decided it.
+  const n0 = f.numbers;
   const byHuman = f.decisions.filter((d) => d.decidedBy === "human-memory" && d.verdict === "same").map((d) => d.sku);
   for (; attempts < 3 && drafted; ) {
     attempts++;
@@ -42,6 +48,8 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
     const problems = out ? auditBrief(out, ids, text) : ["empty answer"];
     if (out && byHuman.length && /\b(confirm(s|ed)?|verif(y|ies|ied)|corresponds exactly)\b[^.]*\b(match|product|SKU)\b|\b(match|product|SKU)\b[^.]*\b(confirm(s|ed)?|verified)\b/i.test(out) && !/reviewer/i.test(out))
       problems.push(`the match for ${byHuman.join(", ")} was a reviewer's decision; say so instead of calling it confirmed`);
+    if (out && n0?.lotRule === "all-lots" && saysNoticeNamesLots(out))
+      problems.push("the notice names no lot codes; every lot we hold is treated as affected — do not say the notice names or lists our lots");
     if (!problems.length) {
       // Lexical checks passed; the Auditor also asks the model whether each sentence is
       // supported by the facts it cites (a separate call, not the Briefer's own prompt).
@@ -67,7 +75,7 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
   }
   if (n && n.unitsSoldSince > 0) actions.push(`Send recall notice to loyalty customers who bought affected lots since ${k.recall.date}: at most ${n.loyaltyCustomers} ${cite("our_loyalty_customers_who_bought_affected_lots")}`);
   if (n && (f.verdict === "act-now" || f.verdict === "notify")) actions.push(`Contact ${n.supplier ?? "the supplier"} for credit and replacement ${cite("our_supplier_for_this_sku")}`);
-  if (f.verdict === "no-exposure") actions.push(`No pull needed. Keep the notice on file; re-run if new lots arrive ${cite("our_lots_named_in_notice")}`);
+  if (f.verdict === "no-exposure") actions.push(`No pull needed. Keep the notice on file; re-run if new lots arrive ${cite("our_affected_lots")}`);
   if (f.verdict === "needs-human") actions.push(`Review in the queue: \`npm run decide -- ${k.recall.id} <sku> same|not-this --note "..."\`. The decision is stored in memory and used on the next run.`);
 
   const caveats: string[] = ["Retailer stock, sales, lots and ship notices are synthetic (Northwind Mercantile, generated for this demo); food items are real products with real barcodes (USDA FoodData Central, Open Food Facts)."];
@@ -96,6 +104,6 @@ function templateWhy(f: Finding, cite: (p: string) => string): string {
   if (f.verdict === "needs-human") return `The team could not settle this: ${f.decisions.map((d) => `${d.sku} ${d.verdict} — ${d.why}`).join("; ")} ${cite("match_decision")}.`;
   const n = f.numbers!;
   return `${same.map((d) => `${d.sku} matches the notice because ${d.why}`).join("; ")} ${cite("match_decision")}. ` +
-    `${n.lotRule === "listed-lots" ? `Our lots ${n.affectedLots.join(", ")} appear in the notice's lot list` : n.lotRule === "all-lots" ? "The notice does not limit the recall to specific lots" : "None of our lots appear in the notice's lot list"} ${cite("our_lots_named_in_notice")}. ` +
+    `${n.lotRule === "listed-lots" ? `Our lots ${n.affectedLots.join(", ")} appear in the notice's lot list` : n.lotRule === "all-lots" ? "The notice does not limit the recall to specific lots" : "None of our lots appear in the notice's lot list"} ${cite("our_affected_lots")}. ` +
     `${n.onHandUnits} units are on hand in ${n.storesWithStock} store(s) ${cite("our_units_on_hand_in_affected_lots")} and ${n.unitsSoldSince} were sold since the recall began ${cite("our_units_sold_since_recall_date")}.`;
 }
