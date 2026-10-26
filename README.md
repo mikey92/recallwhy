@@ -9,7 +9,7 @@
 - **Nothing unproven gets through.** The Auditor re-derives every number with its own SQL and can block; a dismissal whose own quote names our item goes back to the judge or to a person; a pull list is withheld unless it equals the Auditor's on-hand number.
 - **It ends in work a person approves:** a pull list per store and lot, a supplier request citing the supplier's own ship notices, a customer notice, and a map of where to pull. Nothing is sent.
 - **Data:** the food items are real products (USDA FoodData Central, Open Food Facts) and the 24 stores stand at real SNAP supermarket locations (USDA FNS); stock, sales and ship notices are synthetic, because no public data holds them.
-- **Check it yourself:** `npm ci && npm run verify` — type check, every test, every number in these documents recomputed from the committed results, and the model-free evaluations re-run.
+- **Check it yourself:** `npm ci && npm run verify` — type check, every test, every number in these documents recomputed from the committed results, the Meterless engines checked against upstream and its conformance suites, and the model-free evaluations re-run.
 
 ![Where to pull, from a live run: 873 units in 16 stores at their real SNAP locations; the selected recall notice's distribution states are shaded, and the amber stores in WA, OR and CA hold recalled stock in states the notice never listed](docs/img/report-map.png)
 
@@ -66,6 +66,14 @@ For every run, in `out/<run>/`:
 - **A weekly digest** (`digest.md`, `src/digest.ts`): what needs the manager first, most urgent first, and a table of every case. It is read through the **Meterless Markovian engine**: the cases go in batches of a fixed size, one bounded chunk each, and only a compressed state is carried from chunk to chunk, so a run with 200 cases costs the same per call as one with 10. Totals and the table are computed in code; the Auditor drops the model's lines if they state a number no case has.
 
 ## How the sponsor technology is used
+
+**At a glance** (measured on live runs; where to check it; what is not done):
+
+| Sponsor | What runs | Measured | Where to check | Not done |
+|---|---|---|---|---|
+| **Zetaris** | 2 live REST feeds + 2 JDBC databases; catalog statements; federated REST × JDBC and JDBC × JDBC SQL; the agents write back two views; a 7-table USL `recall_exposure` with keys, descriptions and 18 DQ rules | Zetaris's DQ engine names the 1,883 of 14,244 barcoded ship notices no proven rule reaches yet, by supplier; every other key valid; verdicts written back 4/4 with their 3 rules passing | [`docs/ZETARIS.md`](docs/ZETARIS.md), `sql/04_usl_check.sql`, `docs/img/zetaris-preview.png` | no Zetaris pipeline or data mart; feeds not cached |
+| **Meterless** | H-MEM, World Model and Markovian mounted from Meterless@1742dec; Nightshift as the model provider; Scout Intent's execution contract and guard implemented from its spec | engines byte-identical to upstream and green on the upstream conformance suites (H-MEM 13/13, Markovian 8/8, World Model 8/8); guard 10/10 on Scout's adversarial set, 0 of the 517 real notices in `sample/` flagged | `npm run check:engines` (CI), `test/contract.test.ts`, `test/guard.test.ts` | Scout's intent classifier and model routing (one intent here) |
+| **NVIDIA Nemotron** | 3 Ultra as the judge, lot reader, brief writer, digest writer and barcode-transform proposer; 3.5 Lightning compared | 134 of 146 caught, 1 missed, 1 false alarm over 322 pairs; 0 of 392 calls failed | [`eval/EVAL.md`](eval/EVAL.md) | no embedding or safety model |
 
 **Zetaris (load-bearing: every agent reads data only through it)**
 - `sql/01_feeds.sql` registers two live **Lightning REST tables**:
