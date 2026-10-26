@@ -19,7 +19,7 @@ export interface Brief { caseId: string; verdict: Finding["verdict"]; markdown: 
 
 /** A draft that says the notice names, lists or identifies our lots (wrong when the notice names no lot codes). */
 export function saysNoticeNamesLots(text: string): boolean {
-  return /\blots?\b[^.]{0,40}\b(named|listed|specified|identified|cited)\b[^.]{0,20}\b(in|by) the (recall )?notice\b|\bnotice('s)?\b[^.]{0,30}\b(names|lists|specifies|identifies)\b[^.]{0,20}\b(our |the )?lots?\b|\bexact lots?\b/i.test(text);
+  return /\blots?\b[^.]{0,40}\b(named|listed|specified|identified|cited)\b[^.]{0,20}\b(in|by) the (recall )?notice\b|\bnotice('s)?\b[^.]{0,30}\b(names|lists|specifies|identifies)\b(?![^.]{0,12}\b(no|not|any)\b)[^.]{0,20}\b(our |the )?lots?\b|\bexact lots?\b/i.test(text);
 }
 
 export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: string[], openCritiques: string[] = []): Promise<Brief> {

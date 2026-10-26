@@ -62,5 +62,7 @@ test("a brief may not say the notice names our lots when it names none", async (
   assert.equal(saysNoticeNamesLots("Our inventory holds all lots named in the notice, 639 units in 8 stores [E9]."), true);
   assert.equal(saysNoticeNamesLots("The notice lists lot 720106 [E3], and we hold that exact lot [E9]."), true);
   assert.equal(saysNoticeNamesLots("The notice does not limit the recall to specific lots, so all 639 units we hold are affected [E9]."), false);
+  assert.equal(saysNoticeNamesLots("Our inventory matches the recalled product and, because the notice names no lot codes, every lot we hold is treated as affected [E6]."), false);
+  assert.equal(saysNoticeNamesLots("The notice does not list any lots, so every lot counts [E7]."), false);
   assert.equal(saysNoticeNamesLots("Decathlon recalled the bicycles because the fork can break [E4]; we hold 639 units in 8 stores [E9]."), false);
 });
