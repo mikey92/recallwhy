@@ -118,6 +118,7 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
   const blanks = map.barcodes.filter((b) => (b.lengths["0"] ?? 0) > 0).map((b) => `${b.table} has ${b.lengths["0"]} rows with no barcode`);
   say(ctx, "Cartographer", "Orchestrator", `mapped ${map.tables.length} tables in ${new Set(map.tables.map((t) => t.source)).size} sources (${map.skipped.length} skipped). ${blanks.join("; ")}${blanks.length ? " — those rows are reachable by SKU only." : ""}`,
     { tables: map.tables.map((t) => `${t.kind}:${t.name}`), skipped: map.skipped });
+  if (ctx.sql.engine === "zetaris") await remember(ctx, map).catch((e: Error) => say(ctx, "Cartographer", "Orchestrator", `could not read the remembered supplier rules from Zetaris (${e.message.slice(0, 120)}); every rule is learned again when a case needs it`));
   return map;
 }
 
@@ -250,6 +251,45 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
 }
 
 export const RECONCILED = "reconciled.ship_notice_item_keys";
+/** The supplier rules proven so far, kept in Zetaris so a later run (even from empty agent state) can re-prove and reuse them. */
+export const RULES_VIEW = "reconciled.supplier_rules";
+
+/** Every supplier rule in the map, as a VALUES view. */
+export function rulesViewSql(runId: string, rules: SupplierRule[]): string {
+  const rows = rules.map((r) => `(${[r.supplier, r.transform, JSON.stringify(r.ops ?? null), String(r.rows), r.learnedFrom, runId, r.proposedBy ?? ""].map(lit).join(", ")})`);
+  return `CREATE SCHEMASTORE VIEW supplier_rules WITH CONTAINER reconciled AS\nSELECT * FROM VALUES\n  ${rows.join(",\n  ")}\nAS t(supplier_id, transform, ops, proven_rows, learned_from, run_id, proposed_by)`;
+}
+
+/**
+ * Start of a run on Zetaris: read the rules earlier runs proved (reconciled.supplier_rules), re-prove each on
+ * every barcoded ship notice of its supplier, and adopt only those that still hold. A rule is never taken
+ * on trust: the data may have changed since.
+ */
+export async function remember(ctx: AgentContext, map: SourceMap): Promise<SupplierRule[]> {
+  const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
+  const saved = await run(`SELECT supplier_id, transform, ops, proven_rows, learned_from, run_id, proposed_by FROM ${RULES_VIEW}`, `supplier rules earlier runs proved (${RULES_VIEW})`).catch(() => undefined);
+  if (!saved?.rows.length) return [];
+  const kept: SupplierRule[] = [], dropped: string[] = [];
+  for (const x of saved.rows) {
+    const supplier = String(x.supplier_id), transform = String(x.transform) as Transform;
+    if (!/^SUP\d+$/.test(supplier) || !["no-leading-zeros", "no-check-digit", "proposed"].includes(transform)) continue;
+    let ops: ProposedOps | undefined;
+    try { ops = JSON.parse(String(x.ops)) ?? undefined; } catch { continue; }
+    if (transform === "proposed" && !ops) continue;
+    const all = await run(`SELECT COUNT(*) AS n, SUM(CASE WHEN ${keyEq(transform, "a", "s", ops)} THEN 1 ELSE 0 END) AS ok
+       FROM ${ASN} a JOIN ${ITEMS} s ON s.sku = a.sku WHERE a.supplier_id = ${lit(supplier)} AND a.upc <> ''`, `re-prove the remembered rule for ${supplier} on every one of its ship notices`);
+    const [tot, hit] = [Number(all.rows[0]?.n ?? 0), Number(all.rows[0]?.ok ?? 0)];
+    if (!tot || hit !== tot) { dropped.push(`${supplier} ${hit}/${tot}`); continue; }
+    kept.push({ supplier, transform, rows: tot, learnedFrom: `remembered from run ${String(x.run_id)} (${String(x.learned_from)})`, sqlId: all.sqlId, ...(ops ? { ops, proposedBy: String(x.proposed_by || "") || undefined } : {}) });
+  }
+  if (kept.length) {
+    let j = map.joins.find((x) => x.left === ASN || x.right === ASN);
+    if (!j) map.joins.push(j = { left: ASN, right: ITEMS, column: "upc", leftRows: 0, asWritten: 0, normalized: 0, chosen: "as-written", sqlIds: [] });
+    (j.rules ??= []).push(...kept.filter((k) => !j!.rules!.some((r) => r.supplier === k.supplier)));
+  }
+  say(ctx, "Cartographer", "Auditor", `remembered ${kept.length} supplier rule(s) from Zetaris (${RULES_VIEW}), each re-proven on all its ship notices: ${kept.map((r) => `${r.supplier} ${r.transform === "proposed" ? "model-proposed" : r.transform} ${r.rows}/${r.rows}`).join(", ") || "none"}${dropped.length ? `; no longer holding, dropped: ${dropped.join(", ")}` : ""}`, { remembered: kept.map((r) => ({ supplier: r.supplier, transform: r.transform, rows: r.rows, sqlId: r.sqlId })), dropped });
+  return kept;
+}
 
 /** Publish ship notices matched to our items under the corrected map as a Zetaris view, then read each learned supplier back. */
 export const USL_TABLE = "lightning.metastore.recallwhy.recall_keys.notice_item";
@@ -272,11 +312,16 @@ export async function publish(ctx: AgentContext, map: SourceMap | undefined, lea
   const contract = issueContract(ctx.trace, {
     intent: "write-back.corrected-barcode-map",
     parameters: { rules: learned.map((r) => ({ supplier: r.supplier, transform: r.transform, provenOn: `${r.rows}/${r.rows} ship notices`, sql: r.sqlId })) },
-    capabilities: [`zetaris.view.replace:${RECONCILED}`, `zetaris.usl.activate:${USL_TABLE}`],
+    capabilities: [`zetaris.view.replace:${RECONCILED}`, `zetaris.view.replace:${RULES_VIEW}`, `zetaris.usl.activate:${USL_TABLE}`],
   });
   verifyContract(ctx.trace, contract, `zetaris.view.replace:${RECONCILED}`, "Cartographer");
   await run(`DROP VIEW IF EXISTS ${RECONCILED}`, `replace ${RECONCILED}`);
   await run(`CREATE SCHEMASTORE VIEW ship_notice_item_keys WITH CONTAINER reconciled AS\n     ${select}`, `write the corrected barcode map back to Zetaris as ${RECONCILED}`);
+  // Every rule the map now holds (remembered and learned), so the next run can re-prove and reuse them.
+  const allRules = map?.joins.find((x) => x.left === ASN || x.right === ASN)?.rules ?? learned;
+  verifyContract(ctx.trace, contract, `zetaris.view.replace:${RULES_VIEW}`, "Cartographer");
+  await run(`DROP VIEW IF EXISTS ${RULES_VIEW}`, `replace ${RULES_VIEW}`);
+  await run(rulesViewSql(ctx.trace.runId, allRules), `keep the ${allRules.length} proven supplier rule(s) in Zetaris as ${RULES_VIEW}`);
   const readBack: { supplier: string; rows: number; read: number; sqlId: string }[] = [];
   for (const r of learned) {
     const back = await run(`SELECT COUNT(*) AS n FROM ${RECONCILED} WHERE supplier_id = ${lit(r.supplier)} AND item_sku = notice_sku`, `read ${r.supplier} back from ${RECONCILED}`);
