@@ -3,6 +3,8 @@
 //   pull-list.csv       one row per store × lot to pull, with the store's name and city
 //   supplier-request.md a credit/replacement request citing the supplier's own ship notices
 //   customer-notice.md  the notice text for loyalty customers who bought affected lots (count only)
+//   fda-traceability.csv FDA recalls only: the FSMA 204 sortable spreadsheet of the affected lots' records we
+//                       hold (supplier shipments into our DCs, receipts at our stores), one row per record
 //   packet.json         the SQL ids behind every file, and whether the totals reconcile
 // Nothing is sent. Every row comes from its own federated query, and the packet is withheld when its
 // on-hand total does not equal the number the Auditor already re-derived.
@@ -13,7 +15,7 @@ import { issueContract, verifyContract, ContractRefused } from "./contract.ts";
 import type { Finding } from "./agents/investigator.ts";
 import type { Case } from "./agents/scout.ts";
 
-export interface PullRow { store_id: string; store: string; city: string; state: string; sku: string; upc: string; title: string; lot_code: string; on_hand: number }
+export interface PullRow { store_id: string; store: string; city: string; state: string; sku: string; upc: string; title: string; lot_code: string; on_hand: number; received_on?: string }
 export interface ShipRow { asn_id: string; supplier_id: string; supplier: string; contact_role: string; sku: string; lot_code: string; shipped_on: string; units: number; dc_state: string }
 export interface Packet {
   caseId: string; recall: string; firm: string; product: string; verdict: Finding["verdict"]; dir: string; status: "draft" | "withheld";
@@ -36,7 +38,7 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
   if (!n || !(f.verdict === "act-now" || f.verdict === "notify") || !n.affectedLots.length) return undefined;
   const skus = f.decisions.filter((d) => d.verdict === "same").map((d) => d.sku);
   const pull = await ctx.sql.run(
-    `SELECT i.store_id, st.name AS store, st.city, st.state, i.sku, s.upc, s.title, i.lot_code, SUM(i.on_hand) AS on_hand
+    `SELECT i.store_id, st.name AS store, st.city, st.state, i.sku, s.upc, s.title, i.lot_code, SUM(i.on_hand) AS on_hand, MIN(i.received_on) AS received_on
      FROM erp.inventory i JOIN erp.stores st ON st.store_id = i.store_id JOIN erp.skus s ON s.sku = i.sku
      WHERE i.sku IN (${inList(skus)}) AND i.lot_code IN (${inList(n.affectedLots)}) AND i.on_hand > 0
      GROUP BY i.store_id, st.name, st.city, st.state, i.sku, s.upc, s.title, i.lot_code ORDER BY i.store_id, i.lot_code`,
@@ -46,7 +48,7 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
      FROM supplier_portal.ship_notices a JOIN supplier_portal.suppliers p ON p.supplier_id = a.supplier_id
      WHERE a.sku IN (${inList(skus)}) AND a.lot_code IN (${inList(n.affectedLots)}) ORDER BY a.shipped_on, a.asn_id`,
     { agent: "Orchestrator", purpose: `supplier ship notices for the affected lots of ${k.id}` });
-  const rows: PullRow[] = pull.rows.map((r) => ({ store_id: String(r.store_id), store: String(r.store), city: String(r.city), state: String(r.state), sku: String(r.sku), upc: String(r.upc ?? ""), title: String(r.title), lot_code: String(r.lot_code), on_hand: Number(r.on_hand) }));
+  const rows: PullRow[] = pull.rows.map((r) => ({ store_id: String(r.store_id), store: String(r.store), city: String(r.city), state: String(r.state), sku: String(r.sku), upc: String(r.upc ?? ""), title: String(r.title), lot_code: String(r.lot_code), on_hand: Number(r.on_hand), received_on: r.received_on == null ? "" : String(r.received_on).slice(0, 10) }));
   const asns: ShipRow[] = ship.rows.map((r) => ({ asn_id: String(r.asn_id), supplier_id: String(r.supplier_id), supplier: String(r.supplier), contact_role: String(r.contact_role), sku: String(r.sku), lot_code: String(r.lot_code), shipped_on: String(r.shipped_on).slice(0, 10), units: Number(r.units), dc_state: String(r.dc_state) }));
   const pullUnits = rows.reduce((a, r) => a + r.on_hand, 0);
   const dir = `${outDir}/actions/${k.id}`;
@@ -90,6 +92,10 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
     writeFileSync(`${dir}/${name}`, md + "\n");
     packet.files.push(name);
   }
+  if (k.recall.feed === "fda_food" && (rows.length || asns.length)) {
+    writeFileSync(`${dir}/fda-traceability.csv`, fsmaSheet(k, rows, asns, { pull: pull.sqlId, ship: ship.sqlId }));
+    packet.files.push("fda-traceability.csv");
+  }
   if (n.loyaltyCustomers > 0) {
     const md = [
       `# DRAFT — not sent`, "",
@@ -115,6 +121,23 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
 }
 
 /** A person approves a drafted packet: the approval is recorded next to it, with who and when. Nothing is sent. */
+export const FSMA_COLUMNS = ["traceability_lot_code", "product_description", "upc", "quantity", "unit_of_measure", "quantity_basis", "event", "location", "immediate_previous_source", "event_date", "reference_document", "recall", "sql_id"];
+
+/**
+ * The FSMA 204 sortable spreadsheet (21 CFR 1.1455(c)(3)) for the affected lots, from the records we hold:
+ * the supplier's shipment into our distribution center (ship notice, ship date) and the receipt at each store
+ * that still has stock (ERP, first received date; the ERP keeps the quantity on hand, not the quantity received,
+ * and the column says so). Rows sort by lot, then date. Every row names the query that produced it.
+ */
+export function fsmaSheet(k: Pick<Case, "recall">, rows: PullRow[], asns: ShipRow[], sql: { pull: string; ship: string }): string {
+  const titles = new Map(rows.map((r) => [r.sku, { title: r.title, upc: r.upc }]));
+  const recs = [
+    ...asns.map((a) => [a.lot_code, titles.get(a.sku)?.title ?? a.sku, titles.get(a.sku)?.upc ?? "", a.units, "each", "shipped", "shipping (supplier to our DC)", `Northwind DC, ${a.dc_state}`, `${a.supplier} (${a.supplier_id})`, a.shipped_on, `ship notice ${a.asn_id}`, k.recall.id, sql.ship]),
+    ...rows.map((r) => [r.lot_code, r.title, r.upc, r.on_hand, "each", "on hand now", "receiving (store)", `${r.store} ${r.store_id}, ${r.city}, ${r.state}`, "Northwind DC", r.received_on ?? "", "ERP inventory", k.recall.id, sql.pull]),
+  ].sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[9]).localeCompare(String(b[9])));
+  return [FSMA_COLUMNS.join(","), ...recs.map((r) => r.map((v) => csv(v as string | number)).join(","))].join("\n") + "\n";
+}
+
 export function approvePacket(runId: string, caseId: string, by: string, note = ""): { ok: boolean; reason?: string; file?: string } {
   if (!/^[\w-]+$/.test(runId) || !/^[\w.:-]+$/.test(caseId) || caseId.includes("..")) return { ok: false, reason: "bad run or case id" };
   const dir = `out/${runId}/actions/${caseId}`;
