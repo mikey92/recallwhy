@@ -45,3 +45,30 @@ test("an undecided SKU is queued for a reviewer even when another SKU of the sam
     process.chdir(cwd);
   }
 });
+
+test("model output never reaches SQL: a model that answers with SQL fragments changes no statement the agents run", async () => {
+  const { makeRunner } = await import("../src/sql/index.ts");
+  const { CaseMemory } = await import("../src/memory.ts");
+  const { World } = await import("../src/world.ts");
+  const { run } = await import("../src/orchestrator.ts");
+  const cwd = process.cwd();
+  const dir = mkdtempSync(join(tmpdir(), "rw-nosql-"));
+  process.chdir(dir);
+  try {
+    const trace = new Trace({ quiet: true });
+    const real = await makeRunner({ SAMPLE_MODE: "true" } as NodeJS.ProcessEnv, trace);
+    const statements: string[] = [];
+    const sql = { engine: real.engine, close: () => real.close(), run: (q: string, m: { agent: string; purpose: string }) => { statements.push(q); return real.run(q, m); } };
+    // Every answer is shaped to be parsed (a verdict, a quote, lot codes, transform ops, a paragraph) and carries SQL.
+    const evil = `{"verdict":"SAME","quote":"CANARY' OR 1=1 --","lots":["CANARY'); DROP TABLE erp.skus; --"],"supplier":["digits_only","CANARY) --"],"ours":["CANARY"],"why":"CANARY"} ["CANARY'); DROP TABLE erp.skus; --"] SAME CANARY`;
+    let calls = 0;
+    const ctx = { sql, gen: async () => { calls++; return evil; }, memory: new CaseMemory(trace, `${dir}/hmem`), world: new World(trace, `${dir}/world`), trace, model: "test:evil" } as never;
+    await run(ctx, { since: "2026-07-01", only: ["H-1362-2026", "H-1364-2026", "H-1099-2026", "H-1355-2026"] });
+    await sql.close();
+    assert.ok(calls > 3, "the model was asked");
+    assert.ok(statements.length > 50);
+    assert.deepEqual(statements.filter((q) => /CANARY/.test(q)), [], "no statement carries model text");
+  } finally {
+    process.chdir(cwd);
+  }
+});

@@ -71,8 +71,8 @@ test("narrow checked tasks go to the small Nemotron; the judge stays on the main
   const trace = { runId: "r", emit: (kind: string, _a: string, d: { model?: string }) => events.push({ kind, ...d }) } as never;
   try {
     const gen = makeGenerator(cfg, trace);
-    await gen("x", { agent: "Investigator", purpose: "read lot codes", tier: "fast" });
-    await gen("x", { agent: "Investigator", purpose: "judge" });
+    await gen("x", { agent: "Investigator", purpose: "read lot codes fda:H-1-2026" });
+    await gen("x", { agent: "Investigator", purpose: "judge NW-1 vs fda:H-1-2026" });
   } finally { globalThis.fetch = realFetch; }
   assert.deepEqual(sent, ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-ultra-550b-a55b"]);
   assert.deepEqual(events.filter((e) => e.kind === "llm").map((e) => e.model), ["meterless:nvidia/nemotron-3.5-lightning-30b-a3b", "meterless:nvidia/nemotron-3-ultra-550b-a55b"]);
@@ -95,4 +95,52 @@ test("an unreachable Nightshift fails fast: no retries on a refused connection, 
   assert.ok(Date.now() - t0 < 2000);
   assert.equal(events.filter((e) => e.kind === "llm.retry").length, 0);
   assert.ok(events.some((e) => e.kind === "note" && /unreachable 3 times/.test(e.text ?? "")));
+});
+
+test("Scout Intent routing: every model task is classified; low-risk checked tasks go to the fast profile, the rest stay on the capable one", async () => {
+  const { classify, profiles, route, INTENTS } = await import("../src/scout-intent.ts");
+  const ps = profiles({ model: "nvidia/nemotron-3-ultra-550b-a55b", fastModel: "nvidia/nemotron-3.5-lightning-30b-a3b" });
+  // Every purpose the agents use in the committed live traces maps to a known intent, and to the expected profile.
+  const want: Record<string, string> = { "match.judge": "capable", "brief.check": "capable", "brief.write": "capable", "digest.write": "capable", "barcode.transform.propose": "capable", "lots.read": "fast" };
+  const { readdirSync, readFileSync, existsSync } = await import("node:fs");
+  let seen = 0;
+  for (const d of readdirSync("examples/output").filter((d) => existsSync(`examples/output/${d}/trace.jsonl`))) {
+    for (const l of readFileSync(`examples/output/${d}/trace.jsonl`, "utf8").trim().split("\n")) {
+      const e = JSON.parse(l);
+      if (e.kind !== "llm") continue;
+      const i = classify(e.purpose);
+      assert.notEqual(i.id, "other", e.purpose);
+      assert.equal(route(i, ps).profile, want[i.id], e.purpose);
+      seen++;
+    }
+  }
+  assert.ok(seen > 40);
+  assert.equal(INTENTS.length, Object.keys(want).length);
+  assert.equal(classify("something new").risk, "high");
+  assert.deepEqual(route(classify("read lot codes x"), ps).chain, ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-ultra-550b-a55b"]);
+  assert.deepEqual(route(classify("judge a vs b"), ps).chain, ["nvidia/nemotron-3-ultra-550b-a55b"], "a high-risk task never falls back to a smaller model");
+  assert.equal(route(classify("read lot codes x"), profiles({ model: "m" })).profile, "capable");
+});
+
+test("when the fast model fails, the profile's fallback runs the task and the trace says so; usage is recorded", async () => {
+  const { llmFromEnv, makeGenerator } = await import("../src/llm.ts");
+  const cfg = llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", LLM_RPM: "0" } as NodeJS.ProcessEnv);
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async (_u: string, init: { body: string }) => {
+    const m = JSON.parse(init.body).model;
+    if (/lightning/.test(m)) return new Response("model not available", { status: 404 });
+    return new Response(JSON.stringify({ model: m, usage: { prompt_tokens: 120, completion_tokens: 8 }, choices: [{ message: { content: "[\"L1\"]" } }] }), { status: 200 });
+  }) as typeof fetch;
+  const events: { kind: string; [k: string]: unknown }[] = [];
+  const trace = { runId: "r", emit: (kind: string, _a: string, d: object) => events.push({ kind, ...d }) } as never;
+  try {
+    assert.equal(await makeGenerator(cfg, trace)("x", { agent: "Investigator", purpose: "read lot codes fda:H-1-2026" }), '["L1"]');
+  } finally { globalThis.fetch = realFetch; }
+  const routes = events.filter((e) => e.kind === "route");
+  assert.equal(routes[0].intent, "lots.read");
+  assert.equal(routes[0].profile, "fast");
+  assert.match(String(routes[1].reason), /fallback/);
+  const llm = events.filter((e) => e.kind === "llm");
+  assert.match(String(llm[0].output), /^ERROR/);
+  assert.deepEqual(llm[1].usage, { prompt: 120, completion: 8 });
 });

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { barcodeJoin, chart, publish, reconcile, RECONCILED } from "../src/agents/cartographer.ts";
+import { barcodeColumnsByContent, barcodeJoin, chart, joinTest, publish, reconcile, RECONCILED } from "../src/agents/cartographer.ts";
 import { scout } from "../src/agents/scout.ts";
 import type { AgentContext } from "../src/agents/context.ts";
 import { DuckSampleRunner } from "../src/sql/duck.ts";
@@ -272,4 +272,30 @@ test("if the USL re-bind fails, the write-back still counts and the trace says t
   assert.equal(learned.length, 1);
   assert.ok(msgs.some((t) => /written back to Zetaris as reconciled\.ship_notice_item_keys and read back: SUP007/.test(t)));
   assert.ok(msgs.some((t) => /could not re-check the barcode key in the Zetaris USL \(Zetaris query failed 400/.test(t)));
+});
+
+test("with column names that say nothing, the Cartographer finds the barcode columns by content and the join test gives the same answer", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "rw-opaque-"));
+  const trace = new Trace({ dir, quiet: true, runId: "opaque" });
+  const sql = new DuckSampleRunner({ trace });
+  await sql.ready;
+  try {
+    const run = (q: string) => sql.run(q, { agent: "test", purpose: "setup" });
+    await run("CREATE SCHEMA IF NOT EXISTS opaque");
+    await run("CREATE OR REPLACE VIEW opaque.t1 AS SELECT asn_id AS c1, supplier_id AS c2, sku AS c3, upc AS c4, lot_code AS c5 FROM supplier_portal.ship_notices");
+    await run("CREATE OR REPLACE VIEW opaque.t2 AS SELECT sku AS f1, title AS f2, upc AS f3, brand AS f4 FROM erp.skus");
+    const cols = async (t: string) => (await run(`SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = 'opaque' AND table_name = '${t}' ORDER BY ordinal_position`)).rows.map((r) => ({ name: String(r.column_name), type: String(r.data_type).toLowerCase() }));
+    const ctx = { sql, trace } as unknown as AgentContext;
+    const a = await barcodeColumnsByContent(ctx, { name: "opaque.t1", kind: "jdbc", source: "opaque", columns: await cols("t1") });
+    const b = await barcodeColumnsByContent(ctx, { name: "opaque.t2", kind: "jdbc", source: "opaque", columns: await cols("t2") });
+    assert.deepEqual(a.map((x) => x.column), ["c4"]);
+    assert.deepEqual(b.map((x) => x.column), ["f3"]);
+    const opaque = await joinTest(ctx, "opaque.t1", "c4", "opaque.t2", "f3");
+    const named = await joinTest(ctx, "supplier_portal.ship_notices", "upc", "erp.skus", "upc");
+    assert.equal(Number(opaque.norm.rows[0].n), Number(named.norm.rows[0].n));
+    assert.equal(Number(opaque.norm.rows[0].n), 11512);
+    assert.equal(Number(opaque.raw.rows[0].n), 6810);
+  } finally {
+    await sql.close();
+  }
 });

@@ -98,7 +98,7 @@ async function readLots(ctx: AgentContext, r: Recall): Promise<{ lots: string[];
   if (messy) {
     const out = await ctx.gen(
       `Text from a food recall notice:\n"""${r.codeInfo.slice(0, 1500)}"""\n\nList every lot code or batch code in it as a JSON array of strings, copied exactly. Do not include dates, best-by dates, UPC numbers or product names. If there are none, answer [].`,
-      { agent: "Investigator", purpose: `read lot codes ${r.id}`, maxTokens: 400, tier: "fast" }).catch(() => "[]");
+      { agent: "Investigator", purpose: `read lot codes ${r.id}`, maxTokens: 400 }).catch(() => "[]");
     const m = out.match(/\[[\s\S]*?\]/);
     const dates: string[] = [];
     try { for (const l of JSON.parse(m?.[0] ?? "[]") as unknown[]) if (typeof l === "string" && l.trim()) { if (isDateLike(l)) dates.push(l.trim()); else sources[l.trim()] ??= "model"; } } catch { /* model gave no JSON: regex lots only */ }

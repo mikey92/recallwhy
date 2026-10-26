@@ -71,13 +71,24 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
   const map: SourceMap = { tables: [], skipped: [], barcodes: [], joins: [] };
   map.tables = ctx.sql.engine === "zetaris" ? await zetarisCatalog(ctx, map) : await duckCatalog(ctx);
   for (const t of map.tables) for (const c of t.columns) c.role = roleOf(c.name);
+  // A name is a hint, not proof: a table whose column names say nothing about barcodes is profiled by
+  // content, and a text column whose values are 10–14 digit numbers is taken as a barcode column.
+  for (const t of map.tables.filter((t) => t.kind === "jdbc" && !t.columns.some((c) => c.role === "barcode"))) {
+    const found = await barcodeColumnsByContent(ctx, t).catch(() => []);
+    for (const f of found) {
+      t.columns.find((c) => c.name === f.column)!.role = "barcode";
+      say(ctx, "Cartographer", "Auditor", `${t.name}.${f.column} holds barcodes although its name does not say so: ${f.digits} of ${f.values} values are 10–14 digit numbers (${f.sqlId})`);
+    }
+  }
+  const barcodeCol = (t: TableInfo) => t.columns.find((c) => c.role === "barcode")!.name;
 
   const withBarcode = map.tables.filter((t) => t.kind === "jdbc" && t.columns.some((c) => c.role === "barcode"));
   for (const t of withBarcode) {
-    const r = await ctx.sql.run(`SELECT length(upc) AS len, COUNT(*) AS n FROM ${t.name} GROUP BY length(upc)`, { agent: "Cartographer", purpose: `profile barcode column ${t.name}.upc` });
+    const col = barcodeCol(t);
+    const r = await ctx.sql.run(`SELECT length(${col}) AS len, COUNT(*) AS n FROM ${t.name} GROUP BY length(${col})`, { agent: "Cartographer", purpose: `profile barcode column ${t.name}.${col}` });
     const lengths = Object.fromEntries(r.rows.map((x) => [String(x.len ?? 0), Number(x.n)]));
-    map.barcodes.push({ table: t.name, column: "upc", lengths, sqlId: r.sqlId });
-    const ent = await ctx.world.entity("source_column", ctx.sql.engine, `${t.name}.upc`, `${t.name}.upc`, { role: "barcode" }, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
+    map.barcodes.push({ table: t.name, column: col, lengths, sqlId: r.sqlId });
+    const ent = await ctx.world.entity("source_column", ctx.sql.engine, `${t.name}.${col}`, `${t.name}.${col}`, { role: "barcode" }, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
     await ctx.world.fact(ent, "barcode_lengths", lengths, { kind: ctx.sql.engine, by: "Cartographer", ref: r.sqlId });
   }
 
@@ -86,14 +97,11 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
   for (let i = 0; i < withBarcode.length; i++) for (let j = i + 1; j < withBarcode.length; j++) {
     const [big, small] = [withBarcode[i], withBarcode[j]].sort((x, y) => total(map, y.name) - total(map, x.name));
     if (big.source === small.source) continue;
-    const q = async (on: string, purpose: string) => ctx.sql.run(
-      `SELECT COUNT(*) AS n FROM ${big.name} a JOIN ${small.name} b ON ${on} WHERE a.upc <> '' AND b.upc <> ''`, { agent: "Cartographer", purpose });
-    const raw = await q("a.upc = b.upc", `join test ${big.name} x ${small.name} on barcode as written`);
-    const norm = await q("regexp_replace(a.upc, '^0+', '') = regexp_replace(b.upc, '^0+', '')", `join test ${big.name} x ${small.name} on barcode without leading zeros`);
+    const { raw, norm } = await joinTest(ctx, big.name, barcodeCol(big), small.name, barcodeCol(small));
     const nonBlank = Object.entries(map.barcodes.find((b) => b.table === big.name)!.lengths).filter(([l]) => l !== "0").reduce((s, [, n]) => s + n, 0);
     const asWritten = Number(raw.rows[0]?.n ?? 0), normalized = Number(norm.rows[0]?.n ?? 0);
     const chosen = normalized > asWritten ? "normalized" : asWritten > 0 ? "as-written" : "none";
-    const check: JoinCheck = { left: big.name, right: small.name, column: "upc", leftRows: nonBlank, asWritten, normalized, chosen, sqlIds: [raw.sqlId, norm.sqlId] };
+    const check: JoinCheck = { left: big.name, right: small.name, column: barcodeCol(big), leftRows: nonBlank, asWritten, normalized, chosen, sqlIds: [raw.sqlId, norm.sqlId] };
     map.joins.push(check);
     const ent = await ctx.world.entity("join_key", ctx.sql.engine, `${big.name}~${small.name}:upc`, `${big.name} x ${small.name} on barcode`, {}, { kind: ctx.sql.engine, by: "Cartographer", ref: raw.sqlId });
     await ctx.world.fact(ent, "rows_joined_as_written", asWritten, { kind: ctx.sql.engine, by: "Cartographer", ref: raw.sqlId });
@@ -120,6 +128,27 @@ export async function chart(ctx: AgentContext): Promise<SourceMap> {
     { tables: map.tables.map((t) => `${t.kind}:${t.name}`), skipped: map.skipped });
   if (ctx.sql.engine === "zetaris") await remember(ctx, map).catch((e: Error) => say(ctx, "Cartographer", "Orchestrator", `could not read the remembered supplier rules from Zetaris (${e.message.slice(0, 120)}); every rule is learned again when a case needs it`));
   return map;
+}
+
+const TEXT_TYPE = /char|text|string/i;
+/** Text columns whose values are 10–14 digit numbers (UPC-12, EAN-13, GTIN-14 and their dropped-digit forms). */
+export async function barcodeColumnsByContent(ctx: AgentContext, t: TableInfo): Promise<{ column: string; digits: number; values: number; sqlId: string }[]> {
+  const cols = t.columns.filter((c) => !c.role && TEXT_TYPE.test(c.type) && /^\w+$/.test(c.name)).slice(0, 12);
+  if (!cols.length) return [];
+  const sel = cols.map((c, i) => `SUM(CASE WHEN ${c.name} RLIKE '^[0-9]+$' AND length(${c.name}) BETWEEN 10 AND 14 THEN 1 ELSE 0 END) AS k${i}, SUM(CASE WHEN ${c.name} <> '' THEN 1 ELSE 0 END) AS v${i}`).join(", ");
+  const r = await ctx.sql.run(`SELECT ${sel} FROM ${t.name}`, { agent: "Cartographer", purpose: `profile ${t.name}'s text columns by content: which hold barcodes` });
+  const row = r.rows[0] ?? {};
+  return cols.map((c, i) => ({ column: c.name, digits: Number(row[`k${i}`] ?? 0), values: Number(row[`v${i}`] ?? 0), sqlId: r.sqlId }))
+    .filter((x) => x.values >= 50 && x.digits / x.values >= 0.9);
+}
+
+/** How two barcode columns join: as written, and after stripping leading zeros (GTIN-14 / EAN-13 padding of a UPC-12). */
+export async function joinTest(ctx: AgentContext, big: string, colA: string, small: string, colB: string) {
+  const q = (on: string, purpose: string) => ctx.sql.run(
+    `SELECT COUNT(*) AS n FROM ${big} a JOIN ${small} b ON ${on} WHERE a.${colA} <> '' AND b.${colB} <> ''`, { agent: "Cartographer", purpose });
+  const raw = await q(`a.${colA} = b.${colB}`, `join test ${big} x ${small} on barcode as written`);
+  const norm = await q(`regexp_replace(a.${colA}, '^0+', '') = regexp_replace(b.${colB}, '^0+', '')`, `join test ${big} x ${small} on barcode without leading zeros`);
+  return { raw, norm };
 }
 
 const total = (map: SourceMap, table: string) => Object.values(map.barcodes.find((b) => b.table === table)?.lengths ?? {}).reduce((s, n) => s + n, 0);
