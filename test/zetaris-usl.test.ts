@@ -5,9 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Trace } from "../src/trace.ts";
 import { sqlId, type SqlResult } from "../src/sql/types.ts";
-import { bySupplier, checkShipNoticeKey, dqRow, priorVerdicts, publishVerdicts, verdictsViewSql, USL } from "../src/zetaris-usl.ts";
+import { bySupplier, checkShipNoticeKey, dqRow, mergeVerdicts, priorVerdicts, publishVerdicts, verdictsViewSql, USL } from "../src/zetaris-usl.ts";
 import type { AgentContext } from "../src/agents/context.ts";
-import { issueContract } from "../src/contract.ts";
 
 // A Zetaris stand-in: answers by the statement's first words, records every statement.
 function fakeZetaris(answers: [RegExp, Record<string, unknown>[]][]) {
@@ -38,9 +37,9 @@ test("bySupplier counts Zetaris's invalid records per supplier, largest first", 
 test("checkShipNoticeKey re-binds ship_notice, runs the key rule and names the unreached ship notices", async () => {
   const { ctx, seen } = fakeZetaris([
     [/^RUN DQ matched_sku/, [{ type: "Foreign Key Constraint", total_record: "14244", valid_record: "12361", invalid_record: "3" }]],
-    [/^SHOW DQ INVALID RECORD matched_sku/, [{ asn_id: "A1", supplier_id: "SUP001", notice_upc: "6078000010" }, { asn_id: "A2", supplier_id: "SUP001", notice_upc: "1" }, { asn_id: "A3", supplier_id: "SUP037", notice_upc: "2" }]],
+    [/^SELECT supplier_id, COUNT\(\*\) AS n, MIN\(asn_id\)/, [{ supplier_id: "SUP001", n: "2", asn_id: "A1", notice_upc: "6078000010" }, { supplier_id: "SUP037", n: "1", asn_id: "A3", notice_upc: "2" }]],
   ]);
-  const k = (await checkShipNoticeKey(ctx, issueContract(ctx.trace, { intent: "t", parameters: {}, capabilities: [`zetaris.usl.activate:${USL}.ship_notice`] })))!;
+  const k = (await checkShipNoticeKey(ctx, { rules: ["SUP028 no-check-digit 391/391"] }))!;
   assert.match(seen[0], new RegExp(`^ACTIVATE USL TABLE ${USL.replace(/\./g, "\\.")}\\.ship_notice AS[\\s\\S]*COALESCE\\(r\\.item_sku, 'unreached'\\)`));
   assert.deepEqual([k.total, k.valid, k.invalid], [14244, 12361, 3]);
   assert.deepEqual(k.bySupplier, [{ supplier: "SUP001", n: 2 }, { supplier: "SUP037", n: 1 }]);
@@ -61,21 +60,29 @@ test("publishVerdicts writes the view, re-binds the decision table, reads it bac
     [/^SELECT COUNT\(\*\) AS n FROM .*decision/, [{ n: "2" }]],
     [/^RUN DQ (recall_id|sku)/, [{ type: "Foreign Key Constraint", total_record: "2", valid_record: "2", invalid_record: "0" }]],
     [/^RUN DQ known_verdict/, [{ type: "Custom Data Quality", total_record: "2", valid_record: "2", invalid_record: "0" }]],
-    [/^SELECT run_id, recall_id, sku, verdict, decided_by FROM reconciled\.case_verdicts/, [{ run_id: "old", recall_id: "fda:H-1", sku: "NW-1", verdict: "unsure", decided_by: "agent" }]],
+    [/^SELECT run_id, recall_id, sku, verdict, basis, decided_by FROM reconciled\.case_verdicts/, [{ run_id: "old", recall_id: "fda:H-1", sku: "NW-1", verdict: "unsure", basis: "text", decided_by: "agent" }]],
   ]);
   const r = (await publishVerdicts(ctx, [{ recall_id: "fda:H-1", sku: "NW-1", verdict: "same", basis: "upc", decided_by: "agent" }, { recall_id: "fda:H-1", sku: "NW-2", verdict: "not-this", basis: "text", decided_by: "person" }]))!;
   assert.deepEqual(seen.slice(0, 3).map((q) => q.split(/\s+/).slice(0, 3).join(" ")), ["DROP VIEW IF", "CREATE SCHEMASTORE VIEW", "ACTIVATE USL TABLE"]);
-  assert.deepEqual([r.written, r.read], [2, 2]);
+  assert.deepEqual([r.written, r.read, r.carried], [2, 2, 0]);
   assert.deepEqual(r.dq.map((d) => `${d.rule} ${d.valid}/${d.total}`), ["recall_id 2/2", "sku 2/2", "known_verdict 2/2"]);
   const prior = await priorVerdicts(ctx);
-  assert.deepEqual(prior.get("fda:H-1 NW-1"), { run_id: "old", verdict: "unsure", decided_by: "agent" });
+  assert.deepEqual(prior.get("fda:H-1 NW-1"), { run_id: "old", verdict: "unsure", decided_by: "agent", basis: "text" });
 });
 
 test("on the DuckDB stand-in nothing is written and nothing is read", async () => {
   const { ctx, seen } = fakeZetaris([]);
   (ctx.sql as { engine: string }).engine = "duckdb-sample";
-  assert.equal(await checkShipNoticeKey(ctx, issueContract(ctx.trace, { intent: "t", parameters: {}, capabilities: [] })), undefined);
+  assert.equal(await checkShipNoticeKey(ctx), undefined);
   assert.equal(await publishVerdicts(ctx, []), undefined);
   assert.equal((await priorVerdicts(ctx)).size, 0);
   assert.equal(seen.length, 0);
+});
+
+test("mergeVerdicts carries earlier verdicts this run did not decide and keeps one row per recall and item", () => {
+  const prior = new Map([["fda:H-1 NW-1", { run_id: "old", verdict: "unsure", decided_by: "agent", basis: "text" }], ["fda:H-2 NW-9", { run_id: "old", verdict: "same", decided_by: "person", basis: "text" }]]);
+  const now = [{ recall_id: "fda:H-1", sku: "NW-1", verdict: "same", basis: "upc", decided_by: "agent" as const }, { recall_id: "fda:H-1", sku: "NW-1", verdict: "same", basis: "upc", decided_by: "agent" as const }];
+  const m = mergeVerdicts("new", now, prior);
+  assert.deepEqual(m.map((r) => `${r.run_id} ${r.recall_id} ${r.sku} ${r.verdict} ${r.decided_by}`).sort(), ["new fda:H-1 NW-1 same agent", "old fda:H-2 NW-9 same person"]);
+  assert.match(verdictsViewSql("new", m), /\('old', 'fda:H-2', 'NW-9', 'same', 'text', 'person'\)/);
 });

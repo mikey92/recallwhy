@@ -52,7 +52,7 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
     const n = finding.numbers;
     forDigest.push({ id: k.id, recall: k.recall.id, firm: k.recall.firm, product: k.recall.title, verdict: finding.verdict, onHand: n?.onHandUnits ?? 0, stores: n?.storesWithStock ?? 0, sold: n?.unitsSoldSince ?? 0, customers: n?.loyaltyCustomers ?? 0, packet: p?.status });
   }
-  await publishVerdicts(ctx, verdicts).catch((e) => ctx.trace.emit("note", "Orchestrator", { text: `verdicts not written back to Zetaris: ${(e as Error).message.slice(0, 160)}` }));
+  await publishVerdicts(ctx, verdicts, prior).catch((e) => ctx.trace.emit("note", "Orchestrator", { text: `verdicts not written back to Zetaris: ${(e as Error).message.slice(0, 160)}` }));
   await digest(ctx, { runId: ctx.trace.runId, scanned }, forDigest, outDir).catch((e) => ctx.trace.emit("note", "Briefer", { text: `digest not written: ${(e as Error).message}` }));
   writeFileSync(`${outDir}/report.md`, report(ctx, opts.since, scanned, results));
   writeFileSync(`${outDir}/result.json`, JSON.stringify({ runId: ctx.trace.runId, engine: ctx.sql.engine, model: ctx.model, since: opts.since, scanned, cases: results }, null, 2));

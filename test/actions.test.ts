@@ -66,3 +66,22 @@ test("the weekly digest reads every case through Markovian in bounded chunks, an
   assert.equal(d2.by, "template");
   assert.match(d2.rejected ?? "", /99999/);
 });
+
+test("approving a packet needs a name, records a signed high-risk contract that verifies later, and sends nothing", async () => {
+  const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { signatureValid } = await import("../src/contract.ts");
+  const run = `test-approve-${process.pid}`, dir = `out/${run}/actions/case-x`;
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(`${dir}/packet.json`, JSON.stringify({ caseId: "case-x", status: "draft", files: ["pull-list.csv"], pullUnits: 5, stores: 1 }));
+  try {
+    assert.deepEqual(approvePacket(run, "case-x", "  "), { ok: false, reason: "an approval needs the approver's name" });
+    const r = approvePacket(run, "case-x", "Dana, safety manager", "checked the lots");
+    assert.equal(r.ok, true);
+    const a = JSON.parse(readFileSync(r.file!, "utf8"));
+    assert.equal(a.sent, false);
+    assert.equal(a.contract.risk.level, "high");
+    assert.deepEqual(a.contract.risk.approvals.map((x: { by: string }) => x.by), ["Dana, safety manager"]);
+    assert.equal(signatureValid(a.contract), true, "the recorded contract verifies again from the file");
+    assert.equal(signatureValid({ ...a.contract, intent: { ...a.contract.intent, parameters: { pullUnits: 500 } } }), false);
+  } finally { rmSync(`out/${run}`, { recursive: true, force: true }); }
+});

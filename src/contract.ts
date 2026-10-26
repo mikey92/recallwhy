@@ -6,6 +6,7 @@
 // Used for the Cartographer's write-back of the corrected map, the Orchestrator's write-back of verdicts
 // (both to Zetaris), and a person's approval of an action packet.
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import type { Trace } from "./trace.ts";
 
 export interface Approval { kind: "operator-review"; by: string; at: string; decision: "approve" }
@@ -26,8 +27,15 @@ export class ContractRefused extends Error {
 }
 
 const TTL_MS = 5 * 60 * 1000;
-// Per-deployment secret: RECALLWHY_CONTRACT_SECRET when set, else one per process (contracts never leave it).
-const SECRET = process.env.RECALLWHY_CONTRACT_SECRET || randomBytes(32).toString("hex");
+// Per-deployment secret: RECALLWHY_CONTRACT_SECRET when set, else state/contract-secret (created once, mode
+// 600, gitignored), so a recorded approval can be verified again later, by another process.
+function deploymentSecret(): string {
+  if (process.env.RECALLWHY_CONTRACT_SECRET) return process.env.RECALLWHY_CONTRACT_SECRET;
+  const f = "state/contract-secret";
+  try { if (existsSync(f)) return readFileSync(f, "utf8").trim(); mkdirSync("state", { recursive: true }); const k = randomBytes(32).toString("hex"); writeFileSync(f, k + "\n", { mode: 0o600 }); chmodSync(f, 0o600); return k; }
+  catch { return randomBytes(32).toString("hex"); } // read-only checkout: contracts stay valid within this process
+}
+const SECRET = deploymentSecret();
 const used = new Set<string>();
 
 /** Canonical JSON: object keys sorted at every level, no whitespace. */
@@ -79,6 +87,13 @@ export function verifyContract(trace: Trace, c: ExecutionContract, capability: s
   if (used.has(key)) refuse("used", `${capability} was already used under this contract`);
   used.add(key);
   trace.emit("contract", engine, { event: "contract.verified", contractId: c.contractId, capability });
+}
+
+/** True when a recorded contract carries this deployment's signature (no expiry or single-use check: for audit). */
+export function signatureValid(c: ExecutionContract): boolean {
+  const { signature, ...body } = c;
+  const want = Buffer.from(sign(body), "hex"), got = Buffer.from(String(signature), "hex");
+  return want.length === got.length && timingSafeEqual(want, got);
 }
 
 /** Test hook: sign with an explicit secret (to show a contract from another signer is refused). */

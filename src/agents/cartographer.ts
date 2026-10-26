@@ -6,7 +6,7 @@
 // verified. The map is a hypothesis: when the Auditor finds ship notices its join cannot reach,
 // it sends them back, and the Cartographer diagnoses that supplier's barcodes (reconcile) and
 // corrects the map for the rest of the run.
-import { checkShipNoticeKey, USL } from "../zetaris-usl.ts";
+import { checkShipNoticeKey } from "../zetaris-usl.ts";
 import { issueContract, verifyContract } from "../contract.ts";
 import { inList, lit, say, type AgentContext } from "./context.ts";
 
@@ -238,6 +238,7 @@ export async function reconcile(ctx: AgentContext, caseId: string, skus: string[
         notes.push(`corrected map written back to Zetaris as ${RECONCILED} and read back: ${pub.readBack.map((p) => `${p.supplier} ${p.read}/${p.rows}`).join(", ")}`);
         if (pub.lineage.length) notes.push(`Zetaris lineage of ${RECONCILED}: ${pub.lineage.join(" + ")}`);
         if (pub.dq) notes.push(`Zetaris data-quality rule ${DQ_RULE} on ${USL_TABLE}: ${pub.dq.valid}/${pub.dq.total} rows valid, ${pub.dq.invalid} invalid`);
+        if (pub.keyError) notes.push(`could not re-check the barcode key in the Zetaris USL (${pub.keyError})`);
         if (pub.key) notes.push(`Zetaris key check ${pub.key.table}.matched_sku -> item: ${pub.key.valid}/${pub.key.total} barcoded ship notices reach an item${pub.key.invalid ? `; ${pub.key.invalid} no proven rule reaches yet (${pub.key.bySupplier.slice(0, 6).map((x) => `${x.supplier} ${x.n}`).join(", ")})` : ", every one"}`);
         await ctx.world.fact(ent, "published_view", { view: RECONCILED, readBack: pub.readBack, lineage: pub.lineage, dataQuality: pub.dq ?? null, uslKey: pub.key ? { table: pub.key.table, total: pub.key.total, valid: pub.key.valid, invalid: pub.key.invalid, bySupplier: pub.key.bySupplier } : null }, { kind: ctx.sql.engine, by: "Cartographer", ref: pub.readBack[0]?.sqlId });
       }
@@ -271,7 +272,7 @@ export async function publish(ctx: AgentContext, map: SourceMap | undefined, lea
   const contract = issueContract(ctx.trace, {
     intent: "write-back.corrected-barcode-map",
     parameters: { rules: learned.map((r) => ({ supplier: r.supplier, transform: r.transform, provenOn: `${r.rows}/${r.rows} ship notices`, sql: r.sqlId })) },
-    capabilities: [`zetaris.view.replace:${RECONCILED}`, `zetaris.usl.activate:${USL_TABLE}`, `zetaris.usl.activate:${USL}.ship_notice`],
+    capabilities: [`zetaris.view.replace:${RECONCILED}`, `zetaris.usl.activate:${USL_TABLE}`],
   });
   verifyContract(ctx.trace, contract, `zetaris.view.replace:${RECONCILED}`, "Cartographer");
   await run(`DROP VIEW IF EXISTS ${RECONCILED}`, `replace ${RECONCILED}`);
@@ -291,8 +292,9 @@ export async function publish(ctx: AgentContext, map: SourceMap | undefined, lea
     .then(() => run(`RUN DQ ${DQ_RULE} TABLE ${USL_TABLE}`, `run the Zetaris data-quality rule ${DQ_RULE}`))
     .then((r) => ({ total: Number(r.rows[0]?.total_record ?? 0), valid: Number(r.rows[0]?.valid_record ?? 0), invalid: Number(r.rows[0]?.invalid_record ?? 0), sqlId: r.sqlId }), () => undefined);
   // The governed model (sql/04_usl.sql): re-bind ship_notice to the corrected map and let Zetaris check the barcode key.
-  const key = await checkShipNoticeKey(ctx, contract).catch(() => undefined);
-  return { readBack, lineage, dq, key };
+  const key = await checkShipNoticeKey(ctx, { rules: learned.map((r) => `${r.supplier} ${r.transform} ${r.rows}/${r.rows}`) })
+    .catch((e: Error) => ({ error: e.message.slice(0, 160) }));
+  return { readBack, lineage, dq, key: key && "error" in key ? undefined : key, keyError: key && "error" in key ? key.error : undefined };
 }
 
 const dateFormat = (v: string) => (/^\d{8}$/.test(v) ? "yyyymmdd" : /^\d{4}-\d{2}-\d{2}/.test(v) ? "yyyy-mm-dd" : "unknown");

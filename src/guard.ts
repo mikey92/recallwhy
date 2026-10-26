@@ -9,8 +9,8 @@ export interface GuardResult { flagged: boolean; cls?: InjectionClass; match?: s
 
 const RULES: [InjectionClass, RegExp][] = [
   ["unicode", /[\u202A-\u202E\u2066-\u2069]|\\u20(2[A-E]|6[6-9])/],
-  ["instruction-override", /\b(ignore|disregard|forget|override|bypass)\b[^.\n]{0,40}\b(previous|prior|above|earlier|preceding|all|any|the|these|those)\b[^.\n]{0,25}\b(instructions?|rules?|prompts?|directions?|guidelines?|user)\b|\bignore (all |any )?previous\b|\byou are now\b|\bunrestricted mode\b|\bnew instructions?\s*:/i],
-  ["instruction-override", /\bdisregard the (user|system|operator)\b/i],
+  ["instruction-override", /\b(ignore|disregard|forget|override|bypass)\b[^.\n]{0,30}\b(all (of )?(the )?)?(previous|prior|above|earlier|preceding|system|your)\b[^.\n]{0,25}\b(instructions?|rules?|prompts?|guidelines?)\b|\bignore (all |any )?previous\b|\byou are now\b|\bunrestricted mode\b|\bnew instructions?\s*:/i],
+  ["instruction-override", /\bdisregard the (user|system|operator)\b(?! manual)[^.\n]{0,20}\b(and|to)\b/i],
   ["role-confusion", /<\/?\s*(system|user|assistant|developer)\s*>|^\s*(system|assistant|developer)\s*:/im],
   ["role-confusion", /\bpretend (to be|you are)\b|\bact as (the )?(system|admin|administrator|root)\b|\byou are an? (database |system )?(admin|administrator|root)\b/i],
   ["embedded-control", /\[\/?INST\]|<\|im_(start|end)\|>|<\|(system|user|assistant)\|>|###\s*(instruction|system)|BEGIN (SYSTEM )?PROMPT/i],

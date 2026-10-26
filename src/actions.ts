@@ -119,7 +119,7 @@ export function approvePacket(runId: string, caseId: string, by: string, note = 
   try { verifyContract(trace, contract, capability, "Human"); }
   catch (e) { return { ok: false, reason: e instanceof ContractRefused && e.reason === "approval-missing" ? "an approval needs the approver's name" : (e as Error).message }; }
   const file = `${dir}/approval.json`;
-  writeFileSync(file, JSON.stringify({ runId, caseId, by: who, note: note.slice(0, 500), at, files: p.files, sent: false, contract: { contractId: contract.contractId, signature: contract.signature, expiresAt: contract.expiresAt } }, null, 2));
+  writeFileSync(file, JSON.stringify({ runId, caseId, by: who, note: note.slice(0, 500), at, files: p.files, sent: false, contract }, null, 2));
   return { ok: true, file };
 }
 
