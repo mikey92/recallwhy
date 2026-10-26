@@ -18,7 +18,7 @@ committed data (`data/synthetic/`).
 
 **Count.** By hand: at least 6 queries across three systems written by the analyst, 4 product decisions, one
 barcode-format puzzle, and three documents. The agents: 26 SQL statements and 7 model calls, 87 seconds from
-opening the case to its action packet (17:46:06 → 17:47:33 UTC), most of it the paced model and Zetaris's
+opening the case to its action packet (18:42:24 → 18:43:51 UTC), most of it the paced model and Zetaris's
 data-quality runs.
 
 **What this does not show.** How long an analyst takes; the hand path depends on the person and the tools. The

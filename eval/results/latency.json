@@ -1,114 +1,114 @@
 {
   "note": "Seconds from the Investigator opening a case to its action packet (after the Cartographer's map and the Scout's sweep, which run once per run), in the committed live example runs (Zetaris + Nemotron via Meterless Nightshift, paced at 4 model calls a minute).",
   "casesWithPacket": 11,
-  "medianSeconds": 45.869,
-  "minSeconds": 12.267,
-  "maxSeconds": 104.124,
-  "medianModelSeconds": 38.223,
-  "medianSqlSeconds": 3.055,
+  "medianSeconds": 49.204,
+  "minSeconds": 9.364,
+  "maxSeconds": 90.118,
+  "medianModelSeconds": 33.975,
+  "medianSqlSeconds": 4.531,
   "cases": [
     {
       "run": "example_1",
       "caseId": "case-fda-H-1364-2026",
-      "seconds": 3.5,
-      "modelSeconds": 3.4,
+      "seconds": 24.5,
+      "modelSeconds": 24.5,
       "sqlSeconds": 0,
       "packet": false
     },
     {
       "run": "example_1",
       "caseId": "case-fda-H-1396-2026",
-      "seconds": 61.9,
-      "modelSeconds": 16.9,
-      "sqlSeconds": 44.9,
+      "seconds": 64.9,
+      "modelSeconds": 19,
+      "sqlSeconds": 45.8,
       "packet": true
     },
     {
       "run": "example_1",
       "caseId": "case-fda-H-1355-2026",
-      "seconds": 42,
-      "modelSeconds": 38.2,
-      "sqlSeconds": 3.8,
+      "seconds": 23.7,
+      "modelSeconds": 15.8,
+      "sqlSeconds": 7.8,
       "packet": true
     },
     {
       "run": "example_1",
       "caseId": "case-fda-H-1354-2026",
-      "seconds": 104.1,
-      "modelSeconds": 101.3,
-      "sqlSeconds": 2.8,
+      "seconds": 90.1,
+      "modelSeconds": 84.5,
+      "sqlSeconds": 5.5,
       "packet": true
     },
     {
       "run": "example_1",
       "caseId": "case-fda-H-1351-2026",
-      "seconds": 59.7,
-      "modelSeconds": 56.6,
-      "sqlSeconds": 3.1,
+      "seconds": 60.2,
+      "modelSeconds": 56.4,
+      "sqlSeconds": 3.7,
       "packet": true
     },
     {
       "run": "example_2",
       "caseId": "case-fda-H-1362-2026",
       "seconds": 86.9,
-      "modelSeconds": 15.6,
-      "sqlSeconds": 71.2,
+      "modelSeconds": 16.3,
+      "sqlSeconds": 70.5,
       "packet": true
     },
     {
       "run": "example_3",
       "caseId": "case-fda-H-1099-2026",
-      "seconds": 69.9,
-      "modelSeconds": 61.6,
-      "sqlSeconds": 8.2,
+      "seconds": 49.3,
+      "modelSeconds": 41.1,
+      "sqlSeconds": 8,
       "packet": false
     },
     {
       "run": "example_3_after_human_decision",
       "caseId": "case-fda-H-1099-2026",
-      "seconds": 34,
-      "modelSeconds": 31.9,
-      "sqlSeconds": 1.9,
+      "seconds": 36.2,
+      "modelSeconds": 34,
+      "sqlSeconds": 2.1,
       "packet": true
     },
     {
       "run": "example_4",
       "caseId": "case-fda-H-0007-2027",
-      "seconds": 84.4,
-      "modelSeconds": 9.4,
-      "sqlSeconds": 74.9,
+      "seconds": 88.7,
+      "modelSeconds": 9.3,
+      "sqlSeconds": 79.3,
       "packet": true
     },
     {
       "run": "example_4",
       "caseId": "case-fda-H-0014-2027",
-      "seconds": 12.3,
-      "modelSeconds": 9.4,
-      "sqlSeconds": 2.8,
+      "seconds": 9.4,
+      "modelSeconds": 5.2,
+      "sqlSeconds": 4.1,
       "packet": true
     },
     {
       "run": "example_4",
       "caseId": "case-fda-H-0011-2027",
-      "seconds": 42.9,
-      "modelSeconds": 40.3,
-      "sqlSeconds": 2.6,
+      "seconds": 49.2,
+      "modelSeconds": 45.8,
+      "sqlSeconds": 3.3,
       "packet": true
     },
     {
       "run": "example_4",
       "caseId": "case-fda-H-0002-2027",
-      "seconds": 45.9,
-      "modelSeconds": 38.6,
-      "sqlSeconds": 7.2,
+      "seconds": 39.4,
+      "modelSeconds": 34.8,
+      "sqlSeconds": 4.5,
       "packet": true
     },
     {
       "run": "example_4",
       "caseId": "case-cpsc-27017",
-      "seconds": 44.3,
-      "modelSeconds": 42.6,
-      "sqlSeconds": 1.6,
+      "seconds": 45.5,
+      "modelSeconds": 44,
+      "sqlSeconds": 1.4,
       "packet": true
     }
   ]
