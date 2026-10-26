@@ -4,7 +4,7 @@
   "firm": "Decathlon America LLC, of San Francisco, California",
   "product": "Decathlon America Recalls Van Rysel GRVL AF Bicycles Due to Risk of Serious Injury or Death from Crash Hazard",
   "verdict": "act-now",
-  "dir": "out/2026-10-26T17-49-13-428d45/actions/case-cpsc-27017",
+  "dir": "out/2026-10-26T18-45-17-abf16c/actions/case-cpsc-27017",
   "status": "draft",
   "stores": 8,
   "pullUnits": 639,
@@ -12,7 +12,7 @@
   "shipNotices": 17,
   "customers": 47,
   "sql": {
-    "pullList": "q-aeadcc1202",
+    "pullList": "q-4059e77856",
     "shipNotices": "q-99327d5ecd"
   },
   "files": [

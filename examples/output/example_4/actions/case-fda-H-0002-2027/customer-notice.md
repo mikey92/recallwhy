@@ -13,4 +13,4 @@ Reason given in the recall notice: "Seeds may have been contaminated with E. col
 
 Please do not use it. Return it to any Northwind store for a full refund, or dispose of it. Your receipt is not needed.
 
-_Prepared by RecallWhy run 2026-10-26T17-49-13-428d45. Review before sending._
+_Prepared by RecallWhy run 2026-10-26T18-45-17-abf16c. Review before sending._

@@ -4,7 +4,7 @@
   "firm": "Taylor Fresh Foods Inc",
   "product": "Salsa Verde Mild. Ingredients: Whole Tomatillos (***), Roasted Poblano Chile, Jalapeno Pepper, Cilantro, Serrano…",
   "verdict": "act-now",
-  "dir": "out/2026-10-26T17-45-52-116dd0/actions/case-fda-H-1362-2026",
+  "dir": "out/2026-10-26T18-42-09-c7e9c2/actions/case-fda-H-1362-2026",
   "status": "draft",
   "stores": 9,
   "pullUnits": 424,
@@ -12,12 +12,13 @@
   "shipNotices": 5,
   "customers": 131,
   "sql": {
-    "pullList": "q-3fff0b6625",
+    "pullList": "q-314fec4945",
     "shipNotices": "q-7f42c33454"
   },
   "files": [
     "pull-list.csv",
     "supplier-request.md",
+    "fda-traceability.csv",
     "customer-notice.md"
   ],
   "items": [

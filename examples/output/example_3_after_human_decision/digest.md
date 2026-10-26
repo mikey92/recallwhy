@@ -1,4 +1,4 @@
-# This week's recalls — 2026-10-26T17-53-34-1d871b
+# This week's recalls — 2026-10-26T18-49-41-49e28e
 
 1 recall notice(s) read; 1 touch our catalog: **1 act now**, 0 notify, 0 need a person, 0 no exposure, 0 not ours.
 On our shelves in recalled lots: **231 unit(s)**; customers to notify: at most 95.

@@ -4,7 +4,7 @@
   "firm": "G L Mezzetta Inc",
   "product": "Mezzetta GOLDEN GREEK PEPERONCINI MEDIUM HEAT 32 FL OZ  G.L. MEZZETTA, INC.,  AMERICAN CANYON, NAPA VALLEY, CA 94503…",
   "verdict": "act-now",
-  "dir": "out/2026-10-26T17-49-13-428d45/actions/case-fda-H-0007-2027",
+  "dir": "out/2026-10-26T18-45-17-abf16c/actions/case-fda-H-0007-2027",
   "status": "draft",
   "stores": 2,
   "pullUnits": 12,
@@ -12,12 +12,13 @@
   "shipNotices": 1,
   "customers": 12,
   "sql": {
-    "pullList": "q-e5f7e11ce3",
+    "pullList": "q-9a48c88bbc",
     "shipNotices": "q-012ffa48ce"
   },
   "files": [
     "pull-list.csv",
     "supplier-request.md",
+    "fda-traceability.csv",
     "customer-notice.md"
   ],
   "items": [
