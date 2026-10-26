@@ -22,9 +22,9 @@ jobs:
       - run: |
           mkdir -p _site/examples _site/img
           cp site/*.html _site/
-          cp docs/img/report-case.png docs/img/live-agents.gif _site/img/
-          node scripts/build-site.mjs _site
+          cp docs/img/report-case.jpg _site/img/
           for d in examples/output/*/; do n=$(basename "$d"); mkdir -p "_site/examples/$n"; cp "$d"report.html "$d"trace.jsonl "_site/examples/$n/"; for x in digest.md actions briefs; do [ -e "$d$x" ] && cp -R "$d$x" "_site/examples/$n/"; done; done
+          node scripts/build-site.mjs _site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

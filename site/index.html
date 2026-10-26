@@ -2,7 +2,7 @@
 <title>RecallWhy</title>
 <style>
 :root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1f;--mute:#6b7280;--line:#e5e5e0;--accent:#c0392b}
-@media (prefers-color-scheme:dark){:root{--bg:#111214;--card:#1b1c1f;--ink:#eee;--mute:#9aa0a6;--line:#2c2d31}}
+@media (prefers-color-scheme:dark){:root{--accent:#f87171;--bg:#111214;--card:#1b1c1f;--ink:#eee;--mute:#9aa0a6;--line:#2c2d31}}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,system-ui,sans-serif}
 main{max-width:980px;margin:0 auto;padding:40px 20px 60px}
 .k{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
@@ -20,6 +20,7 @@ h2{font-size:20px;margin:34px 0 10px}.tbl{overflow-x:auto}.tbl table{border-coll
 <p class="lead">Last December the FDA warned four of the largest U.S. grocers that recalled infant formula was still on shelves in over 175 locations. RecallWhy turns a new recall notice into a verified pull list, supplier request and customer notice in minutes — which lots, which stores, how many customers — across the live federal feeds, the ERP and the supplier portal, reached only through Zetaris. Every number carries the query behind it.</p>
 <p class="hook">The agents don't just read the fragments: when a join fails, they find the supplier's rule, prove it on all of that supplier's data and write the repaired join back into Zetaris, so the next run starts from it.</p>
 <iframe src="https://iframe.mediadelivery.net/embed/778121/527853c5-0530-4cf3-97c8-db4fb73aadcd" allow="fullscreen" title="RecallWhy demo video (3:38)"></iframe>
+<p class="chapters"><a href="https://iframe.mediadelivery.net/embed/778121/527853c5-0530-4cf3-97c8-db4fb73aadcd">Open the video on its own page</a> if it does not play here.</p>
 <p class="chapters"><b>In the video (3:38):</b> 0:00 live: 39 recalls, 5 on our shelves · 0:20 the problem · 0:42 Zetaris: feeds, databases, governed model · 1:03 the Cartographer maps the sources · 1:18 Nemotron judges, the Auditor blocks a wrong dismissal · 1:40 a supplier's barcode rule proven and written back · 2:06 the work: map, pull list, drafts · 2:21 a reviewer decides, the next run follows · 2:42 Nemotron proposes a rule, SQL proves it · 3:01 results</p>
 <div class="nums">
 <div class="num"><b>134 / 146</b><span>recalled items caught over 322 recall/SKU pairs on real food products; 1 missed, 1 false alarm (Nemotron 3 Ultra via Meterless Nightshift)</span></div>
@@ -38,6 +39,6 @@ h2{font-size:20px;margin:34px 0 10px}.tbl{overflow-x:auto}.tbl table{border-coll
 <p><a href="https://github.com/mikey92/recallwhy">Code, evaluation and API on GitHub</a> (README, Docker, <code>POST /run</code>, sample mode with no credentials, JSONL traces) · <a href="https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf">Slides (PDF)</a></p>
 <!-- MODELS -->
 <h2>One case</h2>
-<img src="img/report-case.png" alt="A case from a live run: banner of what the agents did above the cited brief and the trace">
+<img src="img/report-case.jpg" loading="lazy" alt="A case from a live run: banner of what the agents did above the cited brief and the trace">
 <p><small>The retailer's food items are real products (USDA FoodData Central, Open Food Facts); its stores stand at real SNAP-authorized supermarket locations (USDA FNS); stock, sales and ship notices are synthetic (Northwind Mercantile); the recall feeds are live CPSC and openFDA data. Built in the hackathon window, 22–27 Oct 2026. This page is rebuilt from the repository on every push.</small></p>
 </main></body></html>
