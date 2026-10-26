@@ -83,6 +83,34 @@ same pairs and model:
   We kept the narrow rule because the same code runs on the synthetic set, where the broad one
   buried the reviewer; the numbers above were measured on the pairs that motivated both changes.
 
+**The 23 positives the text path still dismisses** (barcodes hidden; with the barcode visible, all 23 are found by the UPC rule). Most are the recalled product line under a title that names it generically or in another form: eggs listed as "Large Egg" or "Eggs Jumbo", a lettuce kit described by its ingredients, a flour or pack size the notice words differently, a title in Chinese.
+
+| Recall | Our item's catalog title | Title source |
+|---|---|---|
+| H-1244-2026 | GRAND CENTRAL BAKING COMPANY, RUSTIC BREADS 20 oz | FDC |
+| H-1332-2026 | VANILLA BLENDED GREEK NONFAT YOGURT, VANILLA 32 oz | FDC |
+| H-1280-2026 | CLASSIC ICEBERG LETTUCE, CARROTS, RED CABBAGE SALAD, CLASSIC ICEBERG 12 oz | FDC |
+| H-1280-2026 | CLASSIC ICEBERG LETTUCE, CARROTS, RED CABBAGE SALAD, CLASSIC ICEBERG 24 oz | FDC |
+| H-1280-2026 | ICEBERG SHREDDED LETTUCE, ICEBERG 16 oz | FDC |
+| H-1280-2026 | ICEBERG SHREDDED LETTUCE, ICEBERG 8 oz | FDC |
+| H-1129-2026 | MORNINGSTAR FARMS VEGGITIZERS VEGGIE BUFFALO WINGS, 10.5 OZ | FDC |
+| H-1119-2026 | FRESH ROASTED SUNFLOWER SEEDS 11 oz | FDC |
+| H-1333-2026 | CHOCOLATE ORGANIC LOWFAT MILK, CHOCOLATE 144 fl oz | FDC |
+| H-1193-2026 | BANANA & STRAWBERRY ORGANIC FRUIT PUREE, BANANA & STRAWBERRY 4 oz | FDC |
+| H-1130-2026 | Morningstar Farms Breakfast Hot & Spicy Sausage Patties 8oz | FDC |
+| H-1230-2026 | FARM FRESH LARGE EGGS | FDC |
+| H-1230-2026 | Eggs Jumbo | OFF |
+| H-1230-2026 | Large Egg | OFF |
+| H-1355-2026 | Pico de gallo salsa 7 oz | OFF |
+| H-1329-2026 | Authentic Pounded Yam 32 oz | OFF |
+| H-1329-2026 | Ola Ola Authentic Pounded Yam (iyan) Pack of 3 (12 LBS) 64 oz | OFF |
+| H-1329-2026 | Pounded yam flour 80 oz | OFF |
+| H-1104-2026 | Cacao Beans Dates Cacao Butter Sea Salt | OFF |
+| H-1149-2026 | Chicken Filet | OFF |
+| H-1260-2026 | 宁波汤圆 | OFF |
+| H-1340-2026 | River Valley Sprouts 5 oz | OFF |
+| H-1229-2026 | Eggs - Organic, Cage Free, Brown 0 oz | OFF |
+
 What the text path still misses: FDC descriptions that are long ingredient-style labels, FDC records
 whose description is an older name for the barcode, and OFF names that are empty or wrong. On real
 titles, a barcode is what makes the match; the text judge is a safety net.
