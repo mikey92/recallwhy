@@ -15,7 +15,8 @@
     "eval": "npx tsx eval/run.ts --provider meterless --model nvidia/nemotron-3-ultra-550b-a55b",
     "api": "npm run api  →  POST /run {since, only?, limit?}, GET /packets, POST /approve",
     "docker": "docker build -t recallwhy . && docker run --rm -p 8000:8000 recallwhy",
-    "approve": "npm run approve -- <run-id> <case-id>  (records approval of an action packet; nothing is sent)"
+    "approve": "npm run approve -- <run-id> <case-id>  (records approval of an action packet; nothing is sent)",
+    "codespaces": "https://codespaces.new/mikey92/recallwhy?quickstart=1 (sample mode, no keys: npm run demo runs on create; npm run verify; npm run view)"
   },
   "agents": [
     {
@@ -110,6 +111,6 @@
     "World Model",
     "Markovian"
   ],
-  "tests": "npm test (104 tests; Meterless engine tests in test/engines.test.ts, Markovian digest in test/actions.test.ts)",
+  "tests": "npm test (106 tests; Meterless engine tests in test/engines.test.ts, Markovian digest in test/actions.test.ts)",
   "track_statement": "Track 1, Solving Fragmented Intelligence: agents that discover and reconcile two live federal recall feeds, an ERP and a supplier portal through Zetaris, and prove each reconciliation rule with SQL before using it."
 }

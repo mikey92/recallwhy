@@ -1,0 +1,9 @@
+{
+  "name": "RecallWhy (sample mode, no keys)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "postCreateCommand": "npm ci && npm run demo",
+  "postAttachCommand": "echo 'Sample mode ready: npm run demo · npm run verify · npm run view (report viewer on port 8899)'",
+  "forwardPorts": [8899],
+  "portsAttributes": { "8899": { "label": "RecallWhy viewer", "onAutoForward": "openBrowser" } },
+  "containerEnv": { "SAMPLE_MODE": "true", "LLM_PROVIDER": "none" }
+}
