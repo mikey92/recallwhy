@@ -16,4 +16,4 @@ Your ship notices for the affected lots (q-4fce987f7e):
 
 We are pulling 130 unit(s) from 4 store(s); 102 unit(s) were sold since the recall began. Please confirm credit for the shipped units and whether replacement stock is from unaffected lots.
 
-_Prepared by RecallWhy run 2026-10-26T15-27-45-f8d2c3. Review before sending._
+_Prepared by RecallWhy run 2026-10-26T17-40-51-7739cf. Review before sending._

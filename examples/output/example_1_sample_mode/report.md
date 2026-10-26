@@ -1,4 +1,4 @@
-# RecallWhy run 2026-10-26T15-41-46-9cecbd
+# RecallWhy run 2026-10-26T17-54-37-64bf2d
 
 Engine: **duckdb-sample** (SAMPLE MODE — local stand-in, Zetaris not used) · Model: **none:none** · Recalls since 2026-09-15: **146** scanned, **5** touch our catalog
 
@@ -15,4 +15,4 @@ Engine: **duckdb-sample** (SAMPLE MODE — local stand-in, Zetaris not used) · 
 | [case-fda-H-1351-2026](briefs/case-fda-H-1351-2026.md) | fda:H-1351-2026 | act-now | 1 | template | [pull 122 in 6 store(s)](actions/case-fda-H-1351-2026/) |
 | [case-fda-H-1364-2026](briefs/case-fda-H-1364-2026.md) | fda:H-1364-2026 | needs-human | 1 | template |  |
 
-Weekly digest: [digest.md](digest.md) · Trace: `logs/trace-2026-10-26T15-41-46-9cecbd.jsonl`
+Weekly digest: [digest.md](digest.md) · Trace: `logs/trace-2026-10-26T17-54-37-64bf2d.jsonl`
