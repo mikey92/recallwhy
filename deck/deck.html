@@ -79,15 +79,14 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 
 <section class="s"><div class="k">5b · One live recall, end to end</div><h2>A live FDA notice to a pull list, through Zetaris.</h2>
 <div class="grid g2" style="gap:40px"><div>
-<p style="font-size:24px;margin:0 0 10px"><b>H-0014-2027</b>, GIAS lemon Alfredo fettuccine, read from the live feed on 26 Oct:</p><ol class="e2e" style="margin:0;padding-left:28px">
-<li><b>Scout</b> reads the live FDA feed through Zetaris (REST) and sweeps it against the ERP (JDBC): our SKU's UPC is printed in the notice.</li>
-<li><b>Investigator</b>: Nemotron reads the lot codes from the notice; SQL: 18 units on hand in 1 store, 30 sold since 24 Sep.</li>
+<p style="font-size:24px;margin:0 0 10px"><b>H-0007-2027</b>, Mezzetta Golden Greek peperoncini, read from the live feed on 26 Oct:</p><ol class="e2e" style="margin:0;padding-left:28px">
+<li><b>Scout</b> reads the live FDA feed through Zetaris (REST) and sweeps it against the ERP (JDBC): our UPC 073214003280 is printed in the notice.</li>
+<li><b>Investigator</b>: Nemotron dismisses a look-alike Mezzetta pasta sauce and reads lot 720106; SQL: 12 units on hand in 2 stores, one in NY, which the notice does not list.</li>
 <li><b>Auditor</b> blocks the shortcut: the supplier's ship notices reach the lot by SKU, <b>0 by barcode</b> → sends the rows to the Cartographer.</li>
-<li><b>Cartographer</b>: SUP028 drops the check digit — proven on <b>391 of 391</b> ship notices, written back to Zetaris, read back, lineage + DQ rule 0 invalid.</li>
-<li><b>Auditor</b> re-derives every number with its own SQL → approved. <b>Briefer</b> cites only World Model facts.</li>
-<li><b>Packet</b>: pull 18 units in 1 store, supplier request citing its ship notice, notice for at most 9 customers. A person approves; nothing is sent.</li></ol>
-<p class="mute" style="font-size:22px;margin-top:18px">Trace: examples/output/example_4/trace.jsonl, seq 155–202.</p></div>
-<div><img class="shot" src="zetaris-preview.png" style="height:600px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">The corrected join in Zetaris's own Data Explorer: <code>reconciled.ship_notice_item_keys</code>, where SUP028's 11-digit barcodes now meet our 12-digit UPCs. Any Zetaris user can query it.</p></div></div>
+<li><b>Cartographer</b>: SUP007 drops the check digit — proven on <b>458 of 458</b> ship notices, written back to Zetaris with lineage + DQ rule 0 invalid; the USL key now reaches <b>12,554 of 14,244</b>. Two rules from earlier runs were re-proven first.</li>
+<li><b>Auditor</b> re-derives every number with its own SQL → approved. <b>Packet</b>: pull 12 units in 2 stores, supplier request, notice for at most 12 customers. A person approves; nothing is sent.</li></ol>
+<p class="mute" style="font-size:22px;margin-top:18px">Trace: examples/output/example_4/trace.jsonl, seq 104–171. The whole run, 39 live notices to 5 packets: 4 min 46 s.</p></div>
+<div><img class="shot" src="zetaris-preview.png" style="height:600px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">The corrected join in Zetaris's own Data Explorer: <code>reconciled.ship_notice_item_keys</code>, where suppliers' 11-digit barcodes now meet our 12-digit UPCs. Any Zetaris user can query it.</p></div></div>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s dark"><div class="k">5c · A governed model in Zetaris</div><h2>The joins the agents rely on, as keys Zetaris checks.</h2>
