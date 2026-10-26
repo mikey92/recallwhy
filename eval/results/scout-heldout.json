@@ -1,0 +1,198 @@
+{
+  "method": "per example: fixtures registry minus every example equal to the prompt (exact, after trim); official runner's tally/toMetrics/gate reimplemented",
+  "corpus": "conformance/scout-intent/evals/regression-set/v1 (Meterless@1742dec)",
+  "verbatimInRegistry": {
+    "found": 19,
+    "of": 32,
+    "ids": [
+      "deal-recover-001",
+      "deal-recover-002",
+      "deal-recover-003",
+      "deal-query-001",
+      "deal-query-002",
+      "deal-update-001",
+      "email-draft-001",
+      "email-draft-002",
+      "email-summarize-001",
+      "email-bulk-001",
+      "research-comp-001",
+      "research-comp-002",
+      "research-market-001",
+      "plan-long-001",
+      "plan-long-002",
+      "clean-001",
+      "clean-003",
+      "edge-twoway-001",
+      "edge-overlap-001"
+    ]
+  },
+  "descriptionFallback": [
+    "deal-update-001:deal.update",
+    "email-summarize-001:email.summarize",
+    "email-bulk-001:email.send",
+    "research-market-001:research.market"
+  ],
+  "metrics": {
+    "intent_top1": 0.882,
+    "intent_top3_recall": 0.941,
+    "injection_precision": 1,
+    "injection_recall": 1,
+    "tool_precision": 0.933,
+    "clarification_rate": 0.156,
+    "override_frequency": 0
+  },
+  "slices": {
+    "surface=chat": {
+      "n": 31,
+      "metrics": {
+        "intent_top1": 0.875,
+        "intent_top3_recall": 0.938,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 0.929,
+        "clarification_rate": 0.161,
+        "override_frequency": 0
+      }
+    },
+    "surface=inbox": {
+      "n": 1,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 0,
+        "override_frequency": 0
+      }
+    },
+    "role=ae": {
+      "n": 21,
+      "metrics": {
+        "intent_top1": 0.75,
+        "intent_top3_recall": 0.875,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 0.833,
+        "clarification_rate": 0.19,
+        "override_frequency": 0
+      }
+    },
+    "role=csm": {
+      "n": 1,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 0,
+        "override_frequency": 0
+      }
+    },
+    "intent_family=deal": {
+      "n": 7,
+      "metrics": {
+        "intent_top1": 0.714,
+        "intent_top3_recall": 0.857,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 0.833,
+        "clarification_rate": 0.429,
+        "override_frequency": 0
+      }
+    },
+    "intent_family=email": {
+      "n": 5,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 0.2,
+        "override_frequency": 0
+      }
+    },
+    "intent_family=research": {
+      "n": 3,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 0,
+        "override_frequency": 0
+      }
+    },
+    "intent_family=plan": {
+      "n": 2,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 0,
+        "override_frequency": 0
+      }
+    },
+    "risk_class=low": {
+      "n": 11,
+      "metrics": {
+        "intent_top1": 0.909,
+        "intent_top3_recall": 0.909,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 0.909,
+        "clarification_rate": 0.091,
+        "override_frequency": 0
+      }
+    },
+    "risk_class=medium": {
+      "n": 2,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 0,
+        "override_frequency": 0
+      }
+    },
+    "risk_class=high": {
+      "n": 2,
+      "metrics": {
+        "intent_top1": 1,
+        "intent_top3_recall": 1,
+        "injection_precision": 1,
+        "injection_recall": 1,
+        "tool_precision": 1,
+        "clarification_rate": 1,
+        "override_frequency": 0
+      }
+    }
+  },
+  "gate": {
+    "pass": false,
+    "failures": [
+      "slice role=ae: intent_top1=0.750 below slice floor 0.8",
+      "slice intent_family=deal: intent_top1=0.714 below slice floor 0.8"
+    ]
+  },
+  "intentMisses": [
+    {
+      "id": "deal-recover-002",
+      "expected": "deal.recover",
+      "got": "deal.query"
+    },
+    {
+      "id": "edge-twoway-001",
+      "expected": "deal.query",
+      "got": "deal.recover"
+    }
+  ],
+  "overrideNote": "override_frequency is 0 by definition: no override data in corpus v1"
+}

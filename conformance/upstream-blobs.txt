@@ -23,3 +23,13 @@ world-model 449cb73118c1f39ba0b8bb782c7f89d58e84e2be resolve.ts
 world-model ad7efafd69f841ec6e5851c6d754b0f424f5c4a8 stableIds.ts
 world-model eb9c772a278737d6b5b453d658ae7b77091569d6 store.ts
 world-model dddd2861570309b1e2c6c1e0baea5c7ff81f876e types.ts
+scout-intent c7fb307c2681ac25809ec56b3ae0e06dd419e281 evals/config/thresholds.yaml
+scout-intent d7c8cab620d37c3aa18aeb8accffc8ebace87c89 evals/fixtures/intents.json
+scout-intent 4ed9b2a2682b46c67b5c6a4cbbc6b0bdf40ba6d6 evals/regression-set/v1/edge-cases/clarification.jsonl
+scout-intent ca3dc0af2af9c36a4c7a624b9cd78e4d66cd0361 evals/regression-set/v1/injection/adversarial.jsonl
+scout-intent 95f655269e2b161cc7277a2b9d4e346aabedaa08 evals/regression-set/v1/intents/deal.jsonl
+scout-intent 81e05f103018419f8dd39e6028976688ed3b685b evals/regression-set/v1/intents/email.jsonl
+scout-intent 55d132bfa9399f98b874553dc4a39ecad1969314 evals/regression-set/v1/intents/research-and-plan.jsonl
+scout-intent 3e04f9f1bcb7ec1e1ff9c900d871fd1d92dd6774 evals/regression-set/v1/multi-intent/composed.jsonl
+scout-intent 8b33628c3e587ff513ce08de2d71e97e8adadc2c evals/runner/add.ts
+scout-intent 779dec70f3d6fcac7b218343684ec64884074d7b evals/runner/index.ts

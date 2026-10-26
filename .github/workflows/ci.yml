@@ -21,6 +21,7 @@ jobs:
       - run: npm run check:claims
       # The mounted Meterless engines: byte-identical to Meterless@1742dec, and each passes its upstream conformance suite.
       - run: npm run check:engines
+      - run: npm run check:scout
       # The evaluations that need no model, re-run and compared pair by pair with the committed results.
       - run: npm run check:repro
       # The judge path: sample mode, no credentials, no model.
