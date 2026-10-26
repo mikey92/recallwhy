@@ -1,0 +1,296 @@
+{
+  "sqlId": "q-646474f022",
+  "total": 14244,
+  "asWritten": 6810,
+  "afterRules": 14244,
+  "suppliers": 40,
+  "suppliersByRule": {
+    "as written": 19,
+    "leading-zero padding": 13,
+    "dropped check digit": 4,
+    "10-digit core (model-proposed)": 4
+  },
+  "orphans": [],
+  "rows": [
+    {
+      "supplier": "SUP001",
+      "notices": 390,
+      "asWritten": 0,
+      "rule": "10-digit core (model-proposed)",
+      "reached": 390
+    },
+    {
+      "supplier": "SUP002",
+      "notices": 259,
+      "asWritten": 259,
+      "rule": "as written",
+      "reached": 259
+    },
+    {
+      "supplier": "SUP003",
+      "notices": 435,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 435
+    },
+    {
+      "supplier": "SUP004",
+      "notices": 298,
+      "asWritten": 298,
+      "rule": "as written",
+      "reached": 298
+    },
+    {
+      "supplier": "SUP005",
+      "notices": 425,
+      "asWritten": 425,
+      "rule": "as written",
+      "reached": 425
+    },
+    {
+      "supplier": "SUP006",
+      "notices": 458,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 458
+    },
+    {
+      "supplier": "SUP007",
+      "notices": 458,
+      "asWritten": 0,
+      "rule": "dropped check digit",
+      "reached": 458
+    },
+    {
+      "supplier": "SUP008",
+      "notices": 359,
+      "asWritten": 359,
+      "rule": "as written",
+      "reached": 359
+    },
+    {
+      "supplier": "SUP009",
+      "notices": 298,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 298
+    },
+    {
+      "supplier": "SUP010",
+      "notices": 193,
+      "asWritten": 0,
+      "rule": "10-digit core (model-proposed)",
+      "reached": 193
+    },
+    {
+      "supplier": "SUP011",
+      "notices": 335,
+      "asWritten": 335,
+      "rule": "as written",
+      "reached": 335
+    },
+    {
+      "supplier": "SUP012",
+      "notices": 260,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 260
+    },
+    {
+      "supplier": "SUP013",
+      "notices": 415,
+      "asWritten": 415,
+      "rule": "as written",
+      "reached": 415
+    },
+    {
+      "supplier": "SUP014",
+      "notices": 307,
+      "asWritten": 0,
+      "rule": "dropped check digit",
+      "reached": 307
+    },
+    {
+      "supplier": "SUP015",
+      "notices": 334,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 334
+    },
+    {
+      "supplier": "SUP016",
+      "notices": 245,
+      "asWritten": 245,
+      "rule": "as written",
+      "reached": 245
+    },
+    {
+      "supplier": "SUP017",
+      "notices": 274,
+      "asWritten": 274,
+      "rule": "as written",
+      "reached": 274
+    },
+    {
+      "supplier": "SUP018",
+      "notices": 299,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 299
+    },
+    {
+      "supplier": "SUP019",
+      "notices": 339,
+      "asWritten": 0,
+      "rule": "10-digit core (model-proposed)",
+      "reached": 339
+    },
+    {
+      "supplier": "SUP020",
+      "notices": 300,
+      "asWritten": 300,
+      "rule": "as written",
+      "reached": 300
+    },
+    {
+      "supplier": "SUP021",
+      "notices": 301,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 301
+    },
+    {
+      "supplier": "SUP022",
+      "notices": 407,
+      "asWritten": 407,
+      "rule": "as written",
+      "reached": 407
+    },
+    {
+      "supplier": "SUP023",
+      "notices": 378,
+      "asWritten": 378,
+      "rule": "as written",
+      "reached": 378
+    },
+    {
+      "supplier": "SUP024",
+      "notices": 445,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 445
+    },
+    {
+      "supplier": "SUP025",
+      "notices": 403,
+      "asWritten": 403,
+      "rule": "as written",
+      "reached": 403
+    },
+    {
+      "supplier": "SUP026",
+      "notices": 334,
+      "asWritten": 334,
+      "rule": "as written",
+      "reached": 334
+    },
+    {
+      "supplier": "SUP027",
+      "notices": 496,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 496
+    },
+    {
+      "supplier": "SUP028",
+      "notices": 391,
+      "asWritten": 0,
+      "rule": "dropped check digit",
+      "reached": 391
+    },
+    {
+      "supplier": "SUP029",
+      "notices": 227,
+      "asWritten": 227,
+      "rule": "as written",
+      "reached": 227
+    },
+    {
+      "supplier": "SUP030",
+      "notices": 352,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 352
+    },
+    {
+      "supplier": "SUP031",
+      "notices": 575,
+      "asWritten": 575,
+      "rule": "as written",
+      "reached": 575
+    },
+    {
+      "supplier": "SUP032",
+      "notices": 475,
+      "asWritten": 475,
+      "rule": "as written",
+      "reached": 475
+    },
+    {
+      "supplier": "SUP033",
+      "notices": 351,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 351
+    },
+    {
+      "supplier": "SUP034",
+      "notices": 352,
+      "asWritten": 352,
+      "rule": "as written",
+      "reached": 352
+    },
+    {
+      "supplier": "SUP035",
+      "notices": 281,
+      "asWritten": 0,
+      "rule": "dropped check digit",
+      "reached": 281
+    },
+    {
+      "supplier": "SUP036",
+      "notices": 387,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 387
+    },
+    {
+      "supplier": "SUP037",
+      "notices": 373,
+      "asWritten": 0,
+      "rule": "10-digit core (model-proposed)",
+      "reached": 373
+    },
+    {
+      "supplier": "SUP038",
+      "notices": 404,
+      "asWritten": 404,
+      "rule": "as written",
+      "reached": 404
+    },
+    {
+      "supplier": "SUP039",
+      "notices": 286,
+      "asWritten": 0,
+      "rule": "leading-zero padding",
+      "reached": 286
+    },
+    {
+      "supplier": "SUP040",
+      "notices": 345,
+      "asWritten": 345,
+      "rule": "as written",
+      "reached": 345
+    }
+  ]
+}

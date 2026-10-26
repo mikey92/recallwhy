@@ -1,0 +1,75 @@
+{
+  "note": "Same 322 pairs. Missed = a recalled item dismissed (the dangerous error), with a Wilson 95% interval on its rate. The ground truth (data/synthetic/eval/ground_truth.csv) was last changed in commit 17b8d67 (25 Oct 13:49 UTC), before the Ultra run started (25 Oct 16:41 UTC); labels follow a fixed rule: an item built from the notice, or whose barcode the notice prints.",
+  "ladder": [
+    {
+      "setup": "No Cartographer, judge off (barcodes joined as written, rules only)",
+      "pairs": 322,
+      "positives": 146,
+      "caught": 53,
+      "missed": 0,
+      "falseAlarms": 0,
+      "toHuman": 269,
+      "missRate": 0,
+      "missRate95": [
+        0,
+        0.0256
+      ]
+    },
+    {
+      "setup": "Cartographer + model-proposed barcode rules, judge off",
+      "pairs": 322,
+      "positives": 146,
+      "caught": 99,
+      "missed": 0,
+      "falseAlarms": 0,
+      "toHuman": 223,
+      "missRate": 0,
+      "missRate95": [
+        0,
+        0.0256
+      ]
+    },
+    {
+      "setup": "Nemotron 3 Ultra alone, one prompt per case (no agents)",
+      "pairs": 322,
+      "positives": 146,
+      "caught": 136,
+      "missed": 5,
+      "falseAlarms": 0,
+      "toHuman": 5,
+      "missRate": 0.0342,
+      "missRate95": [
+        0.0147,
+        0.0777
+      ]
+    },
+    {
+      "setup": "Agents without the Auditor loop (the judge's first answer stands)",
+      "pairs": 322,
+      "positives": 146,
+      "caught": 132,
+      "missed": 4,
+      "falseAlarms": 2,
+      "toHuman": 10,
+      "missRate": 0.0274,
+      "missRate95": [
+        0.0107,
+        0.0683
+      ]
+    },
+    {
+      "setup": "Full system: Cartographer + Nemotron 3 Ultra judge + Auditor",
+      "pairs": 322,
+      "positives": 146,
+      "caught": 134,
+      "missed": 1,
+      "falseAlarms": 1,
+      "toHuman": 30,
+      "missRate": 0.0068,
+      "missRate95": [
+        0.0012,
+        0.0378
+      ]
+    }
+  ]
+}

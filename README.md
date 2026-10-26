@@ -4,6 +4,8 @@
 
 <sub>Video chapters: 0:00 live run · 0:20 the problem · 0:42 Zetaris · 1:03 mapping the sources · 1:18 Nemotron judges, the Auditor blocks · 1:40 a barcode rule proven and written back · 2:06 the work · 2:21 a reviewer decides · 2:42 Nemotron proposes, SQL proves · 3:01 results</sub>
 
+<sub>The video was cut on 25 Oct. Added since: the one-prompt baseline and the ladder below, the join map, FDA receiving records in each packet, Scout Intent routing and its official eval harness, the data contract, and repeatability. Each headline claim, the command that checks it, and what is not claimed: [CLAIMS.md](CLAIMS.md).</sub>
+
 [![CI](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml/badge.svg)](https://github.com/mikey92/recallwhy/actions/workflows/ci.yml) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mikey92/recallwhy?quickstart=1)
 
 **Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence.** In December 2025 the FDA warned Kroger, Albertsons, Target and Walmart: recalled infant formula was still on shelves in over 175 locations, and staff were unsure which lots were affected. Whether a recall is on *our* shelves — which lots, which stores, who bought it — sits in four systems that disagree down to how they write a barcode: the live CPSC and FDA feeds, the ERP and the supplier portal. **RecallWhy turns a new recall notice into a verified pull list, supplier request and customer notice in minutes, with the evidence behind every number**: five agents working through **Zetaris**, with **Meterless** memory and engines and **NVIDIA Nemotron** as the judge. **The agents don't just read the fragments: when a join fails, they find the supplier's rule, prove it on all of that supplier's data and write the repaired join back into Zetaris, so the next run — and any Zetaris user — starts from it.**
@@ -11,7 +13,8 @@
 ![Replay of the live run example_2: the Auditor finds ship notices the barcode map cannot reach, Nemotron proposes the supplier's barcode rule, SQL proves it on all 193 ship notices, and the corrected map and rule are written back to Zetaris under signed contracts (right lane)](docs/img/live-agents.gif)
 
 - **Live, end to end, in minutes:** the last two and a half weeks of live notices (39 since 8 Oct) became five action packets — 1,093 units in 14 stores, 6 of them in states the notice never listed — in 4 min 22 s ([report](https://mikey92.github.io/recallwhy/examples/example_4/report.html)). Each run starts where the last stopped: the supplier rules it proved and every verdict are kept in Zetaris, a remembered rule is re-proven before it is used, and a verdict that changes (e.g. after a reviewer's decision) is flagged.
-- **134 of 146 recalled items caught, 1 missed, 1 false alarm**, and 91% of 322 recall/SKU pairs settled without a person (Nemotron 3 Ultra; rules alone catch 89). On real products, 97 of 97 recalls are found by barcode and 0 of 152 look-alikes are matched.
+- **Recalled items missed — the error that leaves stock on the shelf: 5 by the same model alone, 4 by the agents without the Auditor, 1 by the full system** (of 146, over 322 recall/SKU pairs; [ladder](#evaluation)). The full system catches 134, raises 1 false alarm and sends the other 11 recalled items to a person with the reason; 91% of pairs are settled without a person (Nemotron 3 Ultra; rules alone catch 89).
+- **The fragmented join, repaired:** suppliers' barcodes reach our item master as written for 6,810 of 14,244 ship notices (47.8%); after the per-supplier rules the Cartographer proves in SQL, 14,244 (100%) ([join map](docs/JOIN-MAP.md)). On real products, 97 of 97 recalls are found by barcode and 0 of 152 look-alikes are matched.
 - **The agents repair the join, not just read it.** When a supplier's barcodes don't reach our items, the Cartographer finds the supplier's rule (a dropped check digit, a padded GTIN; for an unknown format Nemotron proposes one), SQL proves it on every ship notice of that supplier (391 of 391), and the corrected join is written back into Zetaris as a view any Zetaris user can query, confirmed by Zetaris lineage and a data-quality rule with 0 invalid rows. [See it in Zetaris's own catalog](docs/img/zetaris-preview.png).
 - **Nothing unchecked gets through.** The Auditor re-derives every number with its own SQL and can block; a dismissal whose own quote names our item goes back to the judge or to a person; a pull list is withheld unless it equals the Auditor's on-hand number.
 - **It ends in work a person approves:** a pull list per store and lot, a supplier request citing the supplier's own ship notices, a customer notice, and a map of where to pull. Nothing is sent.
@@ -202,6 +205,18 @@ curl -X POST localhost:8000/run -H 'Content-Type: application/json' -d '{"since"
 | Bad request to `POST /run` | `400` with the reason; `409` if a run is already going | `src/api.ts` |
 
 ## Evaluation
+
+**What each part adds** (`eval/ladder.ts`, `eval/results/ladder.json`; same 322 pairs, 146 recalled items; missed = a recalled item dismissed, with a Wilson 95% interval):
+
+| Setup | Caught | **Missed** | False alarms (of 176) | To a person |
+|---|---|---|---|---|
+| No Cartographer, judge off (barcodes joined as written) | 53 | 0 | 0 | 269 |
+| Cartographer + model-proposed barcode rules, judge off | 99 | 0 | 0 | 223 |
+| Nemotron 3 Ultra alone, one prompt per case, no agents | 136 | **5** (1.5–7.8%) | 0 | 5 |
+| Agents without the Auditor loop (judge's first answer stands) | 132 | **4** (1.1–6.8%) | 2 | 10 |
+| **Full system: Cartographer + Ultra judge + Auditor** | **134** | **1** (0.1–3.8%) | 1 | 30 |
+
+The labels were fixed before the run: `data/synthetic/eval/ground_truth.csv` last changed in commit `17b8d67` (25 Oct 13:49 UTC), the Ultra run started at 16:41 UTC, and the rule is mechanical (an item built from the notice, or whose barcode the notice prints), never a judgment made after seeing answers.
 
 `eval/run.ts` runs the real Investigator ⇄ Auditor loop (sample-mode data, model calls through Nightshift) on every candidate pair since 2026-07-01: 515 recalls scanned, 184 cases, 322 recall/SKU pairs, 146 of them covered. A pair counts as covered if our item is the product the notice recalls: for food, the real product whose barcode the notice prints (97 pairs); for non-food, the SKU built from that CPSC notice (49). The 176 others are mostly real products of the same brand owners (another flavour, size or line of the recalling firm), the hard negatives a real item master is full of.
 

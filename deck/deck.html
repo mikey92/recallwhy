@@ -122,16 +122,14 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <p class="mute" style="font-size:24px;margin-top:14px">The 24 stores stand at real SNAP-authorized supermarkets (USDA FNS). Shaded: the recall notice's own distribution states. Amber: stock in a state the notice does not list — a check by distribution list alone misses it. Try the review screen with no install: <b>mikey92.github.io/recallwhy/review.html</b></p>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
-<section class="s"><div class="k">8 · Results</div><h2>134 of 146 recalled items caught, 1 missed, 1 false alarm — on real products.</h2>
+<section class="s"><div class="k">8 · Results</div><h2>1 recalled item missed of 146. The same model alone misses 5.</h2><p style="font-size:24px;margin:-6px 0 12px">134 of 146 recalled items caught, 1 false alarm, the other 11 sent to a person with the reason — on real products.</p>
 <table class="tight" style="margin-bottom:14px"><tr><th>Setup (322 recall/SKU pairs)</th><th>Caught (of 146)</th><th>Wrongly dismissed</th><th>False alarms (of 176)</th><th>To human</th></tr>
 <tr><td>No Cartographer — rules only</td><td>53</td><td>0</td><td>0</td><td>269</td></tr>
 <tr><td>Cartographer, known rules only</td><td>89</td><td>0</td><td>0</td><td>233</td></tr>
 <tr><td>Cartographer + model-proposed transforms (no judge)</td><td>99</td><td>0</td><td>0</td><td>223</td></tr>
 <tr><td>Nemotron 3 Ultra alone, one prompt per case (no agents)</td><td>136</td><td style="color:#c0392b">5</td><td>0</td><td>5</td></tr>
+<tr><td>Agents without the Auditor loop (judge's first answer stands)</td><td>132</td><td style="color:#c0392b">4</td><td>2</td><td>10</td></tr>
 <tr style="font-weight:700"><td>Full system: Cartographer + Nemotron 3 Ultra judge + Auditor</td><td>134</td><td>1</td><td>1</td><td>30</td></tr></table>
-<table class="tight" style="margin-bottom:14px"><tr><th>Text matches (47 covered of 223)</th><th>Caught</th><th>Wrongly dismissed</th><th>False alarms</th><th>To human</th></tr>
-<tr><td>Ultra: judge's first answer</td><td>43</td><td style="color:#c0392b">4</td><td>2</td><td>0</td></tr>
-<tr style="font-weight:700"><td>Ultra: after the Auditor loop</td><td>45</td><td>1</td><td>1</td><td>20</td></tr></table>
 <p style="font-size:26px"><b>292 of 322 pairs (91%) settled without a person, 290 correctly; 30 go to a reviewer with the reason.</b> 0 of 392 model calls failed. On the real products, every recall whose barcode we carry is found by rule (97 of 97), with 0 of 152 false matches.</p>
 <p class="mute" style="font-size:22px">Real Investigator ⇄ Auditor loop on every candidate pair from 515 recalls (sample-mode data). Food items are real products (USDA FoodData Central, Open Food Facts); stock, sales and ship notices are synthetic. Details: eval/EVAL.md, eval/REAL.md.</p>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
