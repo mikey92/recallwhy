@@ -94,3 +94,7 @@ Results per pair are in `eval/results/*.json`. `python3 eval/first-vs-final.py <
 ## Repeatability
 
 `eval/repro.ts` compares the committed full Ultra run with two more runs of a 44-pair subset (16 covered; `eval/run.ts --recalls`, `eval/results/repro-run1.json`, `repro-run2.json`): the same final decision in all three runs for 42 of 44 pairs, 43 between the two re-runs; wrongly dismissed 1 / 2 / 1; no false alarm in any run. Differences, pair by pair: `eval/results/repro.json`.
+
+## The same model without the agents
+
+`eval/one-prompt.ts`: one prompt per case to Nemotron 3 Ultra (notice text, codes, printed barcodes, every candidate item, the judge's instructions; no Auditor, Cartographer, memory or rules), 184 calls, 0 failed, every verdict parsed. On the same 322 pairs: 136 caught, 5 missed, 0 false alarms, 5 unsure; the agents: 134 / 1 / 1 / 30. All 5 misses are barcode pairs (the notice prints our UPC); on the 223 text pairs the model alone scores 42 / 0 / 0 / 5 against the agents' 45 / 1 / 1 / 20.
