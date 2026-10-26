@@ -3,8 +3,8 @@
 Zetaris Lightning 2.4.3.1 (local Docker). Every agent reads data only through it; the agents also write
 back to it. Each row below names the object, the statement that creates or uses it, the independent check,
 and what that check returned on a live run (timings from the run's own trace; run
-`2026-10-26T01-03-25-fbc453`, request `examples/input/example_2.json` from empty agent state, 58 Zetaris
-statements, 0 errors, 2 min 19 s end to end including Nemotron calls).
+`2026-10-26T01-11-08-21d3f8`, request `examples/input/example_2.json` from empty agent state, 0 Zetaris
+errors, 1 min 46 s end to end including Nemotron calls).
 
 ## Sources
 
@@ -27,15 +27,22 @@ suppliers ⋈ item master; exposure by store and lot; units sold since the recal
 | USL `recall_keys.notice_item` + DQ rule `barcode_names_the_notice_sku` (`item_sku = notice_sku`) | `sql/03_writeback.sql`; re-bound by `ACTIVATE USL TABLE` in `publish()` | same | `RUN DQ` (24.5 s) | every row valid, 0 invalid |
 | `reconciled.case_verdicts` (schemastore view over `VALUES`): every verdict of the run | Orchestrator, `publishVerdicts()` in `src/zetaris-usl.ts` | end of every live run | read back from the USL table `decision`; 3 DQ rules (below) | 4/4 read back |
 
-Both writes run under a signed, single-use execution contract (Meterless Scout Intent, `src/contract.ts`):
+Every write runs under a signed, single-use execution contract (Meterless Scout Intent, `src/contract.ts`):
 the contract names the exact views and USL tables it may change, is verified before each statement, and
-expires after 5 minutes. The trace carries `contract.issued` / `contract.verified` events (2 issued, 5
-verified in the run above).
+expires after 5 minutes. The trace carries `contract.issued` / `contract.verified` events (3 issued, 5
+verified in the run above: the map write-back, the USL re-bind, the verdict write-back). The signing key is
+`RECALLWHY_CONTRACT_SECRET` or `state/contract-secret` (mode 600, gitignored), so a recorded approval can be
+verified again later (`signatureValid`). It is an integrity check inside one deployment, as the Scout Intent
+spec says, not a multi-party signature.
 
 ## The governed model: USL `recall_exposure`
 
 `sql/04_usl.sql` (one `COMPILE USL` statement, then descriptions, activations and rules; checks in
 `sql/04_usl_check.sql`). Seven tables, every one described; the keys are the joins the agents rely on.
+
+![The recall_exposure USL in Zetaris's Data Explorer: 7 tables, 7 active, with the description and the key relationships Zetaris draws](img/zetaris-usl.png)
+
+![Zetaris lists the model's 18 data-quality rules: the keys and three custom rules](img/zetaris-usl-dq.png)
 
 | Table | Activated from | Keys | Rows |
 |---|---|---|---|
@@ -53,9 +60,11 @@ verified in the run above).
 **The barcode key is where the fragments show.** `ship_notice.matched_sku` is the item a ship notice's barcode
 reaches under the rules the Cartographer has proven; a notice no proven rule reaches carries `unreached`, so
 `RUN DQ matched_sku` counts it invalid and `SHOW DQ INVALID RECORD matched_sku` lists it, with its supplier and
-its barcode. After every map correction the Cartographer re-binds the table and reports Zetaris's count:
+its barcode. After every map correction the Cartographer re-binds the table under its own contract, runs the
+rule and breaks the invalid rows down by supplier with one aggregate over the same USL table (exact at any
+size; `SHOW DQ INVALID RECORD` is capped by the row limit and is used in `sql/04_usl_check.sql`):
 
-| State of the map | `RUN DQ matched_sku` (valid / total) | Unreached, by supplier (from `SHOW DQ INVALID RECORD`) |
+| State of the map | `RUN DQ matched_sku` (valid / total) | Unreached, by supplier |
 |---|---|---|
 | Fresh run, after SUP010's rule (proposed by Nemotron, proven 193/193) | 11,705 / 14,244 (24.2 s) | 2,539: SUP007 458, SUP028 391, SUP001 390, SUP037 373, SUP019 339, SUP014 307, … |
 | After the live runs of 26 Oct (SUP007 and SUP028 proven too) | 12,361 / 14,244 (16.7 s) | 1,883: SUP001 390, SUP037 373, SUP019 339, SUP014 307, SUP035 281, SUP010 193 |

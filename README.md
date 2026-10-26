@@ -86,6 +86,10 @@ For every run, in `out/<run>/`:
 - The Auditor verifies the Investigator by **querying Zetaris again with differently written SQL**.
 - **The agents write back.** When the Cartographer proves a supplier's barcode rule, it publishes the corrected join as the schemastore view `reconciled.ship_notice_item_keys`, reads it back, asks Zetaris for its lineage (`INFER SQLTABLE SOURCES`) and runs a Zetaris data-quality rule on it (`RUN DQ`: every row valid). The view stays in Zetaris's catalog for anyone to query. Below, in Zetaris's own Data Explorer after the live `example_4` run: SUP007's 11-digit barcode `87037500509` now joins our item `870375005098`, and SUP028's `85005547021` joins `850055470217`.
 
+- **A governed model in Zetaris.** The USL `recall_exposure` (`sql/04_usl.sql`) holds the item master, stores, stock by lot, ship notices joined by the proven barcode rules, the live notices and every verdict, with primary and foreign keys, descriptions and 18 data-quality rules. After each map correction Zetaris's DQ engine checks the barcode key and names the ship notices no proven rule reaches yet (1,883 of 14,244, all from six suppliers); at the end of a run the verdicts are written back and checked too. Details and live numbers: [`docs/ZETARIS.md`](docs/ZETARIS.md).
+
+  ![The recall_exposure USL in Zetaris's Data Explorer: 7 tables, all active, with their keys](docs/img/zetaris-usl.png)
+
   ![Zetaris Data Explorer: the view reconciled.ship_notice_item_keys written by the Cartographer, previewed; SUP007 and SUP028 rows with 11-digit notice barcodes joined to our 12-digit UPCs](docs/img/zetaris-preview.png)
 - `scripts/setup-zetaris.ts` sets all of this up through the Zetaris REST API (`/api/proxy/sql-editor/sqls/run-query`, with `X-Org-ID` and a fresh `X-Request-ID` per call).
 
