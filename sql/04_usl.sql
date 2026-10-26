@@ -89,8 +89,8 @@ ACTIVATE USL TABLE lightning.metastore.recallwhy.recall_exposure.ship_notice AS
 SELECT a.asn_id, a.supplier_id, a.sku AS notice_sku, COALESCE(r.item_sku, 'unreached') AS matched_sku, a.upc AS notice_upc, a.lot_code, CAST(a.units AS INT) AS units
 FROM supplier_portal.ship_notices a LEFT JOIN reconciled.ship_notice_item_keys r ON r.asn_id = a.asn_id WHERE a.upc <> '';
 ACTIVATE USL TABLE lightning.metastore.recallwhy.recall_exposure.recall_notice AS
-SELECT concat('fda:', recall_number) AS recall_id, 'fda' AS feed, recalling_firm AS firm, report_date AS reported, substr(product_description, 1, 400) AS product FROM recallfeeds.fda_food
-UNION ALL SELECT concat('cpsc:', recall_number) AS recall_id, 'cpsc' AS feed, substr(firms, 1, 300) AS firm, recall_date AS reported, substr(title, 1, 400) AS product FROM recallfeeds.cpsc_recalls;
+SELECT COALESCE(concat('fda:', recall_number), '') AS recall_id, 'fda' AS feed, recalling_firm AS firm, report_date AS reported, substr(product_description, 1, 400) AS product FROM recallfeeds.fda_food
+UNION ALL SELECT COALESCE(concat('cpsc:', recall_number), '') AS recall_id, 'cpsc' AS feed, substr(firms, 1, 300) AS firm, recall_date AS reported, substr(title, 1, 400) AS product FROM recallfeeds.cpsc_recalls;
 DROP VIEW IF EXISTS reconciled.case_verdicts;
 CREATE SCHEMASTORE VIEW case_verdicts WITH CONTAINER reconciled AS
 SELECT * FROM VALUES ('none', 'none', 'none', 'unsure', 'none', 'none') AS t(run_id, recall_id, sku, verdict, basis, decided_by) WHERE run_id <> 'none';
