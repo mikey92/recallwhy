@@ -106,6 +106,14 @@ function md(src: string): string {
 
 const COLOR: Record<string, string> = { "act-now": "#c0392b", notify: "#c2410c", "needs-human": "#8e44ad", "no-exposure": "#2c7a7b", "not-ours": "#6b7280" };
 
+/** The brief's evidence list folds under its heading (open on the first case): the brief reads first, the citations stay one click away. */
+function foldEvidence(html: string, open: boolean): string {
+  const at = html.indexOf("<h3>Evidence</h3>");
+  if (at < 0) return html;
+  const n = (html.slice(at).match(/<li>/g) ?? []).length;
+  return `${html.slice(0, at)}<details class="ev-list"${open ? " open" : ""}><summary><h3>Evidence (${n} cited facts)</h3></summary>${html.slice(at + "<h3>Evidence</h3>".length)}</details>`;
+}
+
 /** What the Cartographer found before any case: its messages and the facts it wrote, as recorded in the trace. */
 function sourceMap(evs: Ev[]): string {
   const carto = evs.filter((e) => e.agent === "Cartographer");
@@ -188,7 +196,7 @@ code{font-size:12px}ul{margin:4px 0;padding-left:20px}
 .storemap{border-left-color:#b91c1c}.pulls{width:100%;border-collapse:collapse;font-size:13px}.pulls th,.pulls td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:top}.pulls .n{text-align:right;font-variant-numeric:tabular-nums}.out{color:#b45309;font-size:12px}
 .usmap{width:100%;height:auto;max-height:440px;margin:6px 0}.usmap .st{fill:var(--line);stroke:var(--card);stroke-width:1}.usmap .st-named{fill:#fca5a5;stroke:var(--card);stroke-width:1}
 .usmap circle{stroke:#fff;stroke-width:1.5;fill-opacity:.85}.usmap .d-in{fill:#b91c1c}.usmap .d-out{fill:#d97706}
-.pick select{max-width:100%}.srcmap summary{cursor:pointer;font-weight:600;font-size:16px;padding:6px 0}
+.pick select{max-width:100%}.ev-list summary,.trace summary{cursor:pointer}.ev-list summary h3{display:inline}.trace summary{padding:2px 0 6px}.srcmap summary{cursor:pointer;font-weight:600;font-size:16px;padding:6px 0}
 .k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.k-in{background:#b91c1c}.k-out{background:#d97706}.pick{display:block;margin:8px 0 0;font-size:13px;color:var(--mute)}
 @media (prefers-color-scheme:dark){.usmap .st-named{fill:#7f1d1d}}
 /* "What the agents did": chips across the top of a case card, one per highlight read from that case's trace. */
@@ -199,7 +207,7 @@ code{font-size:12px}ul{margin:4px 0;padding-left:20px}
 .hl-audit{background:#c2410c14;color:#9a3412;border-color:#c2410c33}.hl-stats{background:transparent;color:var(--mute);border-color:var(--line)}
 @media (prefers-color-scheme:dark){.crit{color:#f87171}.mem{color:#c084fc}.llm{color:#4ade80}.cite{color:#93c5fd;background:#2563eb44}
 .hl-map{color:#67e8f9;background:#0e749033}.hl-human{color:#d8b4fe;background:#7c3aed33}.hl-audit{color:#fdba74;background:#c2410c2e}}
-/* Motion: the header fades in, the source map and cases rise in one after another (stagger), counts count up. Ease-out, short; off with reduced motion. */
+/* Motion: the header fades in, the source map and cases rise in one after another (stagger). Ease-out, short; off with reduced motion. */
 @keyframes fade{from{opacity:0}}@keyframes rise{from{opacity:0;transform:translateY(10px)}}
 header{animation:fade .5s cubic-bezier(.2,.7,.2,1) both}
 .map,.case{animation:rise .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(min(var(--i,0),8) * 70ms + 120ms)}
@@ -213,16 +221,11 @@ ${summary()}
 <div class="sub">${existsSync(`${outDir}/digest.md`) ? `<a href="digest.md">Weekly digest</a>` : ""}${existsSync(`${outDir}/actions`) ? ` · Action packets (drafts, not sent): ${readdirSync(`${outDir}/actions`).length} — pull lists, supplier requests and customer notices in <a href="actions/">actions/</a>` : ""}</div>
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
 ${storeMapSection(points, caseStates(cases, evs), loadStatePaths())}
-${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief"><a id="${esc(c.id)}"></a>${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
-<div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
+${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief"><a id="${esc(c.id)}"></a>${foldEvidence(md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8")), i === 0)}</div>
+<div class="trace"><details${i === 0 ? " open" : ""}><summary><b>How the agents got here</b> (${(slices.get(c.id) ?? []).map(line).filter(Boolean).length} steps)</summary>${(slices.get(c.id) ?? []).map(line).join("")}</details></div></section>`).join("\n")}
 ${sourceMap(evs)}
 </main>
-<script>/* count-up: the final number is in the HTML; this only animates it from 0 */
-if (!matchMedia("(prefers-reduced-motion: reduce)").matches) for (const el of document.querySelectorAll("[data-n]")) {
-  const to = Number(el.dataset.n), t0 = performance.now(), ms = 700;
-  const step = (t) => { const k = Math.min(1, (t - t0) / ms); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString("en-US"); if (k < 1) requestAnimationFrame(step); };
-  requestAnimationFrame(step);
-}</script></body></html>`;
+</body></html>`;
   writeFileSync(`${outDir}/report.html`, html);
   return `${outDir}/report.html`;
 }

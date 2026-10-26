@@ -57,3 +57,23 @@ test("the pacer lets a burst through, then spaces calls evenly", async () => {
   for (let i = 0; i < 4; i++) await pace();
   assert.deepEqual(waits, [], "a quiet minute refills the bucket");
 });
+
+test("narrow checked tasks go to the small Nemotron; the judge stays on the main model; the trace names each", async () => {
+  const { llmFromEnv, makeGenerator } = await import("../src/llm.ts");
+  const cfg = llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", LLM_RPM: "0" } as NodeJS.ProcessEnv);
+  assert.equal(cfg.model, "nvidia/nemotron-3-ultra-550b-a55b");
+  assert.equal(cfg.fastModel, "nvidia/nemotron-3.5-lightning-30b-a3b");
+  assert.equal(llmFromEnv({ METERLESS_RUNTIME_TOKEN: "t", METERLESS_FAST_MODEL: "" } as NodeJS.ProcessEnv).fastModel, undefined);
+  const sent: string[] = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async (_u: string, init: { body: string }) => { const m = JSON.parse(init.body).model; sent.push(m); return new Response(JSON.stringify({ model: m, choices: [{ message: { content: "ok" } }] }), { status: 200 }); }) as typeof fetch;
+  const events: { kind: string; model?: string }[] = [];
+  const trace = { runId: "r", emit: (kind: string, _a: string, d: { model?: string }) => events.push({ kind, ...d }) } as never;
+  try {
+    const gen = makeGenerator(cfg, trace);
+    await gen("x", { agent: "Investigator", purpose: "read lot codes", tier: "fast" });
+    await gen("x", { agent: "Investigator", purpose: "judge" });
+  } finally { globalThis.fetch = realFetch; }
+  assert.deepEqual(sent, ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-ultra-550b-a55b"]);
+  assert.deepEqual(events.filter((e) => e.kind === "llm").map((e) => e.model), ["meterless:nvidia/nemotron-3.5-lightning-30b-a3b", "meterless:nvidia/nemotron-3-ultra-550b-a55b"]);
+});

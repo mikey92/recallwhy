@@ -5,10 +5,11 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import type { Trace } from "./trace.ts";
 
-export interface GenOpts { purpose: string; agent: string; system?: string; maxTokens?: number; json?: boolean }
+/** tier "fast": a narrow, checked task (copy lot codes out of a notice, check a brief against its evidence) that a smaller model can do; it goes to `fastModel` when one is set. */
+export interface GenOpts { purpose: string; agent: string; system?: string; maxTokens?: number; json?: boolean; tier?: "fast" }
 export type Generator = (prompt: string, opts: GenOpts) => Promise<string>;
 
-export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string; rpm?: number }
+export interface LlmConfig { provider: "meterless" | "ollama" | "openai" | "none"; model: string; ollamaUrl?: string; baseUrl?: string; apiKey?: string; numCtx?: number; app?: string; note?: string; rpm?: number; fastModel?: string }
 
 const NIGHTSHIFT_URL = "http://127.0.0.1:8088/v1";
 // Hosted NVIDIA endpoints rate-limit per minute, so the last waits reach past a minute.
@@ -27,7 +28,10 @@ export function llmFromEnv(env: NodeJS.ProcessEnv): LlmConfig {
     // than fail every call. Text matches then go to the human queue and briefs use the template.
     if (!apiKey) return { provider: "none", model: "none", note: "Meterless Nightshift is not configured (no METERLESS_RUNTIME_TOKEN): running without a model; text matches go to the human queue." };
     const model = env.METERLESS_MODEL || "nvidia/nemotron-3-ultra-550b-a55b";
-    return { provider, model, baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy", rpm: rpmFromEnv(env, model) };
+    // Narrow, checked tasks go to the small Nemotron (3.5 Lightning) when the judge is a hosted Nemotron;
+    // METERLESS_FAST_MODEL overrides, and an empty value sends everything to the main model.
+    const fastModel = env.METERLESS_FAST_MODEL !== undefined ? env.METERLESS_FAST_MODEL || undefined : /^nvidia\/nemotron/i.test(model) ? "nvidia/nemotron-3.5-lightning-30b-a3b" : undefined;
+    return { provider, model, fastModel, baseUrl: env.METERLESS_BASE_URL || NIGHTSHIFT_URL, apiKey, app: env.METERLESS_APP || "recallwhy", rpm: rpmFromEnv(env, model) };
   }
   if (provider === "none") return { provider, model: "none" };
   const model = env.LLM_MODEL ?? "nemotron-3-nano";
@@ -77,6 +81,7 @@ function nightshiftToken(): string | undefined {
 export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
   const pace = makePacer(cfg.rpm ?? 0);
   return async (prompt, opts) => {
+    const call = opts.tier === "fast" && cfg.fastModel ? { ...cfg, model: cfg.fastModel } : cfg;
     // No model: callers fall back (judge → UNSURE, lots → regex, brief → template); nothing was called, so nothing is logged.
     if (cfg.provider === "none") throw new Error("no model configured (LLM_PROVIDER=none)");
     const t0 = Date.now();
@@ -84,13 +89,13 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
     let error: string | undefined;
     let served: Served = {};
     try {
-      if (cfg.provider === "ollama") output = await ollama(cfg, prompt, opts);
+      if (cfg.provider === "ollama") output = await ollama(call, prompt, opts);
       else {
         // Rate limits (429) and slow first tokens (502/504) from the hosted model are transient:
         // wait and try again, and record each retry so the trace shows the recovery.
         for (let attempt = 1; ; attempt++) {
           await pace();
-          try { ({ output, served } = await openai(cfg, prompt, opts)); break; } catch (e) {
+          try { ({ output, served } = await openai(call, prompt, opts)); break; } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
             if (attempt >= RETRIES.length + 1 || !/HTTP (429|502|503|504)\b|\b429\b|first token|fetch failed/i.test(msg)) throw e;
             trace.emit("llm.retry", opts.agent, { purpose: opts.purpose, attempt, waitMs: RETRIES[attempt - 1], reason: msg.slice(0, 160) });
@@ -102,7 +107,7 @@ export function makeGenerator(cfg: LlmConfig, trace: Trace): Generator {
       error = e instanceof Error ? e.message : String(e);
     }
     // Which model actually answered: Nightshift may route meterless/auto to any model, so record what it reports.
-    trace.emit("llm", opts.agent, { model: `${cfg.provider}:${cfg.model}`, served_model: served.model, receipt: served.receipt, purpose: opts.purpose, prompt: prompt.slice(0, 4000), output: error ? `ERROR ${error}` : output, ms: Date.now() - t0 });
+    trace.emit("llm", opts.agent, { model: `${call.provider}:${call.model}`, served_model: served.model, receipt: served.receipt, purpose: opts.purpose, prompt: prompt.slice(0, 4000), output: error ? `ERROR ${error}` : output, ms: Date.now() - t0 });
     if (error) throw new Error(error);
     return output;
   };

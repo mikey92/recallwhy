@@ -67,7 +67,7 @@ export function issueContract(trace: Trace, o: { intent: string; parameters: Rec
     issuedAt: new Date(now).toISOString(), expiresAt: new Date(now + TTL_MS).toISOString(), signedBy: "scout",
   };
   const c = { ...body, signature: sign(body) };
-  trace.emit("contract", "Scout", { event: "contract.issued", contractId: c.contractId, intent: o.intent, risk: c.risk.level, capabilities: o.capabilities, expiresAt: c.expiresAt });
+  trace.emit("contract", "Orchestrator", { spec: "meterless-scout-intent", event: "contract.issued", contractId: c.contractId, intent: o.intent, risk: c.risk.level, capabilities: o.capabilities, expiresAt: c.expiresAt });
   return c;
 }
 

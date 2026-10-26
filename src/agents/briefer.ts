@@ -2,7 +2,7 @@
 // paragraph comes from the model and must survive the Auditor's brief check;
 // actions and caveats are computed from the cited evidence.
 import { buildContext } from "../world.ts";
-import { auditBrief } from "./auditor.ts";
+import { auditBrief, auditBriefWithModel } from "./auditor.ts";
 import { say, type AgentContext } from "./context.ts";
 import type { Finding } from "./investigator.ts";
 import type { Case } from "./scout.ts";
@@ -51,15 +51,10 @@ export async function brief(ctx: AgentContext, k: Case, f: Finding, entities: st
     if (out && n0?.lotRule === "all-lots" && saysNoticeNamesLots(out))
       problems.push("the notice names no lot codes; every lot we hold is treated as affected — do not say the notice names or lists our lots");
     if (!problems.length) {
-      // Lexical checks passed; the Auditor also asks the model whether each sentence is
-      // supported by the facts it cites (a separate call, not the Briefer's own prompt).
-      const verdict = await ctx.gen(
-        [`FACTS:`, text, "", `DRAFT:`, out, "",
-          "Check every sentence of the DRAFT against the FACTS it cites in brackets. Facts named notice_* come from the recall notice; facts named our_* come from our own systems. Paraphrase and plain conclusions drawn directly from the facts are fine. A sentence is unsupported only if it adds information the cited facts do not contain (for example a state, a person, a confirmation, or a notice statement about our stores).",
-          "A sentence that restates a cited fact in other words is supported. Do not object to wording, tone, or a recommended action that follows from the facts.",
-          "Answer exactly OK if every sentence is supported. Otherwise answer UNSUPPORTED: <the first unsupported claim, quoted>."].join("\n"),
-        { agent: "Auditor", purpose: `check brief support ${k.id}`, maxTokens: 120 }).catch(() => "OK");
-      if (/^\W*UNSUPPORTED/i.test(verdict)) problems.push(verdict.replace(/^\W*UNSUPPORTED\W*/i, "unsupported claim: ").slice(0, 240));
+      // Lexical checks passed; the Auditor also has a model check each sentence against the facts it cites
+      // (its own call, not the Briefer's prompt).
+      const unsupported = await auditBriefWithModel(ctx, k.id, text, out);
+      if (unsupported) problems.push(unsupported);
     }
     if (!problems.length) { why = out.trim(); whyBy = "model"; ctx.trace.emit("note", "Auditor", { text: `brief for ${k.id} passes evidence check` }); break; }
     feedback = problems.slice(0, 4).join("; ");
