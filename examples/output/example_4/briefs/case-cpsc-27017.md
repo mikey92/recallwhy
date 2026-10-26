@@ -37,9 +37,9 @@ The recall notice from Decathlon America LLC identifies Van Rysel GRVL AF Bicycl
 - [E14] our_stores_with_units_on_hand: ["S002 CA: 125","S006 WA: 103","S017 NJ: 97","S011 MN: 90","S014 WI: 82","S001 CA: 74","S016 NY: 46","S010 IL: 22"] — *zetaris q-23b3efa928 by Investigator*
 - [E15] verdict: "act-now" — *agent by Auditor*
 
-_why-paragraph written by meterless:nvidia/nemotron-3-ultra-550b-a55b and checked by the Auditor; run 2026-10-26T01-39-10-1cbcb7_
+_why-paragraph written by meterless:nvidia/nemotron-3-ultra-550b-a55b and checked by the Auditor; run 2026-10-26T02-13-33-d850cd_
 ## Action packet (drafts, not sent)
 - [pull-list.csv](../actions/case-cpsc-27017/pull-list.csv)
 - [supplier-request.md](../actions/case-cpsc-27017/supplier-request.md)
 - [customer-notice.md](../actions/case-cpsc-27017/customer-notice.md)
-- Pull 639 unit(s) in 8 store(s); the total equals the Auditor's re-derived on-hand. Approve with `npm run approve -- 2026-10-26T01-39-10-1cbcb7 case-cpsc-27017`.
+- Pull 639 unit(s) in 8 store(s); the total equals the Auditor's re-derived on-hand. Approve with `npm run approve -- 2026-10-26T02-13-33-d850cd case-cpsc-27017`.
