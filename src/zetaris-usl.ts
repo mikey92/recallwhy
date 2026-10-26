@@ -9,6 +9,7 @@
 //     we carry) and its custom rule. The next run reads the view and flags a verdict that changed.
 // Only on the Zetaris engine; the DuckDB stand-in has no USL.
 import { lit, say, type AgentContext } from "./agents/context.ts";
+import { issueContract, verifyContract, type ExecutionContract } from "./contract.ts";
 
 export const USL = "lightning.metastore.recallwhy.recall_exposure";
 export const VERDICTS = "reconciled.case_verdicts";
@@ -34,10 +35,11 @@ export function bySupplier(rows: Record<string, unknown>[]): { supplier: string;
 }
 
 /** Re-bind ship_notice to the corrected map and let Zetaris check the barcode key. */
-export async function checkShipNoticeKey(ctx: AgentContext): Promise<KeyCheck | undefined> {
+export async function checkShipNoticeKey(ctx: AgentContext, contract: ExecutionContract): Promise<KeyCheck | undefined> {
   if (ctx.sql.engine !== "zetaris") return undefined;
   const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Cartographer", purpose });
   const table = `${USL}.ship_notice`;
+  verifyContract(ctx.trace, contract, `zetaris.usl.activate:${table}`, "Cartographer");
   await run(`ACTIVATE USL TABLE ${table} AS\n${SHIP_NOTICE_ACTIVATION}`, `re-bind the USL table ${table} to the corrected map`);
   const dq = await run(`RUN DQ matched_sku TABLE ${table}`, "Zetaris data-quality check of the barcode key ship_notice.matched_sku -> item");
   const row = dqRow(dq.rows, "matched_sku", table, /foreign/i);
@@ -60,8 +62,14 @@ export async function publishVerdicts(ctx: AgentContext, rows: VerdictRow[]): Pr
   if (ctx.sql.engine !== "zetaris") return undefined;
   const run = (sql: string, purpose: string) => ctx.sql.run(sql, { agent: "Orchestrator", purpose });
   const table = `${USL}.decision`;
+  const contract = issueContract(ctx.trace, {
+    intent: "write-back.case-verdicts", parameters: { verdicts: rows.length, people: rows.filter((r) => r.decided_by === "person").length },
+    capabilities: [`zetaris.view.replace:${VERDICTS}`, `zetaris.usl.activate:${table}`],
+  });
+  verifyContract(ctx.trace, contract, `zetaris.view.replace:${VERDICTS}`, "Orchestrator");
   await run(`DROP VIEW IF EXISTS ${VERDICTS}`, `replace ${VERDICTS}`);
   await run(verdictsViewSql(ctx.trace.runId, rows), `write this run's ${rows.length} verdict(s) back to Zetaris as ${VERDICTS}`);
+  verifyContract(ctx.trace, contract, `zetaris.usl.activate:${table}`, "Orchestrator");
   await run(`ACTIVATE USL TABLE ${table} AS\nSELECT run_id, recall_id, sku, verdict, basis, decided_by FROM ${VERDICTS}`, `re-bind the USL table ${table}`);
   const back = await run(`SELECT COUNT(*) AS n FROM ${table} WHERE run_id = ${lit(ctx.trace.runId)}`, `read the verdicts back from ${table}`);
   const read = Number(back.rows[0]?.n ?? 0);

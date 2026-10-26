@@ -1,6 +1,7 @@
 // Investigator: decides which candidate SKUs a recall really covers, which of our
 // lots are affected, and what the exposure is — every number tied to the SQL that
 // produced it. It can be sent back by the Auditor with critiques.
+import { detectInjection } from "../guard.ts";
 import { lotAppears, lotsFromCodeInfo, type Recall } from "../feeds.ts";
 import { designatorConflict, type Candidate } from "../match.ts";
 import { inList, lit, say, type AgentContext } from "./context.ts";
@@ -50,6 +51,12 @@ export function parseJudge(text: string): { label: "SAME" | "DIFFERENT" | "UNSUR
 
 async function judge(ctx: AgentContext, k: Case, c: Candidate, strict?: string): Promise<MatchDecision> {
   const base = { sku: c.sku.sku, title: c.sku.title, basis: c.basis };
+  // Scout Intent guard: a notice that carries instructions for a model is not sent to the judge.
+  const g = detectInjection(`${k.recall.text}\n${k.recall.codeInfo}`);
+  if (g.flagged) {
+    ctx.trace.emit("guard", "Investigator", { caseId: k.id, sku: c.sku.sku, cls: g.cls, match: g.match });
+    return { ...base, verdict: "unsure", why: `the notice text carries instructions for a model (${g.cls}: "${g.match}"), so it is not sent to the judge; a reviewer decides`, decidedBy: "rule" };
+  }
   const similar = ctx.memory.similar(`${k.recall.firm} ${c.sku.title}`, "Investigator", 3).map((m) => m.content);
   const out = await ctx.gen(judgePrompt(k.recall, c, similar, strict), { agent: "Investigator", purpose: `judge ${c.sku.sku} vs ${k.recall.id}`, system: JUDGE_SYSTEM, maxTokens: 120 }).catch((e) => (/no model configured/.test(e.message) ? "UNSURE: no model is configured, so a reviewer decides this text match" : `UNSURE: the model call failed (${e.message.slice(0, 80)}), so a reviewer decides`));
   const a = parseJudge(out);
@@ -87,7 +94,7 @@ export async function decide(ctx: AgentContext, k: Case, c: Candidate): Promise<
 async function readLots(ctx: AgentContext, r: Recall): Promise<{ lots: string[]; sources: Record<string, "regex" | "model"> }> {
   const sources: Record<string, "regex" | "model"> = {};
   for (const l of lotsFromCodeInfo(r.codeInfo)) sources[l] = "regex";
-  const messy = r.feed === "fda_food" && r.codeInfo.length > 12 && !/no lot codes?/i.test(r.codeInfo);
+  const messy = r.feed === "fda_food" && r.codeInfo.length > 12 && !/no lot codes?/i.test(r.codeInfo) && !detectInjection(r.codeInfo).flagged;
   if (messy) {
     const out = await ctx.gen(
       `Text from a food recall notice:\n"""${r.codeInfo.slice(0, 1500)}"""\n\nList every lot code or batch code in it as a JSON array of strings, copied exactly. Do not include dates, best-by dates, UPC numbers or product names. If there are none, answer [].`,

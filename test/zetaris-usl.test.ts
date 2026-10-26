@@ -7,6 +7,7 @@ import { Trace } from "../src/trace.ts";
 import { sqlId, type SqlResult } from "../src/sql/types.ts";
 import { bySupplier, checkShipNoticeKey, dqRow, priorVerdicts, publishVerdicts, verdictsViewSql, USL } from "../src/zetaris-usl.ts";
 import type { AgentContext } from "../src/agents/context.ts";
+import { issueContract } from "../src/contract.ts";
 
 // A Zetaris stand-in: answers by the statement's first words, records every statement.
 function fakeZetaris(answers: [RegExp, Record<string, unknown>[]][]) {
@@ -39,7 +40,7 @@ test("checkShipNoticeKey re-binds ship_notice, runs the key rule and names the u
     [/^RUN DQ matched_sku/, [{ type: "Foreign Key Constraint", total_record: "14244", valid_record: "12361", invalid_record: "3" }]],
     [/^SHOW DQ INVALID RECORD matched_sku/, [{ asn_id: "A1", supplier_id: "SUP001", notice_upc: "6078000010" }, { asn_id: "A2", supplier_id: "SUP001", notice_upc: "1" }, { asn_id: "A3", supplier_id: "SUP037", notice_upc: "2" }]],
   ]);
-  const k = (await checkShipNoticeKey(ctx))!;
+  const k = (await checkShipNoticeKey(ctx, issueContract(ctx.trace, { intent: "t", parameters: {}, capabilities: [`zetaris.usl.activate:${USL}.ship_notice`] })))!;
   assert.match(seen[0], new RegExp(`^ACTIVATE USL TABLE ${USL.replace(/\./g, "\\.")}\\.ship_notice AS[\\s\\S]*COALESCE\\(r\\.item_sku, 'unreached'\\)`));
   assert.deepEqual([k.total, k.valid, k.invalid], [14244, 12361, 3]);
   assert.deepEqual(k.bySupplier, [{ supplier: "SUP001", n: 2 }, { supplier: "SUP037", n: 1 }]);
@@ -73,7 +74,7 @@ test("publishVerdicts writes the view, re-binds the decision table, reads it bac
 test("on the DuckDB stand-in nothing is written and nothing is read", async () => {
   const { ctx, seen } = fakeZetaris([]);
   (ctx.sql as { engine: string }).engine = "duckdb-sample";
-  assert.equal(await checkShipNoticeKey(ctx), undefined);
+  assert.equal(await checkShipNoticeKey(ctx, issueContract(ctx.trace, { intent: "t", parameters: {}, capabilities: [] })), undefined);
   assert.equal(await publishVerdicts(ctx, []), undefined);
   assert.equal((await priorVerdicts(ctx)).size, 0);
   assert.equal(seen.length, 0);

@@ -8,6 +8,8 @@
 // on-hand total does not equal the number the Auditor already re-derived.
 import { mkdirSync, writeFileSync, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { inList, say, type AgentContext } from "./agents/context.ts";
+import { Trace } from "./trace.ts";
+import { issueContract, verifyContract, ContractRefused } from "./contract.ts";
 import type { Finding } from "./agents/investigator.ts";
 import type { Case } from "./agents/scout.ts";
 
@@ -107,8 +109,17 @@ export function approvePacket(runId: string, caseId: string, by: string, note = 
   if (!existsSync(`${dir}/packet.json`)) return { ok: false, reason: "no packet for this run and case" };
   const p = JSON.parse(readFileSync(`${dir}/packet.json`, "utf8")) as Packet;
   if (p.status !== "draft") return { ok: false, reason: `packet is ${p.status}` };
+  // Scout Intent: a high-risk contract that carries the person's approval, verified before it is recorded.
+  const who = by.trim().slice(0, 80);
+  const at = new Date().toISOString();
+  const trace = new Trace({ dir: "logs/approvals", quiet: true, runId: `approve-${runId}-${caseId}`.slice(0, 120) });
+  const capability = `packet.approve:${runId}/${caseId}`;
+  const contract = issueContract(trace, { intent: "packet.approve", parameters: { runId, caseId, files: p.files, pullUnits: p.pullUnits, stores: p.stores }, capabilities: [capability], risk: "high", surface: "review",
+    approvals: who ? [{ kind: "operator-review", by: who, at, decision: "approve" }] : [] });
+  try { verifyContract(trace, contract, capability, "Human"); }
+  catch (e) { return { ok: false, reason: e instanceof ContractRefused && e.reason === "approval-missing" ? "an approval needs the approver's name" : (e as Error).message }; }
   const file = `${dir}/approval.json`;
-  writeFileSync(file, JSON.stringify({ runId, caseId, by: by.slice(0, 80), note: note.slice(0, 500), at: new Date().toISOString(), files: p.files, sent: false }, null, 2));
+  writeFileSync(file, JSON.stringify({ runId, caseId, by: who, note: note.slice(0, 500), at, files: p.files, sent: false, contract: { contractId: contract.contractId, signature: contract.signature, expiresAt: contract.expiresAt } }, null, 2));
   return { ok: true, file };
 }
 

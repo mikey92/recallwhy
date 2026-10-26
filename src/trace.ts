@@ -6,7 +6,7 @@ import { randomUUID } from "node:crypto";
 
 export type TraceKind =
   | "run.start" | "run.end" | "msg" | "sql" | "sql.error" | "llm" | "llm.retry" | "memory.read" | "memory.write"
-  | "world.write" | "world.context" | "verdict" | "critique" | "escalate" | "brief" | "note" | "packet";
+  | "world.write" | "world.context" | "verdict" | "critique" | "escalate" | "brief" | "note" | "packet" | "contract" | "guard";
 
 export interface TraceEvent { t: string; run: string; seq: number; kind: TraceKind; agent: string; [k: string]: unknown }
 
