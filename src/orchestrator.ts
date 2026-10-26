@@ -33,11 +33,12 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   const prior = await priorVerdicts(ctx);
   const verdicts: VerdictRow[] = [];
   for (const k of todo) {
-    const { finding, open } = await adjudicate(ctx, k);
+    const { finding, open, openSkus } = await adjudicate(ctx, k);
     for (const d of finding.decisions) {
-      verdicts.push({ recall_id: k.recall.id, sku: d.sku, verdict: d.verdict, basis: d.basis, decided_by: d.decidedBy === "human-memory" ? "person" : "agent" });
+      const row = verdictRow(k.recall.id, d, finding.verdict === "needs-human", openSkus);
+      verdicts.push(row);
       const was = prior.get(`${k.recall.id} ${d.sku}`);
-      if (was && was.verdict !== d.verdict) say(ctx, "Orchestrator", "Human", `${k.id}: ${d.sku} was "${was.verdict}" in run ${was.run_id} (${was.decided_by}, read from Zetaris) and is "${d.verdict}" now (${d.decidedBy})`);
+      if (was && was.verdict !== row.verdict) say(ctx, "Orchestrator", "Human", `${k.id}: ${d.sku} was "${was.verdict}" in run ${was.run_id} (${was.decided_by}, read from Zetaris) and is "${row.verdict}" now (${row.decided_by === "person" ? "a person decided" : d.decidedBy})`);
     }
     if (finding.verdict !== "needs-human" && !finding.decisions.some((d) => d.verdict === "unsure")) unqueue(ctx, k.id); // settled now (e.g. by a reviewer's decision)
     const entities = await record(ctx, k, finding);
@@ -59,6 +60,17 @@ export async function run(ctx: AgentContext, opts: { since: string; only?: strin
   try { renderReport(outDir); } catch (e) { ctx.trace.emit("note", "Orchestrator", { text: `report.html not written: ${(e as Error).message}` }); }
   ctx.trace.emit("run.end", "Orchestrator", { scanned, cases: results.length, verdicts: count(results.map((r) => r.verdict)), outDir });
   return { runId: ctx.trace.runId, scanned, cases: results, outDir };
+}
+
+/**
+ * The verdict written back to Zetaris for one pair. On an escalated case a pair the Auditor still blocks
+ * (or every agent call, when the block names no item) is the reviewer's to decide: it is written as unsure,
+ * not as the call the Auditor refused. A person's decision and a barcode match stand.
+ */
+export function verdictRow(recallId: string, d: Finding["decisions"][number], escalated: boolean, openSkus: string[]): VerdictRow {
+  const person = d.decidedBy === "human-memory";
+  const blocked = escalated && !person && (openSkus.includes(d.sku) || (!openSkus.length && d.basis !== "upc"));
+  return { recall_id: recallId, sku: d.sku, verdict: blocked ? "unsure" : d.verdict, basis: blocked ? "escalated" : d.basis, decided_by: person ? "person" : "agent" };
 }
 
 export async function adjudicate(ctx: AgentContext, k: Case): Promise<{ finding: Finding; open: string[]; openSkus: string[] }> {

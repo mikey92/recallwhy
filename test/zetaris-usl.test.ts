@@ -86,3 +86,14 @@ test("mergeVerdicts carries earlier verdicts this run did not decide and keeps o
   assert.deepEqual(m.map((r) => `${r.run_id} ${r.recall_id} ${r.sku} ${r.verdict} ${r.decided_by}`).sort(), ["new fda:H-1 NW-1 same agent", "old fda:H-2 NW-9 same person"]);
   assert.match(verdictsViewSql("new", m), /\('old', 'fda:H-2', 'NW-9', 'same', 'text', 'person'\)/);
 });
+
+test("an escalated pair the Auditor blocks is written back as unsure; a person's decision and a barcode match stand", async () => {
+  const { verdictRow } = await import("../src/orchestrator.ts");
+  const d = (sku: string, verdict: string, basis: string, decidedBy: string) => ({ sku, verdict, basis, decidedBy, why: "", title: "" }) as never;
+  assert.deepEqual(verdictRow("fda:H-1", d("A", "not-this", "text", "judge"), true, ["A"]), { recall_id: "fda:H-1", sku: "A", verdict: "unsure", basis: "escalated", decided_by: "agent" });
+  assert.equal(verdictRow("fda:H-1", d("B", "not-this", "text", "judge"), true, ["A"]).verdict, "not-this");
+  assert.equal(verdictRow("fda:H-1", d("C", "same", "upc", "rule"), true, []).verdict, "same");
+  assert.equal(verdictRow("fda:H-1", d("D", "not-this", "text", "judge"), true, []).verdict, "unsure");
+  assert.deepEqual(verdictRow("fda:H-1", d("A", "not-this", "text", "human-memory"), true, ["A"]), { recall_id: "fda:H-1", sku: "A", verdict: "not-this", basis: "text", decided_by: "person" });
+  assert.equal(verdictRow("fda:H-1", d("A", "not-this", "text", "judge"), false, []).verdict, "not-this");
+});

@@ -96,6 +96,11 @@ CREATE SCHEMASTORE VIEW case_verdicts WITH CONTAINER reconciled AS
 SELECT * FROM VALUES ('none', 'none', 'none', 'unsure', 'none', 'none') AS t(run_id, recall_id, sku, verdict, basis, decided_by) WHERE run_id <> 'none';
 ACTIVATE USL TABLE lightning.metastore.recallwhy.recall_exposure.decision AS
 SELECT run_id, recall_id, sku, verdict, basis, decided_by FROM reconciled.case_verdicts;
+-- The supplier barcode rules the Cartographer proves are kept here between runs (src/agents/cartographer.ts,
+-- remember()); setup starts it empty, so a first run reads no rules instead of failing on a missing view.
+DROP VIEW IF EXISTS reconciled.supplier_rules;
+CREATE SCHEMASTORE VIEW supplier_rules WITH CONTAINER reconciled AS
+SELECT * FROM VALUES ('none', 'none', 'null', '0', 'none', 'none', '') AS t(supplier_id, transform, ops, proven_rows, learned_from, run_id, proposed_by) WHERE supplier_id <> 'none';
 REGISTER DQ on_hand_not_negative TABLE lightning.metastore.recallwhy.recall_exposure.inventory_lot AS on_hand >= 0;
 REGISTER DQ ships_units TABLE lightning.metastore.recallwhy.recall_exposure.ship_notice AS units > 0;
 REGISTER DQ known_verdict TABLE lightning.metastore.recallwhy.recall_exposure.decision AS verdict IN ('same', 'not-this', 'unsure');
