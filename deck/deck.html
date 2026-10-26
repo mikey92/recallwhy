@@ -69,7 +69,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <tr><td>Retailer data</td><td>Postgres 16 in Docker — food items are real products (USDA FoodData Central, Open Food Facts: 95 recalled, 86 same-brand, 260 more); stores at real SNAP-authorized supermarket locations (USDA FNS); stock, sales and ship notices synthetic</td></tr>
 <tr><td>Entry points</td><td><code>POST /run</code> · <code>POST /approve</code> API · Dockerfile · CLI · live trace viewer · review screen</td></tr>
 <tr><td>No-credential mode</td><td><code>SAMPLE_MODE=true</code>: same agents and SQL on an in-process DuckDB stand-in, labelled SAMPLE</td></tr>
-<tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 106 tests incl. Meterless engine tests</td></tr></table>
+<tr><td>Development</td><td>Cursor (agent scaffolding, generator, SQL layer, tests) · 107 tests incl. Meterless engine tests</td></tr></table>
 <div class="foot"><span>RecallWhy</span><span>Track 1</span></div></section>
 
 <section class="s dark"><div class="k">5 · How Zetaris and Meterless are used</div><h2>Load-bearing, not bolted on.</h2>
@@ -93,7 +93,7 @@ code{font-family:"SF Mono",Menlo,monospace;font-size:.85em;background:#0001;padd
 <section class="s dark"><div class="k">5c · A governed model in Zetaris</div><h2>The joins the agents rely on, as keys Zetaris checks.</h2>
 <div class="grid g2" style="gap:40px"><div><img class="shot" src="zetaris-usl.png" style="height:600px;object-fit:cover;object-position:top left"><p class="mute" style="font-size:22px;margin-top:10px">USL <code>recall_exposure</code> in Zetaris's Data Explorer: 7 tables, all active, described, with primary and foreign keys and 18 data-quality rules.</p></div>
 <div><ul class="e2e" style="margin:0;padding-left:28px">
-<li><b>The barcode key</b> <code>ship_notice.matched_sku → item</code>: after every map correction the Cartographer re-binds it and Zetaris's DQ engine counts the ship notices no proven rule reaches — <b>1,883 of 14,244</b>, all from six suppliers, named one by one.</li>
+<li><b>The barcode key</b> <code>ship_notice.matched_sku → item</code>: after every map correction the Cartographer re-binds it and Zetaris's DQ engine counts the ship notices no proven rule reaches — <b>1,690 of 14,244</b> after three proven rules, all from five suppliers, named one by one.</li>
 <li><b>Every other key holds</b>: items → suppliers 900/900, stock → stores and items 14,982/14,982, ship notices → items 14,244/14,244.</li>
 <li><b>Verdicts go back in</b>: each run writes its verdicts as <code>reconciled.case_verdicts</code>; Zetaris checks each points at a live notice and an item we carry; the next run reads them and flags a change.</li>
 <li><b>Every write is signed</b>: a Meterless Scout Intent execution contract names the exact views and tables it may change, single-use, 5-minute expiry.</li></ul></div></div>
