@@ -13,7 +13,7 @@ a.card:hover{border-color:var(--accent)}main>p a{color:var(--accent)}a.card b{di
 .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:18px 0}
 .num{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.num b{font-size:30px;display:block;line-height:1.1}.num span{color:var(--mute);font-size:13px}
 img{max-width:100%;border-radius:12px;border:1px solid var(--line)}iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000}
-h2{font-size:20px;margin:34px 0 10px}.hook{font-size:17px;margin:-8px 0 22px;border-left:3px solid var(--accent);padding-left:12px}.chapters{font-size:14px;color:var(--mute);margin:10px 0 0}.chapters b{color:var(--ink)}small{color:var(--mute)}
+h2{font-size:20px;margin:34px 0 10px}.tbl{overflow-x:auto}.tbl table{border-collapse:collapse;font-size:13px;width:100%}.tbl th,.tbl td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}.tbl .n{text-align:right;white-space:nowrap}.tbl code{font-size:12px}.hook{font-size:17px;margin:-8px 0 22px;border-left:3px solid var(--accent);padding-left:12px}.chapters{font-size:14px;color:var(--mute);margin:10px 0 0}.chapters b{color:var(--ink)}small{color:var(--mute)}
 </style></head><body><main>
 <div class="k">Open Agent Hackathon 2026 · Track 1: Solving Fragmented Intelligence</div>
 <h1>RecallWhy</h1>
@@ -36,6 +36,7 @@ h2{font-size:20px;margin:34px 0 10px}.hook{font-size:17px;margin:-8px 0 22px;bor
 <a class="card" href="examples/example_1_sample_mode/report.html"><b>Sample mode</b><span>What a judge sees with no Zetaris and no model: the same agents and SQL on the DuckDB stand-in. Text matches go to the review queue instead of being judged, and nothing is written back to Zetaris.</span></a>
 </div>
 <p><a href="https://github.com/mikey92/recallwhy">Code, evaluation and API on GitHub</a> (README, Docker, <code>POST /run</code>, sample mode with no credentials, JSONL traces) · <a href="https://github.com/mikey92/recallwhy/blob/main/deck/RecallWhy-deck.pdf">Slides (PDF)</a></p>
+<!-- MODELS -->
 <h2>One case</h2>
 <img src="img/report-case.png" alt="A case from a live run: banner of what the agents did above the cited brief and the trace">
 <p><small>The retailer's food items are real products (USDA FoodData Central, Open Food Facts); its stores stand at real SNAP-authorized supermarket locations (USDA FNS); stock, sales and ship notices are synthetic (Northwind Mercantile); the recall feeds are live CPSC and openFDA data. Built in the hackathon window, 22–27 Oct 2026. This page is rebuilt from the repository on every push.</small></p>

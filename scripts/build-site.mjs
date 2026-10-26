@@ -28,3 +28,27 @@ const data = { runs, queue, packets, note: "Recorded live runs. First decide the
 const html = readFileSync("src/review.html", "utf8").replace("<script>", `<script>window.RW_STATIC = ${JSON.stringify(data).replace(/</g, "\\u003c")};</script>\n<script>`);
 writeFileSync(`${out}/review.html`, html);
 console.log(`review.html: ${queue.length} queued case(s), ${packets.packets.length} packet(s), ${Object.keys(runs).length} run(s)`);
+
+// The project page's "Which Nemotron model handled each call" table, from the llm events of every live
+// example trace: the model the agent asked for, the model Nightshift routed to, the task, how many calls,
+// and one Nightshift receipt id per row (each call's own receipt is in the trace).
+const task = (p) => p.replace(/\s*\(attempt \d+\)/, "").replace(/\s+(case-\S+|fda:\S+|cpsc:\S+|NW-\d+ vs \S+)/g, "").replace(/\s+(for\s+)?SUP\d+/g, "").replace(/\s+NW-\d+/g, "").replace(/\s+\d+\/\d+(?=\s|\)|$)/, "").trim();
+const rows = new Map();
+for (const d of readdirSync(ex).filter((d) => existsSync(`${ex}/${d}/trace.jsonl`) && !/sample_mode/.test(d))) {
+  for (const l of readFileSync(`${ex}/${d}/trace.jsonl`, "utf8").trim().split("\n")) {
+    const e = JSON.parse(l);
+    if (e.kind !== "llm" || String(e.output).startsWith("ERROR")) continue;
+    const k = `${e.agent}|${task(e.purpose)}|${e.model}|${e.served_model ?? ""}`;
+    const r = rows.get(k) ?? { agent: e.agent, task: task(e.purpose), model: String(e.model).replace(/^meterless:/, ""), served: e.served_model ?? "", n: 0, ms: [], receipt: e.receipt };
+    r.n++; r.ms.push(e.ms); rows.set(k, r);
+  }
+}
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const med = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)] ?? 0; };
+const list = [...rows.values()].sort((a, b) => a.model.localeCompare(b.model) || b.n - a.n);
+const table = `<h2>Which Nemotron model handled each call</h2><p><small>Every model call of the live example runs, from their traces: the model the agent asked Meterless Nightshift for, the model Nightshift reports it routed to, and one Nightshift receipt per row. Narrow tasks whose output is checked word for word (lot codes must appear in the notice) go to the small Nemotron 3.5 Lightning; judging, briefs, the Auditor's check and the digest go to Nemotron 3 Ultra.</small></p>
+<div class="tbl"><table><thead><tr><th>Agent</th><th>Task</th><th>Asked for</th><th>Served by (Nightshift)</th><th>Calls</th><th>Median</th><th>A receipt</th></tr></thead><tbody>${list.map((r) => `<tr><td>${esc(r.agent)}</td><td>${esc(r.task)}</td><td><code>${esc(r.model)}</code></td><td><code>${esc(r.served)}</code></td><td class="n">${r.n}</td><td class="n">${(med(r.ms) / 1000).toFixed(1)} s</td><td><code>${esc(r.receipt ?? "")}</code></td></tr>`).join("")}</tbody></table></div>`;
+if (existsSync(`${out}/index.html`)) {
+  const idx = readFileSync(`${out}/index.html`, "utf8");
+  if (idx.includes("<!-- MODELS -->")) { writeFileSync(`${out}/index.html`, idx.replace("<!-- MODELS -->", table)); console.log(`index.html: ${list.length} model-call rows`); }
+}
