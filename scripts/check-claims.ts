@@ -69,6 +69,7 @@ const claims: [string, boolean][] = [
     README.includes(`**${bc.settledByUpcRule} of 97 by the UPC rule`) && README.includes(`catches ${ra.caught} of 97, misses ${ra.wronglyDismissed}, raises ${ra.falseAlarms} false alarms`) &&
     REAL.includes(`| after the Auditor (final) | ${ra.caught} / 97 | **${ra.wronglyDismissed}** | ${ra.falseAlarms} / 152 | ${ra.toHuman}`) && REAL.includes(`| judge, first answer | ${rf.caught} / 97 | ${rf.wronglyDismissed} | ${rf.falseAlarms} / 152 | ${rf.toHuman} |`) &&
     META.includes(`${bc.settledByUpcRule}/97 settled by the UPC rule`) && SUB.includes(`settles ${bc.settledByUpcRule} of 97 recalls`)],
+  [`deck: judge off ${rules.all.caught} / ${proposals.all.caught} / ${noCarto.all.caught} of ${u.positives}`, DECK.includes(`Judge off: <b>${rules.all.caught}</b> of ${u.positives} caught with known rules, <b>${proposals.all.caught}</b> with proposals, <b>${noCarto.all.caught}</b> without the Cartographer`)],
   [`${tests} tests in metadata and the deck`, META.includes(`(${tests} tests;`) && DECK.includes(`${tests} tests incl.`)],
   [`no placeholder left in the documents`, ![README, EVAL, REAL, META, DECK, SITE, SUB].some((d) => /\{[A-Z]_[A-Z_]+\}/.test(d))],
   ...exampleChecks,
