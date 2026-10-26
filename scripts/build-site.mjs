@@ -13,12 +13,18 @@ for (const f of readdirSync(ex).filter((f) => f.endsWith(".json") && f !== "revi
   if (runId) runs[runId] = `examples/${f.replace(/\.json$/, "")}`;
 }
 const queue = existsSync(`${ex}/review-queue.json`) ? JSON.parse(readFileSync(`${ex}/review-queue.json`, "utf8")) : [];
+// Our item titles from the pull list (column "item"), when the packet predates its `items` field.
+function withItems(p, csvFile) {
+  if (p.items || !existsSync(csvFile)) return p;
+  const rows = readFileSync(csvFile, "utf8").trim().split("\n").slice(1).map((l) => (l.match(/("(?:[^"]|"")*"|[^,]*)(,|$)/g) ?? []).map((c) => c.replace(/,$/, "").replace(/^"|"$/g, "").replace(/""/g, '"')));
+  return { ...p, items: [...new Set(rows.map((r) => r[6]).filter(Boolean))] };
+}
 const pk = "example_1";
 const packets = {
   runId: JSON.parse(readFileSync(`${ex}/${pk}.json`, "utf8")).runId,
-  packets: existsSync(`${ex}/${pk}/actions`) ? readdirSync(`${ex}/${pk}/actions`).filter((c) => existsSync(`${ex}/${pk}/actions/${c}/packet.json`)).map((c) => JSON.parse(readFileSync(`${ex}/${pk}/actions/${c}/packet.json`, "utf8"))) : [],
+  packets: existsSync(`${ex}/${pk}/actions`) ? readdirSync(`${ex}/${pk}/actions`).filter((c) => existsSync(`${ex}/${pk}/actions/${c}/packet.json`)).map((c) => withItems(JSON.parse(readFileSync(`${ex}/${pk}/actions/${c}/packet.json`, "utf8")), `${ex}/${pk}/actions/${c}/pull-list.csv`)) : [],
 };
-const data = { runs, queue, packets, note: "Recorded live runs. Decide the matches the Auditor would not settle, then approve a packet. Nothing is sent; your clicks stay in this browser (in the product a decision goes into H-MEM and the next run follows it)." };
+const data = { runs, queue, packets, note: "Recorded live runs. First decide the matches the Auditor would not settle, then approve a packet. Nothing is sent; your clicks stay in this browser (in the product a decision goes into H-MEM and the next run follows it)." };
 const html = readFileSync("src/review.html", "utf8").replace("<script>", `<script>window.RW_STATIC = ${JSON.stringify(data).replace(/</g, "\\u003c")};</script>\n<script>`);
 writeFileSync(`${out}/review.html`, html);
 console.log(`review.html: ${queue.length} queued case(s), ${packets.packets.length} packet(s), ${Object.keys(runs).length} run(s)`);

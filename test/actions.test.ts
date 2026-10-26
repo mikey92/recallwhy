@@ -85,3 +85,9 @@ test("approving a packet needs a name, records a signed high-risk contract that 
     assert.equal(signatureValid({ ...a.contract, intent: { ...a.contract.intent, parameters: { pullUnits: 500 } } }), false);
   } finally { rmSync(`out/${run}`, { recursive: true, force: true }); }
 });
+
+test("the review screen titles a packet with our items from its pull list", async () => {
+  const { itemsFromPullList } = await import("../src/actions.ts");
+  const csv = 'store_id,store,city,state,sku,upc,item,lot_code,units_to_pull\nS005,Northwind #005 Seattle,Seattle,WA,NW-1,0302,Spicy guacamole,L1,15\nS007,"Northwind #007, Tyler",Tyler,TX,NW-2,0303,"Salsa ""Fresca"", 12 oz",L2,3\nS008,X,Y,TX,NW-1,0302,Spicy guacamole,L3,1\n';
+  assert.deepEqual(itemsFromPullList(csv), ["Spicy guacamole", 'Salsa "Fresca", 12 oz']);
+});

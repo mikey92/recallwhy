@@ -11,6 +11,10 @@ type Ev = { kind: string; about?: string; predicate?: string; value?: unknown };
 
 /** "fda:H-1396-2026" → "H-1396-2026": the result's recall id carries the feed, the world-model entity a longer feed name. */
 const num = (recall: string) => recall.replace(/^[^:]*:/, "");
+/** How a recall is named on the page: FDA recall numbers read on their own (H-1355-2026); a CPSC number needs its feed (CPSC 27017). */
+const recallName = (recall: string) => recall.startsWith("cpsc:") ? `CPSC ${num(recall)}` : num(recall);
+const fmt = (n: number) => n.toLocaleString("en-US");
+const count = (n: number, one: string, many: string) => `${fmt(n)} ${n === 1 ? one : many}`;
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
 /** A CSV row into fields (pull lists quote titles with commas). */
@@ -101,15 +105,15 @@ export function storeMapSection(points: MapPoint[], mapCases: MapCase[], paths: 
   const dot = (p: MapPoint) => {
     const [x, y] = albersUsa(p.lon, p.lat);
     const mine = first && p.cases.find((c) => c.id === first.id);
-    return `<circle data-s="${p.store_id}" data-u="${p.units}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(5 + 13 * Math.sqrt((mine ? mine.units : p.units) / max)).toFixed(1)}" class="${mine && !mine.inNotice ? "d-out" : "d-in"}"${first && !mine ? ' style="display:none"' : ""}><title>${esc(p.store)} — ${esc(p.city)}, ${p.state}: ${p.units} unit(s) to pull\n${p.cases.map((c) => `${num(c.recall)}: ${c.units}${c.inNotice ? "" : " (state not in the notice's list)"}`).join("\n")}</title></circle>`;
+    return `<circle data-s="${p.store_id}" data-u="${p.units}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(5 + 13 * Math.sqrt((mine ? mine.units : p.units) / max)).toFixed(1)}" class="${mine && !mine.inNotice ? "d-out" : "d-in"}"${first && !mine ? ' style="display:none"' : ""}><title>${esc(p.store)} — ${esc(p.city)}, ${p.state}: ${count(p.units, "unit", "units")} to pull\n${p.cases.map((c) => `${recallName(c.recall)}: ${c.units}${c.inNotice ? "" : " (state not in the notice's list)"}`).join("\n")}</title></circle>`;
   };
   const svg = `<svg viewBox="0 0 975 610" role="img" aria-label="Map of the stores holding recalled lots" class="usmap">${Object.entries(paths).map(([st, d]) => `<path data-st="${st}" class="${named.has(st) ? "st-named" : "st"}" d="${d}"><title>${st}</title></path>`).join("")}${points.map(dot).join("")}</svg>`;
-  const rows = points.map((p) => `<tr><td>${esc(p.store)}</td><td>${esc(p.city)}, ${p.state}</td><td class="n">${p.units}</td><td>${p.cases.map((c) => `<a href="#${esc(c.id)}">${esc(num(c.recall))}</a> ${c.units}${c.inNotice ? "" : ` <span class="out">state not in the notice's list</span>`}`).join("<br>")}</td></tr>`).join("");
+  const rows = points.map((p) => `<tr><td>${esc(p.store)}</td><td>${esc(p.city)}, ${p.state}</td><td class="n">${fmt(p.units)}</td><td>${p.cases.map((c) => `<a href="#${esc(c.id)}">${esc(recallName(c.recall))}</a> ${c.units}${c.inNotice ? "" : ` <span class="out">state not in the notice's list</span>`}`).join("<br>")}</td></tr>`).join("");
   const data = JSON.stringify(acting.map((c) => ({ id: c.id, st: c.states, s: Object.fromEntries(points.flatMap((p) => p.cases.filter((k) => k.id === c.id).map((k) => [p.store_id, [k.units, k.inNotice]]))) }))).replace(/</g, "\\u003c");
   const opt = (c: MapCase) => { const n = points.filter((p) => p.cases.some((k) => k.id === c.id && !k.inNotice)).length;
-    return `<option value="${esc(c.id)}">${esc(num(c.recall))} — ${unitsOf(c.id)} unit(s)${n ? `, ${n} store(s) outside the notice's states` : ""}</option>`; };
-  return `<section class="map storemap"><h2>Where to pull: ${total} unit(s) in ${points.length} store(s)</h2>
-<div class="sub">Store locations are real SNAP-authorized supermarkets (USDA FNS Retailer Locator); units come from the run's pull lists. Shaded states: the selected recall notice's own distribution list. <span class="k k-in"></span> store in a listed state · <span class="k k-out"></span> store in a state the notice does not list — the stock got there anyway, so checking the distribution list alone would miss it (${outside.length} store(s) in this run).</div>
+    return `<option value="${esc(c.id)}">${esc(recallName(c.recall))} — ${count(unitsOf(c.id), "unit", "units")}${n ? `, ${count(n, "store", "stores")} outside the notice's states` : ""}</option>`; };
+  return `<section class="map storemap"><h2>Where to pull: ${count(total, "unit", "units")} in ${count(points.length, "store", "stores")}</h2>
+<div class="sub">Store locations are real SNAP-authorized supermarkets (USDA FNS Retailer Locator); units come from the run's pull lists. Shaded states: the selected recall notice's own distribution list. <span class="k k-in"></span> store in a listed state · <span class="k k-out"></span> store in a state the notice does not list — the stock got there anyway, so checking the distribution list alone would miss it (${count(outside.length, "store", "stores")} in this run).</div>
 <label class="pick">Recall <select id="mapcase">${acting.map(opt).join("")}<option value="">all ${acting.length} recalls (no shading)</option></select></label>
 ${svg}
 <table class="pulls"><thead><tr><th>Store</th><th>Location</th><th>Units</th><th>Recall: units</th></tr></thead><tbody>${rows}</tbody></table>

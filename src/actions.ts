@@ -19,6 +19,14 @@ export interface Packet {
   caseId: string; recall: string; firm: string; product: string; verdict: Finding["verdict"]; dir: string; status: "draft" | "withheld";
   stores: number; pullUnits: number; auditedUnits: number; shipNotices: number; customers: number;
   sql: { pullList: string; shipNotices: string }; reason?: string; files: string[];
+  /** Our items in the pull list (title), for the review screen. */
+  items?: string[];
+}
+
+/** Our item titles from a packet's pull-list.csv (column "item"), for packets written before `items` existed. */
+export function itemsFromPullList(csvText: string): string[] {
+  const rows = csvText.trim().split("\n").slice(1).map((l) => l.match(/("(?:[^"]|"")*"|[^,]*)(,|$)/g)?.map((c) => c.replace(/,$/, "").replace(/^"|"$/g, "").replace(/""/g, '"')) ?? []);
+  return [...new Set(rows.map((r) => r[6]).filter(Boolean))];
 }
 
 const csv = (v: string | number) => (/[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
@@ -61,6 +69,7 @@ export async function actionPacket(ctx: AgentContext, k: Case, f: Finding, outDi
     packet.files.push("pull-list.csv");
   }
   const items = [...new Map(rows.map((r) => [r.sku, `${r.sku} ${r.title}${r.upc ? ` (UPC ${r.upc})` : ""}`])).values()];
+  packet.items = [...new Set(rows.map((r) => r.title))];
   const itemLines = items.length ? items : f.decisions.filter((d) => d.verdict === "same").map((d) => `${d.sku} ${d.title}`);
   const suppliers = [...new Map(asns.map((a) => [a.supplier_id, a])).values()];
   for (const s of suppliers.length ? suppliers : [undefined]) {
@@ -135,6 +144,8 @@ export function listPackets(): { runId: string; packets: (Packet & { approval?: 
     const f = `out/${runId}/actions/${c}/packet.json`;
     if (!existsSync(f)) return [];
     const p = JSON.parse(readFileSync(f, "utf8")) as Packet;
+    const pl = `out/${runId}/actions/${c}/pull-list.csv`;
+    if (!p.items && existsSync(pl)) p.items = itemsFromPullList(readFileSync(pl, "utf8"));
     const a = `out/${runId}/actions/${c}/approval.json`;
     return [{ ...p, ...(existsSync(a) ? { approval: JSON.parse(readFileSync(a, "utf8")) } : {}) }];
   });

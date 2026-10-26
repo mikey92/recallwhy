@@ -36,6 +36,13 @@ button{min-height:44px;min-width:44px;padding:0 18px;border-radius:10px;border:0
 button.same{background:var(--primary);color:#fff}
 button.link{background:transparent;color:var(--focus);padding:0 8px;font-weight:500}
 button.not{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.pick{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+button.pick:hover,button.not:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.need{border-left:3px solid var(--warn);padding-left:12px;margin-left:-15px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);margin-bottom:2px}
+details.agreed{border-top:1px solid var(--line);margin-top:6px}details.agreed summary{cursor:pointer;color:var(--mute);font-size:15px;padding:12px 0;min-height:44px}
+.item{font-size:17px;font-weight:600;margin:0 0 2px}
+.err{font-size:14px;color:var(--warn);margin:6px 0 0}
 button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .done{font-size:15px;color:var(--ok);margin:6px 0 0}
 /* Motion: cases rise in one after another on first load; a new decision fades in. Ease-out; off with reduced motion (rule above). */
@@ -46,7 +53,8 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 </head>
 <body>
 <header><h1>Review queue</h1><p id="sum" role="status" aria-live="polite"></p><a href="/">Live view</a></header>
-<main><h2 class="sec">Action packets</h2><p class="meta">Drafts from the latest run: what to pull, what to ask the supplier, what to tell customers. Approving records who and when; nothing is sent.</p><div id="packets"></div><h2 class="sec">Matches to decide</h2><div id="list" class="intro"></div></main>
+<main><h2 class="sec">1 · Matches to decide</h2><p class="meta">Pairs the agents could not settle: the Auditor blocked the judge's answer, or nobody could decide. Each case also lists the pairs the agents did decide, folded, so you can check or change them.</p><div id="list" class="intro"></div>
+<h2 class="sec">2 · Action packets to approve</h2><p class="meta">Drafts from a live run: what to pull, what to ask the supplier, what to tell customers. Approving records who and when; nothing is sent.</p><div id="packets"></div></main>
 <script>
 // On the public site (scripts/build-site.mjs) RW_STATIC holds a recorded queue and recorded packets:
 // decisions and approvals are kept in this browser only, nothing is recorded or sent.
@@ -60,18 +68,27 @@ async function api(path, body) {
   if (path === "/api/queue") return ok({ queue: S.queue, decided: local("rw-demo-decided") });
   if (path === "/api/packets") { const a = Object.fromEntries(local("rw-demo-approved").map((x) => [x.caseId, x])); return ok({ runId: S.packets.runId, packets: S.packets.packets.map((p) => a[p.caseId] ? { ...p, approval: a[p.caseId] } : p) }); }
   if (path === "/api/decide") { keep("rw-demo-decided", [...local("rw-demo-decided").filter((d) => !(d.recall === body.recall && d.sku === body.sku)), { ...body, memoryId: "kept in this browser only" }]); return ok({}); }
-  if (path === "/api/approve") { keep("rw-demo-approved", [...local("rw-demo-approved").filter((x) => x.caseId !== body.caseId), { caseId: body.caseId, by: body.by || "you", at: new Date().toISOString(), note: "" }]); return ok({}); }
+  if (path === "/api/approve") { keep("rw-demo-approved", [...local("rw-demo-approved").filter((x) => x.caseId !== body.caseId), { caseId: body.caseId, by: body.by, at: new Date().toISOString(), note: "" }]); return ok({}); }
 }
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const label = { "same": "Same product", "not-this": "Not this product", "unsure": "Undecided" };
 let n = 0;
 
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+// A pair needs a person when nobody could decide it or the Auditor blocked the judge's answer.
+const objectionsFor = (c, s) => c.open.filter((o) => (c.skus.length === 1 || o.includes(s.sku) || o.includes(`"${s.title}"`)) && !o.includes(s.why));
+const needsPerson = (c, s) => s.verdict === "unsure" || objectionsFor(c, s).length > 0;
+
 function skuBlock(c, s, done) {
   const d = done.get(c.recall + " " + s.sku);
-  const objections = c.open.filter((o) => (c.skus.length === 1 || o.includes(s.sku) || o.includes(`"${s.title}"`)) && !o.includes(s.why));
+  const objections = objectionsFor(c, s);
+  const need = needsPerson(c, s);
   const id = "n" + (n++);
-  return `<div class="sku"><h3>${esc(s.title)} <span>${esc(s.sku)}</span></h3>
-    <p class="why">Agents: <b>${label[s.verdict] ?? esc(s.verdict)}</b> — ${esc(s.why)}</p>
+  const agents = s.verdict === "unsure" ? `<b>Undecided</b> — ${esc(s.why)}`
+    : need ? `<b>Undecided</b> — the judge said “${label[s.verdict] ?? esc(s.verdict)}” (${esc(s.why)}), and the Auditor blocked it:`
+    : `<b>${label[s.verdict] ?? esc(s.verdict)}</b> — ${esc(s.why)}`;
+  return `<div class="sku${need && !d ? " need" : ""}">${need && !d ? `<span class="tag">Needs you</span>` : ""}<h3>${esc(s.title)} <span>${esc(s.sku)}</span></h3>
+    <p class="why">Agents: ${agents}</p>
     ${objections.map((o) => `<p class="obj">${esc(o)}</p>`).join("")}
     <p class="facts">Our UPC <b>${esc(s.upc || "none")}</b> · vendor <b>${esc(s.vendor || "unknown")}</b></p>
     ${d ? `<p class="done">Decided: ${label[d.verdict]} (${esc(d.memoryId)}). The next run follows it.
@@ -80,23 +97,24 @@ function skuBlock(c, s, done) {
         : `<div class="row" data-recall="${esc(c.recall)}" data-sku="${esc(s.sku)}">
              <label class="sr" for="${id}">Note for ${esc(s.sku)}</label>
              <input type="text" id="${id}" placeholder="Note for the record (optional)">
-             <button class="same" data-verdict="same" aria-label="Same product: ${esc(s.sku)}">Same product</button>
-             <button class="not" data-verdict="not-this" aria-label="Not this product: ${esc(s.sku)}">Not this product</button></div>`}
+             <button class="pick" data-verdict="same" aria-label="Same product: ${esc(s.sku)}">Same product</button>
+             <button class="pick" data-verdict="not-this" aria-label="Not this product: ${esc(s.sku)}">Not this product</button></div>`}
     <p class="obj" hidden></p></div>`;
 }
 
 async function load() {
   const { queue, decided } = await (await api("/api/queue")).json();
   const done = new Map(decided.map((d) => [d.recall + " " + d.sku, d]));
-  const waiting = queue.flatMap((c) => c.skus.filter((s) => !done.has(c.recall + " " + s.sku))).length;
+  const waiting = queue.flatMap((c) => c.skus.filter((s) => needsPerson(c, s) && !done.has(c.recall + " " + s.sku))).length;
   n = 0;
   document.getElementById("list").innerHTML = queue.length
     ? queue.slice().reverse().map((c, i) => `<section class="case" style="--i:${i}"><h2>${esc(c.firm || c.recall)}</h2>
         <p class="meta">${esc(c.recall)}${c.date ? " · recalled " + esc(c.date) : ""}${c.runId ? ` · <a class="report" href="${esc(outDir(c.runId))}/report.html" target="_blank">Report and agent trace</a>` : ""}</p>
         ${c.notice ? `<p class="notice">${esc(c.notice)}</p>` : ""}
-        ${c.skus.map((s) => skuBlock(c, s, done)).join("")}</section>`).join("")
+        ${c.skus.filter((s) => needsPerson(c, s)).map((s) => skuBlock(c, s, done)).join("")}
+        ${(() => { const rest = c.skus.filter((s) => !needsPerson(c, s)); return rest.length ? `<details class="agreed"><summary>${plural(rest.length, "more item the agents decided", "more items the agents decided")} — check or change</summary>${rest.map((s) => skuBlock(c, s, done)).join("")}</details>` : ""; })()}</section>`).join("")
     : `<p class="empty">Nothing to review. Cases the agents cannot settle appear here.</p>`;
-  document.getElementById("sum").textContent = waiting ? `${waiting} decision${waiting > 1 ? "s" : ""} waiting` : "All decided";
+  document.getElementById("sum").textContent = waiting ? `${plural(waiting, "match needs", "matches need")} you` : "All matches decided";
 }
 
 document.getElementById("list").addEventListener("click", async (e) => {
@@ -116,21 +134,24 @@ document.getElementById("list").addEventListener("click", async (e) => {
 });
 async function loadPackets() {
   const { runId, packets } = await (await api("/api/packets")).json();
-  document.getElementById("packets").innerHTML = packets.length ? packets.map((p) => `<section class="case"><h2>${esc(p.firm || p.recall)}</h2><p class="meta">${esc(p.recall)} · ${esc(p.product || "")}</p>
-    <p class="meta">${p.status === "draft" ? `Pull <b>${p.pullUnits}</b> unit(s) in <b>${p.stores}</b> store(s) · ${p.shipNotices} supplier ship notice(s) cited${p.customers ? ` · notice for at most ${p.customers} customer(s)` : ""} · totals match the Auditor's numbers` : `Withheld: ${esc(p.reason)}`}</p>
+  document.getElementById("packets").innerHTML = packets.length ? packets.map((p) => `<section class="case"><h2>${esc((p.items && p.items.length ? p.items.join(" · ") : p.product) || p.recall)}</h2><p class="meta">${esc(p.recall)} · ${esc(p.firm || "")}</p>
+    <p class="meta">${p.status === "draft" ? `Pull <b>${plural(p.pullUnits, "unit", "units")}</b> in <b>${plural(p.stores, "store", "stores")}</b> · ${plural(p.shipNotices, "supplier ship notice", "supplier ship notices")} cited${p.customers ? ` · notice for at most ${plural(p.customers, "customer", "customers")}` : ""} · totals match the Auditor's numbers` : `Withheld: ${esc(p.reason)}`}</p>
     <p class="files">${p.files.map((f) => `<a href="${esc(outDir(runId))}/actions/${esc(p.caseId)}/${esc(f)}" target="_blank">${esc(f)}</a>`).join("")}</p>
     ${p.approval ? `<p class="done">Approved by ${esc(p.approval.by)} at ${esc(p.approval.at.slice(0, 16).replace("T", " "))}. Not sent.</p>`
-      : p.status === "draft" ? `<div class="row" data-run="${esc(runId)}" data-case="${esc(p.caseId)}"><label class="sr" for="by-${esc(p.caseId)}">Your name</label><input type="text" id="by-${esc(p.caseId)}" placeholder="Your name"><button class="same" data-approve="1">Approve packet</button></div>` : ""}
+      : p.status === "draft" ? `<div class="row" data-run="${esc(runId)}" data-case="${esc(p.caseId)}"><label class="sr" for="by-${esc(p.caseId)}">Your name</label><input type="text" id="by-${esc(p.caseId)}" placeholder="Your name (recorded with the approval)"><button class="same" data-approve="1">Approve packet</button></div><p class="err" hidden></p>` : ""}
     </section>`).join("") : `<p class="empty">No action packets yet. A run drafts one for every recall with our stock or sales.</p>`;
 }
 document.getElementById("packets").addEventListener("click", async (e) => {
   const b = e.target.closest("button[data-approve]");
   if (!b) return;
   const row = b.closest(".row");
+  const err = row.parentElement.querySelector(".err");
+  if (!row.querySelector("input").value.trim()) { err.textContent = "Type your name first: an approval records who approved it."; err.hidden = false; row.querySelector("input").focus(); return; }
+  err.hidden = true;
   if (!confirm(`Approve the action packet for ${row.dataset.case}?\n\nThis records your approval. Nothing is sent.`)) return;
   b.disabled = true;
   const r = await api("/api/approve", { run: row.dataset.run, caseId: row.dataset.case, by: row.querySelector("input").value });
-  if (!r.ok) { b.disabled = false; alert(await r.text()); return; }
+  if (!r.ok) { b.disabled = false; err.textContent = await r.text(); err.hidden = false; return; }
   await loadPackets();
 });
 if (S) { const b = document.createElement("p"); b.className = "meta"; b.style.cssText = "margin:0 0 16px;padding:10px 14px;border-radius:10px;background:var(--card)";

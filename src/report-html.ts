@@ -116,7 +116,7 @@ function sourceMap(evs: Ev[]): string {
     return `<li><code>${esc(String(f.about ?? "").replace(/^[^:]+:[^:]+:/, ""))}</code> ${esc(String(f.predicate ?? "").replace(/_/g, " "))}: <b>${esc(typeof f.value === "string" ? f.value : JSON.stringify(f.value))}</b>${f.ref ? ` <span class="sql">(${esc(f.ref)})</span>` : ""}</li>`;
   }).join("");
   const sqls = carto.filter((e) => e.kind === "sql").length;
-  return `<section class="map"><h2>Source map (Cartographer, ${sqls} catalog and profiling queries)</h2><ul>${msgs}</ul><ul>${facts}</ul></section>`;
+  return `<section class="map"><details class="srcmap"><summary>Source map: how the Cartographer read the four sources (${sqls} catalog and profiling queries)</summary><ul>${msgs}</ul><ul>${facts}</ul></details></section>`;
 }
 
 /** `tracePath` overrides the default logs/trace-<runId>.jsonl, e.g. to re-render a committed example from its own trace. */
@@ -151,6 +151,7 @@ export function renderReport(outDir: string, tracePath?: string): string {
   };
   const counts = cases.reduce((a: Record<string, number>, c: { verdict: string }) => ((a[c.verdict] = (a[c.verdict] ?? 0) + 1), a), {});
   // One-screen summary for the safety manager, summed from the facts the agents wrote (last value per case).
+  const points = storePoints(outDir, cases, evs, loadStores());
   const summary = () => {
     const last = new Map<string, unknown>();
     for (const e of evs as (Ev & { about?: string; predicate?: string; value?: unknown })[]) if (e.kind === "world.write" && e.about?.startsWith("case:") && e.predicate?.startsWith("our_")) last.set(`${e.about.replace(/^case:[^:]+:/, "")}|${e.predicate}`, e.value);
@@ -158,11 +159,11 @@ export function renderReport(outDir: string, tracePath?: string): string {
     const sum = (pred: string) => acting.reduce((n: number, c: { id: string }) => n + (Number(last.get(`${c.id}|${pred}`)) || 0), 0);
     const tiles = [
       [sum("our_units_on_hand_in_affected_lots"), "units to pull from shelves"],
-      [sum("our_stores_holding_affected_lots"), "store pulls"],
+      [points.length, points.length === 1 ? "store to pull from" : "stores to pull from"],
       [sum("our_loyalty_customers_who_bought_affected_lots"), "customers to notify (at most)"],
       [cases.filter((c: { verdict: string }) => c.verdict === "needs-human").length, "cases waiting for a reviewer"],
     ] as const;
-    return `<div class="tiles">${tiles.map(([n, l]) => `<div class="tile"><b data-n="${n}">${n}</b><span>${l}</span></div>`).join("")}</div>`;
+    return `<div class="tiles">${tiles.map(([n, l]) => `<div class="tile"><b data-n="${n}">${Number(n).toLocaleString("en-US")}</b><span>${l}</span></div>`).join("")}</div>`;
   };
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RecallWhy run ${esc(res.runId)}</title><style>
@@ -187,6 +188,7 @@ code{font-size:12px}ul{margin:4px 0;padding-left:20px}
 .storemap{border-left-color:#b91c1c}.pulls{width:100%;border-collapse:collapse;font-size:13px}.pulls th,.pulls td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:top}.pulls .n{text-align:right;font-variant-numeric:tabular-nums}.out{color:#b45309;font-size:12px}
 .usmap{width:100%;height:auto;max-height:440px;margin:6px 0}.usmap .st{fill:var(--line);stroke:var(--card);stroke-width:1}.usmap .st-named{fill:#fca5a5;stroke:var(--card);stroke-width:1}
 .usmap circle{stroke:#fff;stroke-width:1.5;fill-opacity:.85}.usmap .d-in{fill:#b91c1c}.usmap .d-out{fill:#d97706}
+.pick select{max-width:100%}.srcmap summary{cursor:pointer;font-weight:600;font-size:16px;padding:6px 0}
 .k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.k-in{background:#b91c1c}.k-out{background:#d97706}.pick{display:block;margin:8px 0 0;font-size:13px;color:var(--mute)}
 @media (prefers-color-scheme:dark){.usmap .st-named{fill:#7f1d1d}}
 /* "What the agents did": chips across the top of a case card, one per highlight read from that case's trace. */
@@ -210,15 +212,15 @@ ${evs.filter((e) => e.kind === "msg" && /^WARNING: live feed/.test(e.text ?? "")
 ${summary()}
 <div class="sub">${existsSync(`${outDir}/digest.md`) ? `<a href="digest.md">Weekly digest</a>` : ""}${existsSync(`${outDir}/actions`) ? ` · Action packets (drafts, not sent): ${readdirSync(`${outDir}/actions`).length} — pull lists, supplier requests and customer notices in <a href="actions/">actions/</a>` : ""}</div>
 <div class="chips">${Object.entries(counts).map(([k, v]) => `<a class="chip" href="#v-${k}" style="background:${COLOR[k]}">${k} <span data-n="${v}">${v}</span></a>`).join("")}</div></header><main>
-${sourceMap(evs)}
-${storeMapSection(storePoints(outDir, cases, evs, loadStores()), caseStates(cases, evs), loadStatePaths())}
+${storeMapSection(points, caseStates(cases, evs), loadStatePaths())}
 ${cases.map((c: { id: string; verdict: string }, i: number) => `<section class="case" style="--i:${i + 1};border-left-color:${COLOR[c.verdict]}"${i === cases.findIndex((x: { verdict: string }) => x.verdict === c.verdict) ? ` id="v-${c.verdict}"` : ""}>${banner(slices.get(c.id) ?? [])}<div class="brief"><a id="${esc(c.id)}"></a>${md(readFileSync(`${outDir}/briefs/${c.id}.md`, "utf8"))}</div>
 <div class="trace"><b>How the agents got here</b>${(slices.get(c.id) ?? []).map(line).join("")}</div></section>`).join("\n")}
+${sourceMap(evs)}
 </main>
 <script>/* count-up: the final number is in the HTML; this only animates it from 0 */
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) for (const el of document.querySelectorAll("[data-n]")) {
   const to = Number(el.dataset.n), t0 = performance.now(), ms = 700;
-  const step = (t) => { const k = Math.min(1, (t - t0) / ms); el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+  const step = (t) => { const k = Math.min(1, (t - t0) / ms); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString("en-US"); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }</script></body></html>`;
   writeFileSync(`${outDir}/report.html`, html);

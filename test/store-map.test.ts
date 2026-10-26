@@ -39,7 +39,7 @@ test("the map marks a store outside the notice's distribution states", () => {
   const pts = storePoints(dir, cases, evs, loadStores());
   assert.deepEqual(pts.map((p) => [p.store_id, p.units, p.cases[0].inNotice]), [["S005", 7, false], ["S023", 3, true]]);
   const html = storeMapSection(pts, caseStates(cases, evs), loadStatePaths());
-  assert.match(html, /Where to pull: 10 unit\(s\) in 2 store\(s\)/);
+  assert.match(html, /Where to pull: 10 units in 2 stores/);
   assert.match(html, /data-st="GA" class="st-named"/);
   assert.match(html, /data-st="WA" class="st"/);
   assert.match(html, /data-s="S005"[^>]*class="d-out"/);
