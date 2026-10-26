@@ -5,13 +5,14 @@ import { readFileSync } from "node:fs";
 import { loadConfig } from "../src/config.ts";
 import { Trace } from "../src/trace.ts";
 import { ZetarisRunner } from "../src/sql/zetaris.ts";
+import { splitSql } from "../src/sql/split.ts";
 
 const args = process.argv.slice(2);
 const flag = (k: string) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : undefined; };
 const show = Number(flag("rows") ?? 10);
 const inline = args[0] === "-e" ? args[1] : undefined;
 const text = inline ?? readFileSync(args[0], "utf8");
-const stmts = text.split(/;\s*\n|;\s*$/).map((s) => s.replace(/^\s*--.*$/gm, "").trim()).filter(Boolean);
+const stmts = splitSql(text);
 
 const env = loadConfig();
 const trace = new Trace({ dir: "logs/setup", quiet: true });

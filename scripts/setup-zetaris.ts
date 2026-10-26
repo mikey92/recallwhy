@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { loadConfig } from "../src/config.ts";
 import { Trace } from "../src/trace.ts";
 import { ZetarisRunner } from "../src/sql/zetaris.ts";
+import { splitSql } from "../src/sql/split.ts";
 
 const env = loadConfig();
 for (const k of ["ZETARIS_BASE_URL", "ZETARIS_USERNAME", "ZETARIS_PASSWORD"]) if (!env[k]) throw new Error(`${k} is not set (.env)`);
@@ -13,7 +14,7 @@ const z = new ZetarisRunner({ baseUrl: env.ZETARIS_BASE_URL!, username: env.ZETA
 
 const fill = (sql: string) => sql.replace(/\$\{(\w+)\}/g, (_, k) => { if (!env[k]) throw new Error(`${k} is not set (.env)`); return env[k]!; });
 for (const file of ["sql/01_feeds.sql", "sql/02_retail_sources.sql", "sql/03_writeback.sql"]) {
-  const stmts = readFileSync(file, "utf8").split(/;\s*\n/).map((s) => s.replace(/^\s*--.*$/gm, "").trim()).filter(Boolean);
+  const stmts = splitSql(readFileSync(file, "utf8"));
   for (const stmt of stmts) {
     const label = stmt.replace(/\s+/g, " ").slice(0, 80);
     try { await z.run(fill(stmt), { agent: "Setup", purpose: label }); console.log(`ok       ${label}`); }
