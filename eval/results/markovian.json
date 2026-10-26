@@ -1,0 +1,149 @@
+{
+  "note": "Prompt tokens of the weekly digest over a full sample-mode run since 2026-07-01, with Markovian (each batch + a ≤256-token carryover) vs a loop that re-reads every earlier batch. Tokens = characters / 4 on both sides.",
+  "cases": 184,
+  "urgentChunks": 27,
+  "markovianPromptTokens": 13033,
+  "fullHistoryPromptTokens": 133522,
+  "savedPercent": 90.2,
+  "largestPromptTokens": {
+    "markovian": 584,
+    "fullHistory": 8726
+  },
+  "chunks": [
+    {
+      "chunk": 1,
+      "markovianPromptTokens": 528,
+      "fullHistoryPromptTokens": 528
+    },
+    {
+      "chunk": 2,
+      "markovianPromptTokens": 584,
+      "fullHistoryPromptTokens": 946
+    },
+    {
+      "chunk": 3,
+      "markovianPromptTokens": 550,
+      "fullHistoryPromptTokens": 1330
+    },
+    {
+      "chunk": 4,
+      "markovianPromptTokens": 564,
+      "fullHistoryPromptTokens": 1728
+    },
+    {
+      "chunk": 5,
+      "markovianPromptTokens": 562,
+      "fullHistoryPromptTokens": 2123
+    },
+    {
+      "chunk": 6,
+      "markovianPromptTokens": 549,
+      "fullHistoryPromptTokens": 2505
+    },
+    {
+      "chunk": 7,
+      "markovianPromptTokens": 565,
+      "fullHistoryPromptTokens": 2904
+    },
+    {
+      "chunk": 8,
+      "markovianPromptTokens": 548,
+      "fullHistoryPromptTokens": 3285
+    },
+    {
+      "chunk": 9,
+      "markovianPromptTokens": 570,
+      "fullHistoryPromptTokens": 3689
+    },
+    {
+      "chunk": 10,
+      "markovianPromptTokens": 521,
+      "fullHistoryPromptTokens": 4044
+    },
+    {
+      "chunk": 11,
+      "markovianPromptTokens": 460,
+      "fullHistoryPromptTokens": 4336
+    },
+    {
+      "chunk": 12,
+      "markovianPromptTokens": 430,
+      "fullHistoryPromptTokens": 4600
+    },
+    {
+      "chunk": 13,
+      "markovianPromptTokens": 435,
+      "fullHistoryPromptTokens": 4868
+    },
+    {
+      "chunk": 14,
+      "markovianPromptTokens": 376,
+      "fullHistoryPromptTokens": 5077
+    },
+    {
+      "chunk": 15,
+      "markovianPromptTokens": 403,
+      "fullHistoryPromptTokens": 5314
+    },
+    {
+      "chunk": 16,
+      "markovianPromptTokens": 453,
+      "fullHistoryPromptTokens": 5600
+    },
+    {
+      "chunk": 17,
+      "markovianPromptTokens": 441,
+      "fullHistoryPromptTokens": 5875
+    },
+    {
+      "chunk": 18,
+      "markovianPromptTokens": 423,
+      "fullHistoryPromptTokens": 6131
+    },
+    {
+      "chunk": 19,
+      "markovianPromptTokens": 408,
+      "fullHistoryPromptTokens": 6373
+    },
+    {
+      "chunk": 20,
+      "markovianPromptTokens": 484,
+      "fullHistoryPromptTokens": 6690
+    },
+    {
+      "chunk": 21,
+      "markovianPromptTokens": 466,
+      "fullHistoryPromptTokens": 6990
+    },
+    {
+      "chunk": 22,
+      "markovianPromptTokens": 485,
+      "fullHistoryPromptTokens": 7312
+    },
+    {
+      "chunk": 23,
+      "markovianPromptTokens": 495,
+      "fullHistoryPromptTokens": 7645
+    },
+    {
+      "chunk": 24,
+      "markovianPromptTokens": 480,
+      "fullHistoryPromptTokens": 7961
+    },
+    {
+      "chunk": 25,
+      "markovianPromptTokens": 505,
+      "fullHistoryPromptTokens": 8303
+    },
+    {
+      "chunk": 26,
+      "markovianPromptTokens": 499,
+      "fullHistoryPromptTokens": 8639
+    },
+    {
+      "chunk": 27,
+      "markovianPromptTokens": 249,
+      "fullHistoryPromptTokens": 8726
+    }
+  ]
+}

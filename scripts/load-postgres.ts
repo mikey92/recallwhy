@@ -1,14 +1,17 @@
 /**
- * Load data/synthetic/*.csv into local Postgres (erp + supplier_portal).
+ * Load data/synthetic/*.csv (or `--dir <folder>` of a retailer's own exports) into local Postgres
+ * (erp + supplier_portal). The folder must meet the data contract (src/data-contract.ts) first.
  * Reads .env with a tiny parser (no dotenv dependency).
  */
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { checkFolder } from "../src/data-contract.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DATA = path.join(ROOT, "data", "synthetic");
+const dirArg = process.argv.indexOf("--dir");
+const DATA = dirArg > 0 ? path.resolve(process.argv[dirArg + 1]) : path.join(ROOT, "data", "synthetic");
 
 async function loadEnv(filePath: string): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
@@ -248,6 +251,11 @@ async function setupSupplier(
 }
 
 async function main(): Promise<void> {
+  const { violations } = checkFolder(DATA);
+  if (violations.length) {
+    for (const v of violations) console.error(`FAIL ${v.file}: ${v.rule} (${v.count}) e.g. ${v.examples.join("; ")}`);
+    throw new Error(`${DATA} breaks the data contract (docs/DATA-CONTRACT.md); nothing loaded`);
+  }
   const fileEnv = await loadEnv(path.join(ROOT, ".env"));
   const user = process.env.RW_PG_USER || fileEnv.RW_PG_USER || "recallwhy";
   const password = process.env.RW_PG_PASSWORD || fileEnv.RW_PG_PASSWORD || "";
