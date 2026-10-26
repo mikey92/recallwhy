@@ -18,7 +18,8 @@
     "check:claims": "tsx scripts/check-claims.ts",
     "demo": "SAMPLE_MODE=true LLM_PROVIDER=none tsx src/cli.ts run --since 2026-09-15 --limit 5",
     "check:repro": "tsx scripts/check-eval-repro.ts",
-    "verify": "tsc --noEmit -p . && npm test --silent && npm run check:claims --silent && npm run check:repro --silent"
+    "verify": "tsc --noEmit -p . && npm test --silent && npm run check:claims --silent && npm run check:engines --silent && npm run check:repro --silent",
+    "check:engines": "tsx scripts/check-engines.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.4.1-r.1",
